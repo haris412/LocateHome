@@ -3,27 +3,42 @@ import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, catchError, of, switchMap, map, shareReplay } from 'rxjs';
+import { environment } from '../../../environments/environment';
+
+const REFRESH_KEY = 'refreshToken';
+const USER_KEY = 'user';
 
 interface RolesApiResponse {
   success?: boolean;
   data?: { roles?: string[] };
 }
-import { environment } from '../../../environments/environment';
-
-const REFRESH_KEY = 'refreshToken';
 
 export interface User {
   _id: string;
   email: string;
   name?: string;
-  role?: unknown;
+  role?: string;
 }
 
-interface LoginResponse {
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
+export interface RegisterPayload {
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  roleName: string;
+}
+
+interface AuthApiResponse {
   user: User;
   accessToken: string;
   refreshToken: string;
 }
+
 
 @Injectable({
   providedIn: 'root'
@@ -44,7 +59,7 @@ export class AuthService {
 
   /** Public API, no auth. Cached with shareReplay(1). Never errors – returns [] on failure. */
   private roles$ = this.http.get<RolesApiResponse>(`${environment.apiUrl}/api/auth/roles`).pipe(
-    map((res) => res.data?.roles ?? []),
+    map((response) => response.data?.roles ?? []),
     catchError(() => of([])),
     shareReplay(1)
   );
@@ -60,65 +75,43 @@ export class AuthService {
   }
 
   private loadStoredUser(): void {
-    const raw = this.storage?.getItem('user');
+    const raw = this.storage?.getItem(USER_KEY);
     if (raw) try { this.userSubject.next(JSON.parse(raw)); } catch { /* ignore */ }
+  }
+
+  private storeAuthData(data: AuthApiResponse): void {
+    if (!this.storage || !data.accessToken || !data.refreshToken || !data.user) return;
+    this.accessToken = data.accessToken;
+    this.storage.setItem(REFRESH_KEY, data.refreshToken);
+    this.storage.setItem(USER_KEY, JSON.stringify(data.user));
+    this.userSubject.next(data.user);
   }
 
   getAccessToken(): string | null {
     return this.accessToken;
   }
 
-  login(email: string, password: string): Observable<{ user: User }> {
-    return this.http.post<{ success?: boolean; data?: LoginResponse } & LoginResponse>(
+  login(payload: LoginPayload): Observable<{ user: User }> {
+    return this.http.post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
       `${environment.apiUrl}/api/auth/login`,
-      { email, password }
+      payload
     ).pipe(
-      tap((res) => {
-        const data = res.data ?? res;
-        const at = data.accessToken;
-        const rt = data.refreshToken;
-        const user = data.user;
-        if (at && rt && user && this.storage) {
-          this.accessToken = at;
-          this.storage.setItem(REFRESH_KEY, rt);
-          this.storage.setItem('user', JSON.stringify(user));
-          this.userSubject.next(user);
-        }
-      }),
-      switchMap((res) => {
-        const data = res.data ?? res;
-        return of({ user: data.user });
-      }),
-      catchError((err) => {
-        throw err;
-      })
+      tap((response) => this.storeAuthData(response.data ?? response)),
+      switchMap((response) => of({ user: (response.data ?? response).user }))
     );
   }
 
-  register(payload: { email: string; password: string; firstName: string; lastName: string; roleName: string }): Observable<{ user: User }> {
-    return this.http.post<{ success?: boolean; data?: LoginResponse } & LoginResponse>(
+  /**
+   * Registers a new user. On success: stores tokens + user, returns user.
+   * Backend response: { success, data: { user, accessToken, refreshToken } } or flat { user, accessToken, refreshToken }.
+   */
+  register(payload: RegisterPayload): Observable<{ user: User }> {
+    return this.http.post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
       `${environment.apiUrl}/api/auth/register`,
       payload
     ).pipe(
-      tap((res) => {
-        const data = res.data ?? res;
-        const at = data.accessToken;
-        const rt = data.refreshToken;
-        const user = data.user;
-        if (at && rt && user && this.storage) {
-          this.accessToken = at;
-          this.storage.setItem(REFRESH_KEY, rt);
-          this.storage.setItem('user', JSON.stringify(user));
-          this.userSubject.next(user);
-        }
-      }),
-      switchMap((res) => {
-        const data = res.data ?? res;
-        return of({ user: data.user });
-      }),
-      catchError((err) => {
-        throw err;
-      })
+      tap((response) => this.storeAuthData(response.data ?? response)),
+      switchMap((response) => of({ user: (response.data ?? response).user }))
     );
   }
 
@@ -131,8 +124,7 @@ export class AuthService {
     }
     this.accessToken = null;
     this.userSubject.next(null);
-    this.storage?.removeItem(REFRESH_KEY);
-    this.storage?.removeItem('user');
+    this.storage?.clear();
     this.router.navigate(['/login']);
   }
 
@@ -144,12 +136,12 @@ export class AuthService {
       `${environment.apiUrl}/api/auth/refresh-token`,
       { refreshToken: refresh }
     ).pipe(
-      tap((res) => {
-        const at = res.data?.accessToken ?? res.accessToken;
+      tap((response) => {
+        const at = response.data?.accessToken ?? response.accessToken;
         if (at) this.accessToken = at;
       }),
-      switchMap((res) => {
-        const at = res.data?.accessToken ?? res.accessToken;
+      switchMap((response) => {
+        const at = response.data?.accessToken ?? response.accessToken;
         if (at) return of(at);
         this.clearAndRedirect();
         return of('');
@@ -164,8 +156,7 @@ export class AuthService {
   private clearAndRedirect(): void {
     this.accessToken = null;
     this.userSubject.next(null);
-    this.storage?.removeItem(REFRESH_KEY);
-    this.storage?.removeItem('user');
+    this.storage?.clear();
     this.router.navigate(['/login']);
   }
 
@@ -179,10 +170,7 @@ export class AuthService {
     if (!refresh) return Promise.resolve();
 
     return new Promise((resolve) => {
-      this.refreshAccessToken().subscribe({
-        next: (token) => { resolve(); },
-        error: () => { resolve(); }
-      });
+      this.refreshAccessToken().subscribe({ next: () => resolve(), error: () => resolve() });
     });
   }
 }
