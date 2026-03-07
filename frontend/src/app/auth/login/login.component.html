@@ -1,0 +1,74 @@
+<div class="login-page">
+  <div class="bg-gradient"></div>
+  <div class="card">
+    <h1 class="title">{{ isRegister ? 'Create account' : 'Welcome back' }}</h1>
+    <p class="subtitle">{{ isRegister ? 'Sign up for LocateHome' : 'Sign in to LocateHome' }}</p>
+
+    @if (error) {
+      <p class="error-msg">{{ error }}</p>
+    }
+
+    <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      @if (isRegister) {
+        <div class="field-row">
+          <div class="field">
+            <label for="firstName">First name</label>
+            <input id="firstName" type="text" formControlName="firstName" placeholder="First name" />
+            @if (form.get('firstName')?.invalid && form.get('firstName')?.touched) {
+              <span class="field-error">First name is required</span>
+            }
+          </div>
+          <div class="field">
+            <label for="lastName">Last name</label>
+            <input id="lastName" type="text" formControlName="lastName" placeholder="Last name" />
+            @if (form.get('lastName')?.invalid && form.get('lastName')?.touched) {
+              <span class="field-error">Last name is required</span>
+            }
+          </div>
+        </div>
+        <div class="field">
+          <label for="roleName">Role</label>
+          <select id="roleName" formControlName="roleName">
+            @if (rolesLoading && roles.length === 0) {
+              <option value="">Loading roles…</option>
+            }
+            @for (role of roles; track role) {
+              <option [value]="role">{{ role }}</option>
+            }
+          </select>
+        </div>
+      }
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" type="email" formControlName="email" placeholder="you@example.com" />
+        @if (form.get('email')?.invalid && form.get('email')?.touched) {
+          <span class="field-error">{{ form.get('email')?.errors?.['required'] ? 'Email is required' : 'Enter a valid email' }}</span>
+        }
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" type="password" formControlName="password" placeholder="••••••••" />
+        @if (form.get('password')?.invalid && form.get('password')?.touched) {
+          <span class="field-error">Password is required</span>
+        }
+      </div>
+
+      @if (!isRegister) {
+        <a href="#" class="forgot">Forgot password?</a>
+      }
+
+      <button type="submit" class="btn" [disabled]="loading || form.invalid">
+        {{ loading ? (isRegister ? 'Creating account…' : 'Signing in…') : (isRegister ? 'Sign up' : 'Sign in') }}
+      </button>
+    </form>
+
+    <p class="footer-text">
+      @if (isRegister) {
+        Already have an account? <a href="#" (click)="toggleMode(); $event.preventDefault()">Sign in</a>
+      } @else {
+        Don't have an account? <a href="#" (click)="toggleMode(); $event.preventDefault()">Sign up</a>
+      }
+    </p>
+  </div>
+</div>
