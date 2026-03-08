@@ -8,12 +8,16 @@ describe('SocialButtonComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [SocialButtonComponent]
-})
-    .compileComponents();
-    
+      imports: [SocialButtonComponent]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(SocialButtonComponent);
     component = fixture.componentInstance;
+    
+    // Set required inputs
+    fixture.componentRef.setInput('label', 'Google');
+    fixture.componentRef.setInput('icon', 'google');
+    
     fixture.detectChanges();
   });
 
