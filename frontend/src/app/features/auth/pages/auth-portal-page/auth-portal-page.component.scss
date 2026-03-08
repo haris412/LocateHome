@@ -1,0 +1,49 @@
+.app-shell-bg {
+  min-height: 100dvh;
+  background: linear-gradient(
+    to bottom,
+    #f1d7cc 0%,
+    #ffeadf 55%,
+    #fff1ea 100%
+  );
+
+  padding: 2rem;
+}
+
+.auth-layout-row, .right-column {
+  @media (min-width: 992px) {
+    height: calc(100dvh - 4rem);
+  }
+}
+
+.hero-column {
+  @media (min-width: 992px) {
+    height: 100%;
+    min-height: 0;
+  }
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-form-area {
+  @media (min-width: 992px) {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .auth-shell,
+  .auth-layout-row,
+  .hero-column,
+  .right-column,
+  .auth-form-area {
+    height: auto;
+    min-height: auto;
+    overflow: visible;
+  }
+}

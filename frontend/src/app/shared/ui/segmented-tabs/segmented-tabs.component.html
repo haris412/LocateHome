@@ -1,1 +1,23 @@
-<p>segmented-tabs works!</p>
+<div class="auth-segment" role="tablist" aria-label="Authentication options">
+  <button
+    type="button"
+    role="tab"
+    class="segment-btn"
+    [class.segment-btn--active]="active() === 'signup'"
+    [attr.aria-selected]="active() === 'signup'"
+    (click)="changed.emit('signup')"
+  >
+    Sign up
+  </button>
+
+  <button
+    type="button"
+    role="tab"
+    class="segment-btn"
+    [class.segment-btn--active]="active() === 'login'"
+    [attr.aria-selected]="active() === 'login'"
+    (click)="changed.emit('login')"
+  >
+    Log in
+  </button>
+</div>

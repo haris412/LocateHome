@@ -8,8 +8,8 @@ describe('SegmentedTabsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [SegmentedTabsComponent]
-    })
+    imports: [SegmentedTabsComponent]
+})
     .compileComponents();
     
     fixture = TestBed.createComponent(SegmentedTabsComponent);

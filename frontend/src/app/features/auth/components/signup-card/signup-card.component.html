@@ -1,1 +1,163 @@
-<p>signup-card works!</p>
+<section class="section-card auth-card h-100" aria-labelledby="signup-title">
+  <div class="card-inner">
+    <h2 id="signup-title" class="auth-card-title">Create an account</h2>
+    <p class="auth-card-copy text-muted-auth">
+      Join EstatePortal to save properties, contact agents and manage your activity in one place.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label-auth" for="signup-full-name">Full name</label>
+          <mat-form-field appearance="outline">
+            <input
+              id="signup-full-name"
+              matInput
+              formControlName="fullName"
+              placeholder="e.g. Jane Doe"
+              autocomplete="name"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="col-12">
+          <label class="form-label-auth" for="signup-email">Email address</label>
+          <mat-form-field appearance="outline">
+            <input
+              id="signup-email"
+              matInput
+              formControlName="email"
+              placeholder="jane@example.com"
+              autocomplete="email"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label-auth" for="signup-phone">Mobile number</label>
+          <mat-form-field appearance="outline">
+            <input
+              id="signup-phone"
+              matInput
+              formControlName="phone"
+              placeholder="+1 (555) 000..."
+              autocomplete="tel"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label-auth" for="signup-location">Location</label>
+          <mat-form-field appearance="outline">
+            <input
+              id="signup-location"
+              matInput
+              formControlName="location"
+              placeholder="City, State"
+              autocomplete="address-level2"
+            />
+          </mat-form-field>
+        </div>
+
+        <div class="col-12">
+          <fieldset class="border-0 p-0 m-0">
+            <legend class="form-label-auth mb-2">User type</legend>
+
+            <div class="d-flex flex-wrap gap-2">
+              @for (option of userTypes(); track option.value) {
+                <button
+                  type="button"
+                  class="user-type-pill"
+                  [class.user-type-pill--active]="form.controls.userType.value === option.value"
+                  (click)="form.controls.userType.setValue(option.value)"
+                  [attr.aria-pressed]="form.controls.userType.value === option.value"
+                >
+                  {{ option.label }}
+                </button>
+              }
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label-auth" for="signup-password">Password</label>
+          <mat-form-field appearance="outline">
+            <input
+              id="signup-password"
+              matInput
+              [type]="hidePassword() ? 'password' : 'text'"
+              formControlName="password"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              mat-icon-button
+              matSuffix
+              [attr.aria-label]="hidePassword() ? 'Show password' : 'Hide password'"
+              (click)="hidePassword.set(!hidePassword())"
+            >
+              <mat-icon [fontIcon]="hidePassword() ? 'visibility_off' : 'visibility'"></mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <label class="form-label-auth" for="signup-confirm-password">Confirm password</label>
+          <mat-form-field appearance="outline">
+            <input
+              id="signup-confirm-password"
+              matInput
+              [type]="hideConfirmPassword() ? 'password' : 'text'"
+              formControlName="confirmPassword"
+              autocomplete="new-password"
+            />
+            <button
+              type="button"
+              mat-icon-button
+              matSuffix
+              [attr.aria-label]="hideConfirmPassword() ? 'Show confirm password' : 'Hide confirm password'"
+              (click)="hideConfirmPassword.set(!hideConfirmPassword())"
+            >
+              <mat-icon [fontIcon]="hideConfirmPassword() ? 'visibility_off' : 'visibility'"></mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+        @if (passwordMismatch()) {
+          <div class="col-12">
+            <p class="form-error mb-0" aria-live="polite">
+              Password and confirm password must match.
+            </p>
+          </div>
+        }
+
+        <div class="col-12">
+          <mat-checkbox formControlName="agree">
+            I agree to the
+            <a href="#" class="auth-link">Terms</a>
+            and
+            <a href="#" class="auth-link">Privacy Policy</a>
+          </mat-checkbox>
+        </div>
+
+        <div class="col-12">
+          <button type="submit" mat-raised-button class="auth-primary-btn w-100">
+            Create account
+          </button>
+        </div>
+
+        <div class="col-12">
+          <div class="visually-divider">Or continue with</div>
+        </div>
+
+        <div class="col-12 col-sm-6">
+          <app-social-button label="Google" icon="mail" />
+        </div>
+
+        <div class="col-12 col-sm-6">
+          <app-social-button label="Apple" icon="phone_iphone" />
+        </div>
+      </div>
+    </form>
+  </div>
+</section>

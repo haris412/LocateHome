@@ -8,8 +8,8 @@ describe('StatCardComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [StatCardComponent]
-    })
+    imports: [StatCardComponent]
+})
     .compileComponents();
     
     fixture = TestBed.createComponent(StatCardComponent);
