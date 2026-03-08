@@ -39,6 +39,15 @@ interface AuthApiResponse {
   refreshToken: string;
 }
 
+interface VerifyEmailRequestBody {
+  token: string;
+  email?: string;
+}
+
+interface VerifyEmailResponse {
+  success?: boolean;
+}
+
 
 @Injectable({
   providedIn: 'root'
@@ -102,7 +111,7 @@ export class AuthService {
   }
 
   /**
-   * Registers a new user. On success: stores tokens + user, returns user.
+   * Registers a new user. Does NOT log the user in; caller should redirect to login with a message.
    * Backend response: { success, data: { user, accessToken, refreshToken } } or flat { user, accessToken, refreshToken }.
    */
   register(payload: RegisterPayload): Observable<{ user: User }> {
@@ -110,8 +119,7 @@ export class AuthService {
       `${environment.apiUrl}/api/auth/register`,
       payload
     ).pipe(
-      tap((response) => this.storeAuthData(response.data ?? response)),
-      switchMap((response) => of({ user: (response.data ?? response).user }))
+      map((response) => ({ user: (response.data ?? response).user }))
     );
   }
 
@@ -158,6 +166,26 @@ export class AuthService {
     this.userSubject.next(null);
     this.storage?.clear();
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Verifies email using the token (and optional email) from the verification link.
+   * POST body only; token is never sent in the request URL.
+   * Including email allows the backend to return "already verified" on refresh or double submit.
+   */
+  verifyEmail(
+    token: string,
+    email?: string | null
+  ): Observable<{ success: boolean }> {
+    const body: VerifyEmailRequestBody = email?.trim()
+      ? { token, email: email.trim() }
+      : { token };
+    return this.http
+      .post<VerifyEmailResponse>(
+        `${environment.apiUrl}/api/auth/verify-email`,
+        body
+      )
+      .pipe(map((res) => ({ success: res.success ?? true })));
   }
 
   isLoggedIn(): boolean {

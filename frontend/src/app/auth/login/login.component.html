@@ -7,6 +7,9 @@
     @if (error) {
       <p class="error-msg">{{ error }}</p>
     }
+    @if (successMessage) {
+      <p class="success-msg">{{ successMessage }}</p>
+    }
 
     <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()">
       @if (isRegister) {
@@ -48,9 +51,52 @@
       </div>
       <div class="field">
         <label for="password">Password</label>
-        <input id="password" type="password" formControlName="password" placeholder="••••••••" />
+        <div class="password-wrapper">
+          <input
+            id="password"
+            [type]="passwordVisible ? 'text' : 'password'"
+            formControlName="password"
+            placeholder="••••••••"
+            autocomplete="{{ isRegister ? 'new-password' : 'current-password' }}"
+          />
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="passwordVisible ? 'Hide password' : 'Show password'"
+            tabindex="-1"
+          >
+            @if (passwordVisible) {
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            } @else {
+              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            }
+          </button>
+        </div>
+        @if (showPasswordRequirements) {
+          <ul class="password-requirements" aria-live="polite">
+            @for (req of passwordRequirementStatus; track req.id) {
+              <li class="requirement" [class.requirement--met]="req.satisfied">
+                <span class="requirement-icon" aria-hidden="true">{{ req.satisfied ? '✓' : '○' }}</span>
+                <span>{{ req.label }}</span>
+              </li>
+            }
+          </ul>
+        }
         @if (form.get('password')?.invalid && form.get('password')?.touched) {
-          <span class="field-error">Password is required</span>
+          <span class="field-error">
+            @if (form.get('password')?.errors?.['required']) {
+              Password is required
+            } @else if (form.get('password')?.errors?.['passwordStrength']) {
+              Password does not meet all requirements above
+            }
+          </span>
         }
       </div>
 
