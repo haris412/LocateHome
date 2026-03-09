@@ -25,12 +25,14 @@ export interface LoginPayload {
   password: string;
 }
 
+/** Register request body. phoneNumber: digits with optional country code, e.g. +1234567890 or 1234567890 */
 export interface RegisterPayload {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
   roleName: string;
+  phoneNumber: string;
 }
 
 interface AuthApiResponse {

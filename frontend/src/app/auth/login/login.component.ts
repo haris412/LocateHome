@@ -153,7 +153,8 @@ export class LoginComponent {
       password: v.password,
       firstName: v.firstName.trim(),
       lastName: v.lastName.trim(),
-      roleName: v.roleName || 'Buyer'
+      roleName: v.roleName || 'Buyer',
+      phoneNumber: (v as { phone?: string }).phone?.trim() ?? ''
     };
   }
 
