@@ -1,16 +1,20 @@
 .app-shell-bg {
   min-height: 100dvh;
+  padding: 2rem;
   background: linear-gradient(
     to bottom,
     #f1d7cc 0%,
     #ffeadf 55%,
     #fff1ea 100%
   );
-
-  padding: 2rem;
 }
 
-.auth-layout-row, .right-column {
+.auth-shell {
+  height: 100%;
+}
+
+.auth-layout-row,
+.right-column {
   @media (min-width: 992px) {
     height: calc(100dvh - 4rem);
   }
@@ -26,13 +30,59 @@
 .right-column {
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 .auth-form-area {
+  position: relative;
+
   @media (min-width: 992px) {
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
+  }
+}
+
+.auth-card-anim {
+  will-change: opacity, transform;
+}
+
+.auth-card-anim {
+  will-change: opacity;
+}
+
+.auth-card-enter {
+  animation: auth-card-fade-in 1000ms ease;
+}
+
+.auth-card-leave {
+  animation: auth-card-fade-out 220ms ease forwards;
+}
+
+@keyframes auth-card-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes auth-card-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-card-enter,
+  .auth-card-leave {
+    animation: none;
   }
 }
 

@@ -1,11 +1,18 @@
-<div class="auth-segment" role="tablist" aria-label="Authentication options">
+<div class="segmented-tabs" role="tablist" aria-label="Authentication tabs">
+  <div
+    class="segmented-tabs__pill"
+    [class.segmented-tabs__pill--login]="visualActive() === 'login'"
+    aria-hidden="true"
+  ></div>
+
   <button
     type="button"
     role="tab"
-    class="segment-btn"
-    [class.segment-btn--active]="active() === 'signup'"
+    class="segmented-tabs__button"
+    [class.segmented-tabs__button--active]="visualActive() === 'signup'"
     [attr.aria-selected]="active() === 'signup'"
-    (click)="changed.emit('signup')"
+    [attr.tabindex]="active() === 'signup' ? 0 : -1"
+    (click)="selectTab('signup')"
   >
     Sign up
   </button>
@@ -13,10 +20,11 @@
   <button
     type="button"
     role="tab"
-    class="segment-btn"
-    [class.segment-btn--active]="active() === 'login'"
+    class="segmented-tabs__button"
+    [class.segmented-tabs__button--active]="visualActive() === 'login'"
     [attr.aria-selected]="active() === 'login'"
-    (click)="changed.emit('login')"
+    [attr.tabindex]="active() === 'login' ? 0 : -1"
+    (click)="selectTab('login')"
   >
     Log in
   </button>
