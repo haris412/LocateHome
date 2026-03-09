@@ -1,12 +1,7 @@
 .app-shell-bg {
   min-height: 100dvh;
   padding: 2rem;
-  background: linear-gradient(
-    to bottom,
-    #f1d7cc 0%,
-    #ffeadf 55%,
-    #fff1ea 100%
-  );
+  background: linear-gradient(to bottom, #f1d7cc 0%, #ffeadf 55%, #fff1ea 100%);
 }
 
 .auth-shell {
@@ -35,28 +30,38 @@
 
 .auth-form-area {
   position: relative;
+  min-height: 0;
+  border-radius: var(--radius-xl);
 
   @media (min-width: 992px) {
     flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
+    overflow: hidden;
   }
 }
 
 .auth-card-anim {
-  will-change: opacity, transform;
-}
-
-.auth-card-anim {
+  width: 100%;
   will-change: opacity;
 }
 
+@media (min-width: 992px) {
+  .auth-form-area {
+    display: grid;
+  }
+
+  .auth-card-anim {
+    grid-area: 1 / 1;
+    min-height: 0;
+  }
+}
+
 .auth-card-enter {
-  animation: auth-card-fade-in 1000ms ease;
+  animation: auth-card-fade-in 420ms ease;
 }
 
 .auth-card-leave {
   animation: auth-card-fade-out 220ms ease forwards;
+  pointer-events: none;
 }
 
 @keyframes auth-card-fade-in {
