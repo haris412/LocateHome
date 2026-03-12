@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-app-download-card',
+  selector: 'app-download-card',
   imports: [MatIconModule],
   templateUrl: './app-download-card.component.html',
   styleUrl: './app-download-card.component.scss',

@@ -18,6 +18,7 @@ import { AgentsSectionComponent } from '../../components/agents-section/agents-s
 import { AppPromoSectionComponent } from '../../components/app-promo-section/app-promo-section.component';
 import { FooterSectionComponent } from '../../components/footer-section/footer-section.component';
 import { HeaderComponent } from '../../../../shared/ui/header/header.component';
+import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/section-heading.component';
 
 @Component({
   selector: 'app-home-page',
@@ -31,7 +32,8 @@ import { HeaderComponent } from '../../../../shared/ui/header/header.component';
     AgentsSectionComponent,
     AppPromoSectionComponent,
     FooterSectionComponent,
-    HeaderComponent
+    HeaderComponent,
+    SectionHeadingComponent
   ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
@@ -55,7 +57,10 @@ export class HomePageComponent {
 
   readonly hotListings = signal<ListingItem[]>([
     { id: '5', title: 'Skyline Townhouse', address: '120 Syln Blvd, Seattle, WA', price: '$4,200 / mo', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-1.png', beds: 2, baths: 2, area: '1,300 sqft', favorite: false },
+    { id: '6', title: 'Lakeview Family Estate', address: '79 Wellington Dr, Chicago, IL', price: '$1,250,000', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-2.png', beds: 4, baths: 3, area: '3,800 sqft', favorite: false },
+    { id: '6', title: 'Lakeview Family Estate', address: '79 Wellington Dr, Chicago, IL', price: '$1,250,000', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-2.png', beds: 4, baths: 3, area: '3,800 sqft', favorite: false },
     { id: '6', title: 'Lakeview Family Estate', address: '79 Wellington Dr, Chicago, IL', price: '$1,250,000', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-2.png', beds: 4, baths: 3, area: '3,800 sqft', favorite: false }
+
   ]);
 
   readonly recentListings = signal<ListingItem[]>([

@@ -23,12 +23,15 @@
     &:first-child {
       margin-top: 0;
     }
+    &-heading {
+      margin-bottom: 3rem;
+    }
   }
 
   &__band {
     width: 100%;
-    margin-top: 3.5rem;
-    padding-block: 3.5rem;
+    padding-block: 6.5rem;
+    background-color: var(--tertiary);
 
     &--soft {
       background: var(--secondary);
@@ -54,8 +57,7 @@
     }
 
     &__band {
-      margin-top: 2.5rem;
-      padding-block: 2.5rem;
+      padding-block: 4.5rem;
     }
   }
 }

@@ -12,23 +12,27 @@
     />
   </section>
 
-  <div class="home-page__container">
-    <app-search-panel />
-
-    <div class="home-page__section">
-      <app-listings-carousel-section
-        title="Featured Listings"
-        subtitle="Explore curated properties with exclusive video walkthroughs."
-        linkLabel="View all properties"
-        [items]="featuredListings()"
-        [showEyebrow]="true"
-      />
+  <section class="home-page__band">
+    <div class="home-page__container">
+      <app-search-panel />
+      <div class="home-page__section">
+        <app-listings-carousel-section
+          title="Featured Listings"
+          subtitle="Explore curated properties with exclusive video walkthroughs."
+          linkLabel="View all properties"
+          [items]="featuredListings()"
+          [showEyebrow]="true"
+        />
+      </div>
     </div>
-  </div>
+  </section>
 
   <section class="home-page__band home-page__band--soft">
     <div class="home-page__container">
       <div class="home-page__section">
+        <div class="home-page__section-heading">
+          <app-section-heading title="Trending & Hot Properties" subtitle="See what other buyers and renters are viewing the most right now." subText="View trending markets" imgSrc="assets/icons/fire.svg"/>
+        </div>
         <div class="row g-4 align-items-start">
           <div class="col-12 col-lg-4">
             <app-trending-panel [items]="trendItems()" />
@@ -37,10 +41,11 @@
           <div class="col-12 col-lg-8">
             <app-listings-carousel-section
               title="Hot this week"
+              [titleSmall]="true"
               subtitle="Based on saved videos and active interest."
-              linkLabel="View trending markets"
               [items]="hotListings()"
-              variant="compact"
+              [smallContent]="true"
+              
             />
           </div>
         </div>
@@ -78,7 +83,7 @@
           title="Take the property portal with you wherever you go"
           description="Search homes by voice, watch video tours, save listings and connect with agents from anywhere."
           [bullets]="appPromoBullets()"
-          phoneImageUrl="assets/images/home/app-phone.png"
+          phoneImageUrl="assets/images/home/mobile-app.png"
         />
       </div>
     </div>

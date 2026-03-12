@@ -1,13 +1,26 @@
 <div class="section-heading">
-  <div class="section-heading__copy">
+  <div class="section-heading__copy w-100">
     <h2 class="section-heading__title">{{ title() }}</h2>
 
     @if (subtitle()) {
-      <p class="section-heading__subtitle">{{ subtitle() }}</p>
+    <p class="section-heading__subtitle">{{ subtitle() }}</p>
     }
   </div>
 
   @if (linkLabel()) {
-    <a href="#" class="section-heading__link">{{ linkLabel() }}</a>
+  <a href="#"
+     class="section-heading__link">{{ linkLabel() }}</a>
+  }
+  @if (subText()) {
+  <p class="section-heading__subtext">
+    {{ subText() }}
+    @if(!imgSrc()) {
+    <mat-icon fontSet="material-symbols-outlined"
+              inline>{{icon()}}</mat-icon>
+    }
+    @if (imgSrc()) {
+    <img [src]="imgSrc()">
+    }
+  </p>
   }
 </div>

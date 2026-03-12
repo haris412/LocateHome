@@ -38,6 +38,9 @@
     color: #8b5cf6;
     font-size: 0.9rem;
     font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
   }
 
   &__review {

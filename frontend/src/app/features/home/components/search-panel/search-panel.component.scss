@@ -1,7 +1,7 @@
 .search-panel {
   position: relative;
   z-index: 5;
-  margin: -6rem auto 0;
+  margin: -12rem auto 0;
   max-width: 1280px;
   padding: 1.25rem;
   background: rgba(255, 248, 243, 0.98);
@@ -305,7 +305,7 @@
 
 @media (max-width: 767.98px) {
   .search-panel {
-    margin-top: -3rem;
+    margin-top: -6rem;
     padding: 1rem;
 
     &__top-grid,

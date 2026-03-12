@@ -1,44 +1,56 @@
 <div class="trending-panel section-card">
   <div class="trending-panel__top">
-    <span class="trending-panel__label">Trending cities</span>
+    <span class="trending-panel__label"><mat-icon fontSet="material-symbols-outlined" inline>trending_up</mat-icon>Trending cities</span>
 
-    <div class="trending-panel__controls">
-      <button type="button"
-              class="trending-panel__arrow"
-              aria-label="Previous">
-        <mat-icon fontSet="material-symbols-outlined"
-                  inline>
-          chevron_left
-        </mat-icon>
-      </button>
+    @if (isOverflowing()) {
+      <div class="trending-panel__controls">
+        <button
+          type="button"
+          class="trending-panel__arrow"
+          [disabled]="!canScrollPrev()"
+          (click)="scrollPrev()"
+          aria-label="Previous"
+        >
+          <mat-icon fontSet="material-symbols-outlined" inline>
+            chevron_left
+          </mat-icon>
+        </button>
 
-      <button type="button"
-              class="trending-panel__arrow"
-              aria-label="Next">
-        <mat-icon fontSet="material-symbols-outlined"
-                  inline>
-          chevron_right
-        </mat-icon>
-      </button>
-    </div>
+        <button
+          type="button"
+          class="trending-panel__arrow"
+          [disabled]="!canScrollNext()"
+          (click)="scrollNext()"
+          aria-label="Next"
+        >
+          <mat-icon fontSet="material-symbols-outlined" inline>
+            chevron_right
+          </mat-icon>
+        </button>
+      </div>
+    }
   </div>
 
   <h3 class="trending-panel__title">Where demand is surging</h3>
 
-  <div class="trending-panel__grid">
-    @for (item of items(); track item.id) {
-    <article class="trending-panel__item">
-      <div class="trending-panel__item-top">
-        <strong>{{ item.city }}</strong>
-        <span class="trending-panel__growth">{{ item.growth }}</span>
+  <div
+    #track
+    class="trending-panel__track"
+    (scroll)="onTrackScroll()"
+  >
+    @for (page of pagedItems(); track $index) {
+      <div class="trending-panel__page">
+        @for (item of page; track item.id) {
+          <article class="trending-panel__item">
+            <div class="trending-panel__item-top">
+              <strong>{{ item.city }}</strong>
+              <span class="trending-panel__growth">{{ item.growth }}</span>
+            </div>
+
+            <p>{{ item.summary }}</p>
+          </article>
+        }
       </div>
-
-      <p>{{ item.summary }}</p>
-    </article>
     }
-  </div>
-
-  <div class="trending-panel__progress">
-    <span class="trending-panel__progress-fill"></span>
   </div>
 </div>

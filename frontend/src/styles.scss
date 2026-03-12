@@ -1,7 +1,7 @@
 :root {
   --primary: #ff6b57;
   --secondary: #ffeadf;
-  --tertiary: #fff1ea;
+  --tertiary: #FFF8F3;
 
   --font-main: #1f1630;
   --font-secondary: #7a6676;
@@ -27,7 +27,7 @@ body {
   margin: 0;
   font-family: Inter, "Segoe UI", Roboto, sans-serif;
   color: var(--font-main);
-  background: #f6f0ec;
+  // background: #f6f0ec;
 }
 
 .mat-icon {

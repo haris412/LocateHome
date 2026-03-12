@@ -1,26 +1,77 @@
 <section class="app-download-card">
-  <div class="row g-4 align-items-center">
+  <div class="row align-items-center g-4 g-xl-5">
     <div class="col-12 col-lg-7">
       <div class="app-download-card__content">
+        <div class="app-download-card__pills">
+          <span class="app-download-card__pill">
+            <mat-icon fontSet="material-symbols-outlined" inline>
+              smartphone
+            </mat-icon>
+            <span>Download our app</span>
+          </span>
+
+          <span class="app-download-card__pill">
+            <mat-icon fontSet="material-symbols-outlined" inline>
+              verified
+            </mat-icon>
+            <span>Available on iOS & Android</span>
+          </span>
+        </div>
+
         <h2 class="app-download-card__title">{{ title() }}</h2>
-        <p class="app-download-card__description">{{ description() }}</p>
+
+        <p class="app-download-card__description">
+          {{ description() }}
+        </p>
 
         <ul class="app-download-card__bullets">
           @for (bullet of bullets(); track bullet) {
-            <li>{{ bullet }}</li>
+            <li class="app-download-card__bullet">
+              <span class="app-download-card__bullet-icon">
+                <mat-icon fontSet="material-symbols-outlined" inline>
+                  radio_button_checked
+                </mat-icon>
+              </span>
+              <span>{{ bullet }}</span>
+            </li>
           }
         </ul>
 
         <div class="app-download-card__actions">
-          <a href="#" class="app-download-card__btn app-download-card__btn--primary">Download on App Store</a>
-          <a href="#" class="app-download-card__btn">Get it on Google Play</a>
+          <a
+            href="#"
+            class="app-download-card__btn app-download-card__btn--primary"
+          >
+            <mat-icon fontSet="material-symbols-outlined" inline>
+              apple
+            </mat-icon>
+            <span>Download on App Store</span>
+          </a>
+
+          <a
+            href="#"
+            class="app-download-card__btn app-download-card__btn--secondary"
+          >
+            <mat-icon fontSet="material-symbols-outlined" inline>
+              smartphone
+            </mat-icon>
+            <span>Get it on Google Play</span>
+          </a>
         </div>
+
+        <p class="app-download-card__note">
+          Scan QR or sign in on mobile to continue your saved search instantly.
+        </p>
       </div>
     </div>
 
     <div class="col-12 col-lg-5">
       <div class="app-download-card__phone-wrap">
-        <img class="app-download-card__phone" [src]="phoneImageUrl()" [alt]="title()" />
+        <img
+          class="app-download-card__phone"
+          [src]="phoneImageUrl()"
+          [alt]="title()"
+        />
       </div>
     </div>
   </div>

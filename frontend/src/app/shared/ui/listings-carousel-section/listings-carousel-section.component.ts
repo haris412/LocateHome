@@ -23,11 +23,13 @@ import { SectionHeadingComponent } from '../section-heading/section-heading.comp
 })
 export class ListingsCarouselSectionComponent {
   readonly title = input.required<string>();
+  readonly titleSmall = input<boolean>(false);
   readonly subtitle = input<string>('');
   readonly linkLabel = input<string>('');
   readonly items = input.required<readonly ListingItem[]>();
   readonly variant = input<'default' | 'compact'>('default');
   readonly showEyebrow = input<boolean>(false);
+  readonly smallContent = input<boolean>(false);
 
   readonly trackRef = viewChild<ElementRef<HTMLDivElement>>('track');
 
