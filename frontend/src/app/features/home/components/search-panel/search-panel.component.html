@@ -1,0 +1,138 @@
+<section class="search-panel section-card" aria-label="Property search filters">
+  <div class="search-panel__top">
+    <div class="search-panel__tabs" role="tablist" aria-label="Search mode">
+      @for (tab of tabs(); track tab.id) {
+        <button
+          type="button"
+          class="search-panel__tab"
+          [class.search-panel__tab--active]="activeTab() === tab.id"
+          [attr.aria-selected]="activeTab() === tab.id"
+          (click)="setActiveTab(tab.id)"
+        >
+          {{ tab.label }}
+        </button>
+      }
+    </div>
+
+    <div class="search-panel__tools">
+      <button
+        type="button"
+        class="search-panel__tool-btn"
+        [disabled]="!micSupported()"
+        (click)="startVoiceSearch()"
+      >
+        <mat-icon fontSet="material-symbols-outlined" inline>mic_none</mat-icon>
+        <span>Voice search</span>
+      </button>
+
+      <button
+        type="button"
+        class="search-panel__tool-btn"
+        [class.search-panel__tool-btn--active]="showMoreFilters()"
+        (click)="toggleMoreFilters()"
+        [attr.aria-expanded]="showMoreFilters()"
+        aria-controls="search-panel-filters"
+      >
+        <mat-icon fontSet="material-symbols-outlined" inline>tune</mat-icon>
+        <span>More filters</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="search-panel__top-grid">
+    <div class="search-panel__hero-field">
+      <div class="search-panel__hero-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>search</mat-icon>
+        <span>Search by keyword or voice</span>
+      </div>
+
+      <div class="search-panel__hero-query">{{ keyword() }}</div>
+
+      <div class="search-panel__voice-row">
+        <span class="search-panel__voice-hint">{{ voiceHint() }}</span>
+
+        <button
+          type="button"
+          class="search-panel__mic-btn"
+          [class.search-panel__mic-btn--active]="isListening()"
+          [disabled]="!micSupported()"
+          (click)="startVoiceSearch()"
+          [attr.aria-label]="isListening() ? 'Stop voice search' : 'Start voice search'"
+        >
+          <mat-icon fontSet="material-symbols-outlined" inline>
+            {{ isListening() ? 'graphic_eq' : 'mic' }}
+          </mat-icon>
+        </button>
+      </div>
+
+      @if (micError()) {
+        <p class="search-panel__mic-error">{{ micError() }}</p>
+      }
+    </div>
+
+    <div class="search-panel__type-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>apartment</mat-icon>
+        <span>Property Type</span>
+      </span>
+
+      <strong class="search-panel__field-value">{{ propertyType() }}</strong>
+    </div>
+
+    <button
+      type="button"
+      class="search-panel__search-cta"
+      (click)="runSearch()"
+      aria-label="Search properties"
+    >
+      <span class="search-panel__search-cta-icon">
+        <mat-icon fontSet="material-symbols-outlined" inline>search</mat-icon>
+      </span>
+
+      <span class="search-panel__search-cta-copy">
+        <strong>Search properties</strong>
+        <small>Find homes fast</small>
+      </span>
+
+      <span class="search-panel__search-cta-arrow">
+        <mat-icon fontSet="material-symbols-outlined" inline>arrow_forward</mat-icon>
+      </span>
+    </button>
+  </div>
+
+  <div class="search-panel__bottom-grid">
+    @for (field of summaryFields(); track field.id) {
+      <div class="search-panel__mini-field">
+        <span class="search-panel__field-label">
+          <mat-icon fontSet="material-symbols-outlined" inline>
+            {{ field.icon }}
+          </mat-icon>
+          <span>{{ field.label }}</span>
+        </span>
+
+        <strong class="search-panel__field-value">{{ field.value }}</strong>
+      </div>
+    }
+  </div>
+
+  @if (showMoreFilters()) {
+    <div id="search-panel-filters" class="search-panel__chips">
+      @for (chip of quickChips(); track chip.id) {
+        <button
+          type="button"
+          class="search-panel__chip"
+          [class.search-panel__chip--active]="chip.active"
+          (click)="toggleChip(chip.id)"
+        >
+          @if (chip.icon) {
+            <mat-icon fontSet="material-symbols-outlined" inline>
+              {{ chip.icon }}
+            </mat-icon>
+          }
+
+          <span>{{ chip.label }}</span>
+        </button>
+      }
+    </div>
+  }
+</section>

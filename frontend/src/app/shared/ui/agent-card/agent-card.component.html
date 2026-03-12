@@ -1,0 +1,59 @@
+<article class="agent-card">
+
+  <div class="agent-card__top">
+    <img
+      class="agent-card__avatar"
+      [src]="item().avatarUrl"
+      [alt]="item().name"
+    />
+
+    <div class="agent-card__header">
+      <h3 class="agent-card__name">{{ item().name }}</h3>
+      <p class="agent-card__agency">{{ item().role }}</p>
+
+      <div class="agent-card__location">
+        <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
+        {{ item().location }}
+      </div>
+    </div>
+  </div>
+
+  <div class="agent-card__stats">
+    <div class="agent-card__stat">
+      <span class="agent-card__stat-label">Phone</span>
+      <span class="agent-card__stat-value">{{ item().phone }}</span>
+    </div>
+
+    <div class="agent-card__stat">
+      <span class="agent-card__stat-label">Properties</span>
+      <span class="agent-card__stat-value">{{ item().properties }} active</span>
+    </div>
+
+    <div class="agent-card__stat">
+      <span class="agent-card__stat-label">Rating</span>
+      <span class="agent-card__stat-value">{{ item().rating }}</span>
+    </div>
+  </div>
+
+  <p class="agent-card__description">
+    {{ item().description }}
+  </p>
+
+  <div class="agent-card__contact">
+    <div class="agent-card__phone">
+      <span class="material-icons">call</span>
+      {{ item().phone }}
+    </div>
+
+    <div class="agent-card__rating">
+      <span class="material-icons">star</span>
+      {{ item().rating }} rating
+    </div>
+  </div>
+
+  <div class="agent-card__actions">
+    <a class="agent-card__btn agent-card__btn--primary">Contact agent</a>
+    <a class="agent-card__btn">View profile</a>
+  </div>
+
+</article>

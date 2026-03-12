@@ -1,0 +1,27 @@
+<section class="app-download-card">
+  <div class="row g-4 align-items-center">
+    <div class="col-12 col-lg-7">
+      <div class="app-download-card__content">
+        <h2 class="app-download-card__title">{{ title() }}</h2>
+        <p class="app-download-card__description">{{ description() }}</p>
+
+        <ul class="app-download-card__bullets">
+          @for (bullet of bullets(); track bullet) {
+            <li>{{ bullet }}</li>
+          }
+        </ul>
+
+        <div class="app-download-card__actions">
+          <a href="#" class="app-download-card__btn app-download-card__btn--primary">Download on App Store</a>
+          <a href="#" class="app-download-card__btn">Get it on Google Play</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-5">
+      <div class="app-download-card__phone-wrap">
+        <img class="app-download-card__phone" [src]="phoneImageUrl()" [alt]="title()" />
+      </div>
+    </div>
+  </div>
+</section>

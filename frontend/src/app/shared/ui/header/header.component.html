@@ -1,0 +1,83 @@
+<header class="home-header"
+        [class.home-header--menu-open]="mobileMenuOpen()">
+  <div class="home-header__container">
+    <div class="home-header__inner">
+      <a routerLink="/"
+         class="home-header__brand"
+         aria-label="EstatePortal home">
+        <img src="assets/icons/logo.svg"
+             alt=""
+             class="home-header__logo" />
+        <span class="home-header__brand-text">EstatePortal</span>
+      </a>
+
+      <nav class="home-header__nav"
+           aria-label="Primary navigation">
+        @for (item of navItems; track item.id) {
+        <a [routerLink]="item.route"
+           class="home-header__nav-link">
+          {{ item.label }}
+        </a>
+        }
+      </nav>
+
+      <div class="home-header__actions">
+        <a href="#"
+           class="home-header__btn home-header__btn--secondary">Log in</a>
+        <a href="#"
+           class="home-header__btn home-header__btn--primary">Sign up</a>
+      </div>
+
+      <button type="button"
+              class="home-header__menu-toggle"
+              [class.home-header__menu-toggle--open]="mobileMenuOpen()"
+              [attr.aria-expanded]="mobileMenuOpen()"
+              [attr.aria-label]="mobileMenuOpen() ? 'Close navigation' : 'Open navigation'"
+              (click)="toggleMobileMenu()">
+        <span class="home-header__menu-icon-wrap"
+              aria-hidden="true">
+          <mat-icon class="home-header__menu-icon home-header__menu-icon--menu"
+                    fontSet="material-symbols-outlined"
+                    inline>
+            menu
+          </mat-icon>
+
+          <mat-icon class="home-header__menu-icon home-header__menu-icon--close"
+                    fontSet="material-symbols-outlined"
+                    inline>
+            close
+          </mat-icon>
+        </span>
+      </button>
+    </div>
+
+    @if (mobileMenuOpen()) {
+    <div class="home-header__mobile-menu"
+         animate.enter="home-header__mobile-menu--enter"
+         animate.leave="home-header__mobile-menu--leave">
+      <nav class="home-header__mobile-nav"
+           aria-label="Mobile navigation">
+        @for (item of navItems; track item.id) {
+        <a [routerLink]="item.route"
+           class="home-header__mobile-link"
+           (click)="closeMobileMenu()">
+          {{ item.label }}
+        </a>
+        }
+      </nav>
+
+      <div class="home-header__mobile-actions">
+        <a href="#"
+           class="home-header__btn home-header__btn--secondary home-header__btn--mobile">
+          Log in
+        </a>
+
+        <a href="#"
+           class="home-header__btn home-header__btn--primary home-header__btn--mobile">
+          Sign up
+        </a>
+      </div>
+    </div>
+    }
+  </div>
+</header>

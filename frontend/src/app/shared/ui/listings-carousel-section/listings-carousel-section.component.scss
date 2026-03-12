@@ -1,0 +1,144 @@
+.listings-carousel-section {
+  display: grid;
+  gap: 1.4rem;
+
+  &__header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    margin: 0 0 0.45rem;
+    color: var(--font-main);
+    font-size: clamp(1.5rem, 2.7vw, 2rem);
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  &__subtitle {
+    margin: 0;
+    color: var(--font-secondary);
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  &__controls {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  &__arrow {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border-soft);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--font-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    .mat-icon {
+      width: 21px;
+      height: 21px;
+    }
+
+    .material-icons {
+      font-size: 1.25rem;
+    }
+  }
+
+  &__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.75rem;
+    background: var(--surface-soft);
+    color: var(--font-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+    width: fit-content;
+  }
+
+  &__track {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 2rem;
+    scrollbar-gutter: stable;
+
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+
+    &::-webkit-scrollbar-button {
+      display: none;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: var(--secondary);
+      border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--primary);
+      border-radius: 999px;
+    }
+  }
+
+  &__slide {
+    flex: 0 0 auto;
+    width: auto;
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .listings-carousel-section {
+    &__title {
+      font-size: 2rem;
+    }
+
+    &__subtitle {
+      font-size: 0.95rem;
+    }
+
+    &__track {
+      padding-bottom: 0.35rem;
+
+      &::-webkit-scrollbar {
+        height: 8px;
+      }
+    }
+  }
+}

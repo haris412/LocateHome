@@ -1,0 +1,78 @@
+.app-download-card {
+  padding: 2.5rem;
+  border: 1px solid rgba(234, 217, 208, 0.82);
+  border-radius: 1rem;
+  background: var(--surface);
+
+  &__title {
+    margin: 0 0 0.85rem;
+    color: var(--font-main);
+    font-size: clamp(2rem, 3vw, 3.25rem);
+    line-height: 0.98;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+  }
+
+  &__description {
+    margin: 0 0 1.2rem;
+    color: var(--font-secondary);
+    font-size: 1.05rem;
+    line-height: 1.6;
+  }
+
+  &__bullets {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.65rem 1rem;
+    margin: 0 0 1.5rem;
+    padding-left: 1rem;
+    color: var(--font-secondary);
+    font-size: 0.95rem;
+  }
+
+  &__actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  &__btn {
+    min-height: 3rem;
+    padding: 0.85rem 1.15rem;
+    border: 1px solid var(--border-soft);
+    border-radius: 0.7rem;
+    color: var(--font-main);
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+
+    &--primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+  }
+
+  &__phone-wrap {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__phone {
+    max-width: 100%;
+    width: 21rem;
+    display: block;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .app-download-card {
+    padding: 1.5rem;
+
+    &__bullets {
+      grid-template-columns: 1fr;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<div class="section-heading">
+  <div class="section-heading__copy">
+    <h2 class="section-heading__title">{{ title() }}</h2>
+
+    @if (subtitle()) {
+      <p class="section-heading__subtitle">{{ subtitle() }}</p>
+    }
+  </div>
+
+  @if (linkLabel()) {
+    <a href="#" class="section-heading__link">{{ linkLabel() }}</a>
+  }
+</div>

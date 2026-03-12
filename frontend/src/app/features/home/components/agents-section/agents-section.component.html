@@ -1,0 +1,15 @@
+<section class="agents-section">
+  <app-section-heading
+    title="Top real estate agents"
+    subtitle="Connect with trusted experts and specialists with strong ratings."
+    linkLabel="Browse all agents"
+  />
+
+  <div class="row g-4">
+    @for (item of items(); track item.id) {
+      <div class="col-12 col-md-6 col-xl-4">
+        <app-agent-card [item]="item" />
+      </div>
+    }
+  </div>
+</section>
