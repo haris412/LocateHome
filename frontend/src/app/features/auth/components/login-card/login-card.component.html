@@ -14,7 +14,7 @@
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
       <div class="row g-3">
         <div class="col-12">
-          <label class="form-label-auth" for="login-identifier">Email or mobile number</label>
+          <label class="form-label-auth" for="login-identifier">Email</label>
           <mat-form-field appearance="outline">
             <input
               id="login-identifier"
@@ -24,6 +24,10 @@
               autocomplete="username"
             />
           </mat-form-field>
+          <app-form-field-error
+            [control]="form.controls.identifier"
+            label="Email"
+          />
         </div>
 
         <div class="col-12">
@@ -46,6 +50,10 @@
               <mat-icon [fontIcon]="hidePassword() ? 'visibility_off' : 'visibility'"></mat-icon>
             </button>
           </mat-form-field>
+          <app-form-field-error
+            [control]="form.controls.password"
+            label="Password"
+          />
         </div>
 
         <div class="col-12 d-flex align-items-center justify-content-between flex-wrap gap-2">

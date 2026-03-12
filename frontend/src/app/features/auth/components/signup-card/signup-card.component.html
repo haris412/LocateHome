@@ -11,19 +11,39 @@
       </div>
     }
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
       <div class="row g-3">
-        <div class="col-12">
-          <label class="form-label-auth" for="signup-full-name">Full name</label>
+        <div class="col-12 col-md-6">
+          <label class="form-label-auth" for="signup-first-name">First name</label>
           <mat-form-field appearance="outline">
             <input
-              id="signup-full-name"
+              id="signup-first-name"
               matInput
-              formControlName="fullName"
-              placeholder="e.g. Jane Doe"
-              autocomplete="name"
+              formControlName="firstName"
+              placeholder="e.g. Jane"
+              autocomplete="given-name"
             />
           </mat-form-field>
+          <app-form-field-error
+            [control]="form.controls.firstName"
+            label="First name"
+          />
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label-auth" for="signup-last-name">Last name</label>
+          <mat-form-field appearance="outline">
+            <input
+              id="signup-last-name"
+              matInput
+              formControlName="lastName"
+              placeholder="e.g. Doe"
+              autocomplete="family-name"
+            />
+          </mat-form-field>
+          <app-form-field-error
+            [control]="form.controls.lastName"
+            label="Last name"
+          />
         </div>
 
         <div class="col-12">
@@ -37,33 +57,83 @@
               autocomplete="email"
             />
           </mat-form-field>
+          <app-form-field-error
+            [control]="form.controls.email"
+            label="Email address"
+          />
         </div>
 
         <div class="col-12 col-md-6">
           <label class="form-label-auth" for="signup-phone">Mobile number</label>
-          <mat-form-field appearance="outline">
-            <input
-              id="signup-phone"
-              matInput
-              formControlName="phone"
-              placeholder="+1234567890"
-              autocomplete="tel"
-            />
-            <mat-hint>Digits with optional country code (e.g. +1234567890)</mat-hint>
-          </mat-form-field>
+          <div class="phone-row d-flex gap-2 align-items-flex-start">
+            <mat-form-field appearance="outline" class="phone-country">
+              <mat-label>Code</mat-label>
+              <input
+                id="signup-phone-country"
+                matInput
+                formControlName="phoneCountryCode"
+                [matAutocomplete]="phoneCountryAuto"
+                placeholder="Search by code (e.g. AU, US, 92)"
+                aria-label="Country code"
+              />
+              <mat-autocomplete
+                #phoneCountryAuto="matAutocomplete"
+                [displayWith]="displayPhoneCountry"
+                panelClass="auth-dropdown-panel"
+              >
+                @for (c of filteredPhoneCountries(); track c.isoCode) {
+                  <mat-option [value]="c.isoCode" class="auth-dropdown-option">
+                    <span class="auth-option-flag">{{ c.flag }}</span>
+                    <span class="auth-option-text">+{{ c.phonecode }} {{ c.isoCode }}</span>
+                  </mat-option>
+                }
+              </mat-autocomplete>
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="phone-number flex-grow-1">
+              <input
+                id="signup-phone"
+                matInput
+                formControlName="phone"
+                placeholder="phone-number"
+                autocomplete="tel-national"
+                inputmode="numeric"
+              />
+            </mat-form-field>
+          </div>
+          <app-form-field-error
+            [control]="form.controls.phone"
+            label="Mobile number"
+          />
         </div>
 
         <div class="col-12 col-md-6">
           <label class="form-label-auth" for="signup-location">Location</label>
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="w-100">
+            <mat-label>Location</mat-label>
             <input
               id="signup-location"
               matInput
-              formControlName="location"
-              placeholder="City, State"
-              autocomplete="address-level2"
+              formControlName="locationCountryCode"
+              [matAutocomplete]="locationCountryAuto"
+              placeholder="Search by country name"
+              aria-label="Location"
             />
+            <mat-autocomplete
+              #locationCountryAuto="matAutocomplete"
+              [displayWith]="displayLocationCountry"
+              panelClass="auth-dropdown-panel"
+            >
+              @for (c of filteredLocationCountries(); track c.isoCode) {
+                <mat-option [value]="c" class="auth-dropdown-option">
+                  <span class="auth-option-text">{{ c.name }}</span>
+                </mat-option>
+              }
+            </mat-autocomplete>
           </mat-form-field>
+          <app-form-field-error
+            [control]="form.controls.locationCountryCode"
+            label="Location"
+          />
         </div>
 
         <div class="col-12">
@@ -106,45 +176,10 @@
               <mat-icon [fontIcon]="hidePassword() ? 'visibility_off' : 'visibility'"></mat-icon>
             </button>
           </mat-form-field>
-        </div>
-
-        @if (showPasswordRequirements()) {
-          <div class="col-12">
-            <ul class="password-requirements list-unstyled mb-0 small">
-              @for (req of passwordRequirementStatus(); track req.id) {
-                <li [class.text-success]="req.satisfied" [class.text-muted]="!req.satisfied">
-                  {{ req.satisfied ? '✓' : '○' }} {{ req.label }}
-                </li>
-              }
-            </ul>
-          </div>
-        }
-
-        <div class="col-12 col-md-6 confirm-password-col">
-          <label class="form-label-auth" for="signup-confirm-password">Confirm password</label>
-          <mat-form-field appearance="outline">
-            <input
-              id="signup-confirm-password"
-              matInput
-              [type]="hideConfirmPassword() ? 'password' : 'text'"
-              formControlName="confirmPassword"
-              autocomplete="new-password"
-            />
-            <button
-              type="button"
-              mat-icon-button
-              matSuffix
-              [attr.aria-label]="hideConfirmPassword() ? 'Show confirm password' : 'Hide confirm password'"
-              (click)="hideConfirmPassword.set(!hideConfirmPassword())"
-            >
-              <mat-icon [fontIcon]="hideConfirmPassword() ? 'visibility_off' : 'visibility'"></mat-icon>
-            </button>
-          </mat-form-field>
-          @if (passwordMismatch()) {
-            <p class="form-error confirm-password-error" aria-live="polite">
-              Password and confirm password must match.
-            </p>
-          }
+          <app-form-field-error
+            [control]="form.controls.password"
+            label="Password"
+          />
         </div>
 
         <div class="col-12">
@@ -154,6 +189,7 @@
             and
             <a href="#" class="auth-link">Privacy Policy</a>
           </mat-checkbox>
+          <app-form-field-error [control]="form.controls.agree" />
         </div>
 
         <div class="col-12">

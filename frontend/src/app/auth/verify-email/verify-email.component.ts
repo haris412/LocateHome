@@ -8,6 +8,8 @@ import { isPlatformBrowser } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from '../../core/services/auth.service';
 
 export type VerifyState =
@@ -62,6 +64,7 @@ function getVerificationParams(
 @Component({
   selector: 'app-verify-email',
   standalone: true,
+  imports: [MatButtonModule, MatIconModule],
   templateUrl: './verify-email.component.html',
   styleUrl: './verify-email.component.scss',
 })
@@ -117,8 +120,7 @@ export class VerifyEmailComponent implements OnDestroy {
   }
 
   goToLogin(): void {
-    const queryParams = this.state === 'success' ? { verified: 'true' } : {};
-    this.router.navigate(['/login'], { queryParams });
+    this.router.navigate(['/login']);
   }
 
   private normalizeErrorMessage(err: unknown): string {
@@ -139,7 +141,7 @@ export class VerifyEmailComponent implements OnDestroy {
   private scheduleRedirect(): void {
     this.redirectTimeoutId = setTimeout(() => {
       this.redirectTimeoutId = null;
-      this.router.navigate(['/login'], { queryParams: { verified: 'true' } });
+      this.router.navigate(['/login']);
     }, REDIRECT_DELAY_MS);
   }
 }

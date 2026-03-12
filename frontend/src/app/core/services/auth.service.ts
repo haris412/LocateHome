@@ -2,7 +2,7 @@ import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, of, switchMap, map, shareReplay } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of, switchMap, map, shareReplay, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 const REFRESH_KEY = 'refreshToken';
@@ -25,7 +25,7 @@ export interface LoginPayload {
   password: string;
 }
 
-/** Register request body. phoneNumber: digits with optional country code, e.g. +1234567890 or 1234567890 */
+/** Register request body. phoneNumber: E.164 e.g. +923001234567; location: JSON string of LocationJson. */
 export interface RegisterPayload {
   email: string;
   password: string;
@@ -33,6 +33,7 @@ export interface RegisterPayload {
   lastName: string;
   roleName: string;
   phoneNumber: string;
+  location?: string;
 }
 
 interface AuthApiResponse {
@@ -102,20 +103,42 @@ export class AuthService {
     return this.accessToken;
   }
 
+  /** Sends payload as JSON request body. Wraps API errors (success: false) as observable errors. */
   login(payload: LoginPayload): Observable<{ user: User }> {
-    return this.http.post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
-      `${environment.apiUrl}/api/auth/login`,
-      payload
-    ).pipe(
-      tap((response) => this.storeAuthData(response.data ?? response)),
-      switchMap((response) => of({ user: (response.data ?? response).user }))
-    );
+    return this.http
+      .post<
+        {
+          success?: boolean;
+          data?: AuthApiResponse;
+          reason?: string;
+          message?: string;
+        } & AuthApiResponse
+      >(`${environment.apiUrl}/api/auth/login`, payload)
+      .pipe(
+        switchMap((response) => {
+          if (response.success === false) {
+            return throwError(() => ({
+              error: {
+                reason: response.reason,
+                message:
+                  response.message ??
+                  'Login failed. Please verify your details and try again.'
+              }
+            }));
+          }
+
+          const data = (response.data ?? response) as AuthApiResponse;
+          this.storeAuthData(data);
+          return of({ user: data.user });
+        })
+      );
   }
 
   /**
    * Registers a new user. Does NOT log the user in; caller should redirect to login with a message.
    * Backend response: { success, data: { user, accessToken, refreshToken } } or flat { user, accessToken, refreshToken }.
    */
+  /** Sends payload as JSON request body. */
   register(payload: RegisterPayload): Observable<{ user: User }> {
     return this.http.post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
       `${environment.apiUrl}/api/auth/register`,

@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { FeatureCardComponent } from '../../../../shared/ui/feature-card/feature-card.component';
 import { SocialButtonComponent } from '../../../../shared/ui/social-button/social-button.component';
+import { FormFieldErrorComponent } from '../../../../shared/ui/form-field-error/form-field-error.component';
 import { FeatureItem } from '../../../../core/models/auth.models';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -24,7 +25,8 @@ import { AuthService } from '../../../../core/services/auth.service';
     MatIconModule,
     MatButtonModule,
     FeatureCardComponent,
-    SocialButtonComponent
+    SocialButtonComponent,
+    FormFieldErrorComponent
   ],
   templateUrl: './login-card.component.html',
   styleUrl: './login-card.component.scss',
@@ -60,7 +62,7 @@ export class LoginCardComponent {
   ]);
 
   readonly form = this.fb.nonNullable.group({
-    identifier: ['', [Validators.required]],
+    identifier: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required, Validators.minLength(8)]],
     rememberMe: [false]
   });
@@ -91,11 +93,16 @@ export class LoginCardComponent {
     this.error.set(null);
     this.loading.set(true);
     const { identifier, password } = this.form.getRawValue();
-    this.auth.login({ email: identifier.trim(), password }).subscribe({
+    const payload = {
+      email: identifier.trim(),
+      password
+    };
+    this.auth.login(payload).subscribe({
       next: () => this.router.navigate(['/dashboard']),
       error: (err) => {
         this.loading.set(false);
-        const msg = err?.error?.message ?? err?.message ?? 'Login failed. Please try again.';
+        const msg =
+          err?.error?.message ?? err?.message ?? 'Login failed. Please try again.';
         this.error.set(msg);
       },
       complete: () => this.loading.set(false)
