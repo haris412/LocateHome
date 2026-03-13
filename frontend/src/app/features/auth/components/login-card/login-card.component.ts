@@ -99,11 +99,12 @@ export class LoginCardComponent {
     };
     this.auth.login(payload).subscribe({
       next: () => this.router.navigate(['/dashboard']),
-      error: (err) => {
+      error: (err: unknown) => {
         this.loading.set(false);
-        const msg =
-          err?.error?.message ?? err?.message ?? 'Login failed. Please try again.';
-        this.error.set(msg);
+        this.error.set(
+          (err as { message?: string }).message ??
+            'Login failed. Please try again.'
+        );
       },
       complete: () => this.loading.set(false)
     });

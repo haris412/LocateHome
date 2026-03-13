@@ -140,19 +140,23 @@
           <fieldset class="border-0 p-0 m-0">
             <legend class="form-label-auth mb-2">User type</legend>
 
-            <div class="d-flex flex-wrap gap-2">
-              @for (option of userTypes(); track option.value) {
-                <button
-                  type="button"
-                  class="user-type-pill"
-                  [class.user-type-pill--active]="form.controls.userType.value === option.value"
-                  (click)="form.controls.userType.setValue(option.value)"
-                  [attr.aria-pressed]="form.controls.userType.value === option.value"
-                >
-                  {{ option.label }}
-                </button>
-              }
-            </div>
+            @if (rolesLoading()) {
+              <p class="text-muted-auth mb-0">Loading options…</p>
+            } @else {
+              <div class="d-flex flex-wrap gap-2">
+                @for (option of userTypes(); track option.value) {
+                  <button
+                    type="button"
+                    class="user-type-pill"
+                    [class.user-type-pill--active]="form.controls.userType.value === option.value"
+                    (click)="form.controls.userType.setValue(option.value)"
+                    [attr.aria-pressed]="form.controls.userType.value === option.value"
+                  >
+                    {{ option.label }}
+                  </button>
+                }
+              </div>
+            }
           </fieldset>
         </div>
 

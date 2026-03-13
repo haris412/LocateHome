@@ -131,9 +131,10 @@ export class LoginComponent {
             replaceUrl: true,
           });
         },
-        error: (err) => {
+        error: (err: unknown) => {
           this.loading = false;
-          this.error = this.getErrorMessage(err, 'Registration failed.');
+          this.error =
+            (err as { message?: string }).message ?? 'Registration failed.';
         },
       });
     } else {
@@ -167,24 +168,12 @@ export class LoginComponent {
         this.loading = false;
         this.router.navigate(['/dashboard']);
       },
-      error: (err) => {
+      error: (err: unknown) => {
         this.loading = false;
-        this.error = this.getErrorMessage(err, errorFallback);
+        this.error =
+          (err as { message?: string }).message ?? errorFallback;
       },
     });
   }
 
-  private getErrorMessage(err: unknown, fallback: string): string {
-    if (err == null || typeof err !== 'object') return fallback;
-    const e = err as {
-      error?: { message?: string; errors?: Array<{ msg?: string }> };
-      message?: string;
-    };
-    return (
-      e.error?.message ??
-      e.error?.errors?.[0]?.msg ??
-      e.message ??
-      fallback
-    );
-  }
 }

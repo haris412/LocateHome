@@ -104,9 +104,15 @@ export class VerifyEmailComponent implements OnDestroy {
           this.state = 'success';
           this.scheduleRedirect();
         },
-        error: (err) => {
+        error: (err: unknown) => {
           this.state = 'error';
-          this.errorMessage = this.normalizeErrorMessage(err);
+          const fallback =
+            'This link is invalid or has expired. Please request a new verification email.';
+          const msg = (err as { message?: string }).message ?? fallback;
+          this.errorMessage =
+            msg.length > ERROR_MESSAGE_MAX_LENGTH
+              ? msg.slice(0, ERROR_MESSAGE_MAX_LENGTH) + '…'
+              : msg;
         },
       });
   }
@@ -121,21 +127,6 @@ export class VerifyEmailComponent implements OnDestroy {
 
   goToLogin(): void {
     this.router.navigate(['/login']);
-  }
-
-  private normalizeErrorMessage(err: unknown): string {
-    const fallback =
-      'This link is invalid or has expired. Please request a new verification email.';
-    if (err == null || typeof err !== 'object') return fallback;
-
-    const msg =
-      (err as { error?: { message?: string }; message?: string }).error
-        ?.message ??
-      (err as { message?: string }).message;
-    if (typeof msg !== 'string' || !msg) return fallback;
-
-    const safe = msg.slice(0, ERROR_MESSAGE_MAX_LENGTH);
-    return safe.length < msg.length ? `${safe}…` : safe;
   }
 
   private scheduleRedirect(): void {

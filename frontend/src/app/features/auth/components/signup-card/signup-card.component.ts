@@ -4,6 +4,7 @@ import {
   computed,
   DestroyRef,
   inject,
+  OnInit,
   signal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -34,22 +35,21 @@ import {
   validCountryCodeValidator,
   validLocationCountryValidator
 } from '../../../../shared/utils/country-filter.util';
-import { phoneNumberValidator } from '../../../../shared/validators/phone-number.validator';
+import {
+  DEFAULT_PHONE_VALIDATION_CONFIG,
+  phoneNumberValidator
+} from '../../../../shared/validators/phone-number.validator';
 import { SocialButtonComponent } from '../../../../shared/ui/social-button/social-button.component';
-import type { UserTypeOption } from '../../../../core/models/auth.models';
+import {
+  getDefaultUserTypeOptions,
+  rolesToUserTypeOptions,
+  type UserTypeOption
+} from '../../../../core/models/auth.models';
 import { AuthService, RegisterPayload } from '../../../../core/services/auth.service';
 import { FormFieldErrorComponent } from '../../../../shared/ui/form-field-error/form-field-error.component';
 
 const DEFAULT_PHONE_COUNTRY_CODE = 'US';
-
-const USER_TYPE_OPTIONS: UserTypeOption[] = [
-  { value: 'buyer', label: 'Buyer' },
-  { value: 'seller', label: 'Seller' },
-  { value: 'renter', label: 'Renter' },
-  { value: 'agent', label: 'Agent' }
-];
-
-type UserType = 'buyer' | 'seller' | 'renter' | 'agent';
+const REGISTER_ERROR_FALLBACK = 'Registration failed. Please try again.';
 
 interface SignupFormValue {
   firstName: string;
@@ -58,7 +58,7 @@ interface SignupFormValue {
   phoneCountryCode: string;
   phone: string;
   locationCountryCode: string | ICountry | null;
-  userType: UserType;
+  userType: string;
   password: string;
   agree: boolean;
 }
@@ -70,7 +70,7 @@ interface SignupFormControls {
   phoneCountryCode: FormControl<string>;
   phone: FormControl<string>;
   locationCountryCode: FormControl<string | ICountry | null>;
-  userType: FormControl<UserType>;
+  userType: FormControl<string>;
   password: FormControl<string>;
   agree: FormControl<boolean>;
 }
@@ -93,23 +93,53 @@ interface SignupFormControls {
   styleUrl: './signup-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SignupCardComponent {
+export class SignupCardComponent implements OnInit {
   private readonly fb = inject(FormBuilder);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
+  // —— UI state ——
   readonly hidePassword = signal(true);
   readonly error = signal<string | null>(null);
   readonly loading = signal(false);
+  readonly rolesLoading = signal(true);
   private readonly formValid = signal(false);
 
-  readonly userTypes = signal(USER_TYPE_OPTIONS);
+  // —— Options & data (user types from API) ——
+  readonly userTypes = signal<UserTypeOption[]>(getDefaultUserTypeOptions());
   readonly countries: ICountry[] = countryList as ICountry[];
 
+  ngOnInit(): void {
+    this.loadUserTypeOptions();
+  }
+
+  /** Fetch roles from backend and populate user type options; fallback to defaults on error. */
+  private loadUserTypeOptions(): void {
+    this.auth
+      .getRoles()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (roleNames) => {
+          const options =
+            roleNames.length > 0
+              ? rolesToUserTypeOptions(roleNames)
+              : getDefaultUserTypeOptions();
+          this.userTypes.set(options);
+        },
+        error: () => {
+          this.userTypes.set(getDefaultUserTypeOptions());
+          this.rolesLoading.set(false);
+        },
+        complete: () => this.rolesLoading.set(false)
+      });
+  }
+
+  // —— Search terms for dropdowns ——
   readonly phoneCountrySearchTerm = signal('');
   readonly locationCountrySearchTerm = signal('');
 
+  // —— Filtered lists for autocomplete ——
   readonly filteredPhoneCountries = computed(() =>
     filterCountriesBySearch(this.countries, this.phoneCountrySearchTerm(), {
       includePhoneCode: true,
@@ -124,9 +154,9 @@ export class SignupCardComponent {
   );
 
   readonly form = this.buildForm();
-
   readonly canSubmit = computed(() => this.formValid() && !this.loading());
 
+  // —— Autocomplete display: show in input when value is set ——
   displayPhoneCountry = (isoCode: string): string =>
     formatPhoneCountryDisplay(findCountryByCode(this.countries, isoCode));
 
@@ -139,48 +169,59 @@ export class SignupCardComponent {
   };
 
   onSubmit(): void {
-    if (this.form.invalid) {
+    if (!this.form.valid) {
       this.form.markAllAsTouched();
       return;
     }
+
     this.error.set(null);
     this.loading.set(true);
-    const formValue = this.form.getRawValue();
-    const payload = this.buildRegisterPayload(formValue);
+
+    const payload = this.buildRegisterPayload(this.form.getRawValue());
     this.auth.register(payload).subscribe({
       next: () =>
         this.router.navigate(['/login'], {
           queryParams: { registered: 'true' },
           replaceUrl: true
         }),
-      error: (err) => {
+      error: (err: unknown) => {
         this.loading.set(false);
-        this.error.set(this.getRegisterErrorMessage(err));
+        const message =
+          (err as { message?: string }).message ?? REGISTER_ERROR_FALLBACK;
+        this.error.set(message);
       },
       complete: () => this.loading.set(false)
     });
   }
 
+  // —— Keep location search term in sync with form value (for autocomplete filter) ——
   private setLocationSearchFromValue(value: string | ICountry | null): void {
     if (value == null) {
       this.locationCountrySearchTerm.set('');
       return;
     }
     const term =
-      typeof value === 'object' && 'name' in value ? value.name ?? '' : String(value);
+      typeof value === 'object' && 'name' in value
+        ? (value as ICountry).name ?? ''
+        : String(value);
     this.locationCountrySearchTerm.set(term);
   }
 
-  private getRegisterErrorMessage(err: unknown): string {
-    if (err != null && typeof err === 'object' && 'error' in err) {
-      const e = err as { error?: { message?: string }; message?: string };
-      return e.error?.message ?? e.message ?? 'Registration failed. Please try again.';
-    }
-    return err instanceof Error ? err.message : 'Registration failed. Please try again.';
+  // —— Build form and wire validity, search terms, and phone validation ——
+  private buildForm(): FormGroup<SignupFormControls> {
+    const form = this.createFormGroup();
+    form.controls.phone.addValidators(
+      phoneNumberValidator(
+        form.controls.phoneCountryCode,
+        DEFAULT_PHONE_VALIDATION_CONFIG
+      )
+    );
+    this.wireFormReactivity(form);
+    return form;
   }
 
-  private buildForm(): FormGroup<SignupFormControls> {
-    const form = new FormGroup<SignupFormControls>({
+  private createFormGroup(): FormGroup<SignupFormControls> {
+    return new FormGroup<SignupFormControls>({
       firstName: this.fb.nonNullable.control('', [
         Validators.required,
         Validators.minLength(2)
@@ -198,27 +239,26 @@ export class SignupCardComponent {
         validCountryCodeValidator(this.countries)
       ]),
       phone: this.fb.nonNullable.control('', [Validators.required]),
-      locationCountryCode: this.fb.control<string | ICountry>('', [
+      locationCountryCode: this.fb.control<string | ICountry | null>('', [
         Validators.required,
         validLocationCountryValidator(this.countries)
       ]),
-      userType: this.fb.nonNullable.control<UserType>('buyer', [Validators.required]),
+      userType: this.fb.nonNullable.control('Buyer', [
+        Validators.required
+      ]),
       password: this.fb.nonNullable.control('', [Validators.required]),
       agree: this.fb.nonNullable.control(false, [Validators.requiredTrue])
     });
+  }
 
-    form.controls.phone.addValidators(
-      phoneNumberValidator(
-        () => form.controls.phoneCountryCode.value ?? '',
-        this.countries
-      )
-    );
-
+  private wireFormReactivity(form: FormGroup<SignupFormControls>): void {
     form.statusChanges
       .pipe(startWith(form.status), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.formValid.set(form.valid));
 
-    this.phoneCountrySearchTerm.set(form.controls.phoneCountryCode.value ?? '');
+    this.phoneCountrySearchTerm.set(
+      form.controls.phoneCountryCode.value ?? ''
+    );
     form.controls.phoneCountryCode.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string | null) =>
@@ -235,36 +275,40 @@ export class SignupCardComponent {
     form.controls.phoneCountryCode.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => form.controls.phone.updateValueAndValidity());
-
-    return form;
   }
 
+  // —— Map form value to API payload (role sent as-is to backend) ——
   private buildRegisterPayload(value: SignupFormValue): RegisterPayload {
-    const roleName =
-      value.userType.charAt(0).toUpperCase() + value.userType.slice(1).toLowerCase();
-    const country = findCountryByCode(this.countries, value.phoneCountryCode);
-    const phoneDigits = (country?.phonecode ?? '').replace(/\D/g, '');
-    const numberDigits = (value.phone ?? '').replace(/\D/g, '').replace(/^0+/, '') || '';
-    const phoneNumber = phoneDigits ? `+${phoneDigits}${numberDigits}` : numberDigits;
-
-    const locationIsoCode = getLocationIsoCode(value.locationCountryCode);
-    const locationCountry = findCountryByCode(this.countries, locationIsoCode);
-    const location = locationCountry
-      ? JSON.stringify({
-          country: locationCountry.name,
-          countryCode: locationIsoCode
-        })
-      : undefined;
+    const phoneNumber = this.formatPhoneNumber(value);
+    const location = this.formatLocation(value);
 
     const payload: RegisterPayload = {
       email: value.email.trim(),
       password: value.password,
       firstName: value.firstName.trim(),
       lastName: value.lastName.trim(),
-      roleName,
+      roleName: value.userType?.trim() ?? '',
       phoneNumber
     };
     if (location) payload.location = location;
     return payload;
+  }
+
+  private formatPhoneNumber(value: SignupFormValue): string {
+    const country = findCountryByCode(this.countries, value.phoneCountryCode);
+    const codeDigits = (country?.phonecode ?? '').replace(/\D/g, '');
+    const numberDigits =
+      (value.phone ?? '').replace(/\D/g, '').replace(/^0+/, '') || '';
+    return codeDigits ? `+${codeDigits}${numberDigits}` : numberDigits;
+  }
+
+  private formatLocation(value: SignupFormValue): string | undefined {
+    const isoCode = getLocationIsoCode(value.locationCountryCode);
+    const country = findCountryByCode(this.countries, isoCode);
+    if (!country) return undefined;
+    return JSON.stringify({
+      country: country.name,
+      countryCode: isoCode
+    });
   }
 }

@@ -103,8 +103,9 @@ export class AuthService {
     return this.accessToken;
   }
 
-  /** Sends payload as JSON request body. Wraps API errors (success: false) as observable errors. */
+  /** Sends payload as JSON request body. All failures emit error with shape { message: string }. */
   login(payload: LoginPayload): Observable<{ user: User }> {
+    const fallback = 'Login failed. Please try again.';
     return this.http
       .post<
         {
@@ -117,35 +118,37 @@ export class AuthService {
       .pipe(
         switchMap((response) => {
           if (response.success === false) {
-            return throwError(() => ({
-              error: {
-                reason: response.reason,
-                message:
-                  response.message ??
-                  'Login failed. Please verify your details and try again.'
-              }
-            }));
+            return throwError(
+              () => ({ message: response.message ?? fallback })
+            );
           }
-
           const data = (response.data ?? response) as AuthApiResponse;
           this.storeAuthData(data);
           return of({ user: data.user });
-        })
+        }),
+        catchError((err: unknown) =>
+          throwError(() => ({ message: this.getAuthMessage(err, fallback) }))
+        )
       );
   }
 
   /**
    * Registers a new user. Does NOT log the user in; caller should redirect to login with a message.
-   * Backend response: { success, data: { user, accessToken, refreshToken } } or flat { user, accessToken, refreshToken }.
+   * All failures emit error with shape { message: string }.
    */
-  /** Sends payload as JSON request body. */
   register(payload: RegisterPayload): Observable<{ user: User }> {
-    return this.http.post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
-      `${environment.apiUrl}/api/auth/register`,
-      payload
-    ).pipe(
-      map((response) => ({ user: (response.data ?? response).user }))
-    );
+    const fallback = 'Registration failed. Please try again.';
+    return this.http
+      .post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
+        `${environment.apiUrl}/api/auth/register`,
+        payload
+      )
+      .pipe(
+        map((response) => ({ user: (response.data ?? response).user })),
+        catchError((err: unknown) =>
+          throwError(() => ({ message: this.getAuthMessage(err, fallback) }))
+        )
+      );
   }
 
   logout(): void {
@@ -195,13 +198,14 @@ export class AuthService {
 
   /**
    * Verifies email using the token (and optional email) from the verification link.
-   * POST body only; token is never sent in the request URL.
-   * Including email allows the backend to return "already verified" on refresh or double submit.
+   * All failures emit error with shape { message: string }.
    */
   verifyEmail(
     token: string,
     email?: string | null
   ): Observable<{ success: boolean }> {
+    const fallback =
+      'This link is invalid or has expired. Please request a new verification email.';
     const body: VerifyEmailRequestBody = email?.trim()
       ? { token, email: email.trim() }
       : { token };
@@ -210,7 +214,28 @@ export class AuthService {
         `${environment.apiUrl}/api/auth/verify-email`,
         body
       )
-      .pipe(map((res) => ({ success: res.success ?? true })));
+      .pipe(
+        map((res) => ({ success: res.success ?? true })),
+        catchError((err: unknown) =>
+          throwError(() => ({ message: this.getAuthMessage(err, fallback) }))
+        )
+      );
+  }
+
+  /** Normalize API/HTTP error to a single message for callers. */
+  private getAuthMessage(err: unknown, fallback: string): string {
+    if (err == null || typeof err !== 'object') return fallback;
+    if (err instanceof Error) return err.message || fallback;
+    const e = err as {
+      error?: { message?: string; errors?: Array<{ msg?: string }> };
+      message?: string;
+    };
+    return (
+      e.error?.message ??
+      e.error?.errors?.[0]?.msg ??
+      e.message ??
+      fallback
+    );
   }
 
   isLoggedIn(): boolean {
