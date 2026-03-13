@@ -74,10 +74,6 @@ export class FormFieldErrorComponent {
       return `${this.label ?? 'This field'} is too short.`;
     }
 
-    if (errors['passwordStrength']) {
-      return 'Password must meet all the requirements above.';
-    }
-
     if (errors['requiredTrue']) {
       return 'You must accept the terms and privacy policy.';
     }

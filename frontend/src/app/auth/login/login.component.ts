@@ -3,11 +3,6 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable } from 'rxjs';
-import {
-  getPasswordRequirementStatus,
-  registerPasswordValidators,
-  type PasswordRequirementStatus,
-} from '../../core/validators';
 import { AuthService, LoginPayload, RegisterPayload } from '../../core/services/auth.service';
 
 const QUERY_PARAM_REGISTERED = 'registered';
@@ -88,15 +83,6 @@ export class LoginComponent {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  /** Only show requirement list when in register mode and user has typed something. */
-  get showPasswordRequirements(): boolean {
-    return this.isRegister && ((this.form.get('password')?.value as string)?.length ?? 0) > 0;
-  }
-
-  get passwordRequirementStatus(): PasswordRequirementStatus[] {
-    return getPasswordRequirementStatus(this.form.get('password')?.value);
-  }
-
   toggleMode(): void {
     this.isRegister = !this.isRegister;
     this.error = '';
@@ -106,10 +92,7 @@ export class LoginComponent {
       this.form.get(name)?.setValidators(validators);
       this.form.get(name)?.updateValueAndValidity();
     });
-    const passwordValidators = this.isRegister
-      ? registerPasswordValidators()
-      : [Validators.required];
-    this.form.get('password')?.setValidators(passwordValidators);
+    this.form.get('password')?.setValidators([Validators.required]);
     this.form.get('password')?.updateValueAndValidity();
   }
 
