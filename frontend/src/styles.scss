@@ -89,14 +89,23 @@ body {
 }
 
 .mat-mdc-raised-button.auth-primary-btn {
-  background: var(--primary);
-  color: #ffffff;
   border-radius: 12px;
   min-height: 48px;
   box-shadow: none;
 }
 
-.mat-mdc-raised-button.auth-primary-btn:hover {
+.mat-mdc-raised-button.auth-primary-btn:disabled,
+.mat-mdc-raised-button.auth-primary-btn.mat-mdc-button-disabled {
+  background: #ead7ce !important;
+  color: var(--font-secondary) !important;
+}
+
+.mat-mdc-raised-button.auth-primary-btn:not(:disabled):not(.mat-mdc-button-disabled) {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.mat-mdc-raised-button.auth-primary-btn:not(:disabled):not(.mat-mdc-button-disabled):hover {
   background: #f35d48;
 }
 
@@ -148,6 +157,60 @@ body {
   align-items: center;
   justify-content: center;
   color: var(--primary);
+}
+
+/* Auth dropdown panels (Code, Location) – overlay rendered outside component */
+.auth-dropdown-panel {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-soft) !important;
+  border: 1px solid var(--border-soft) !important;
+  max-height: 280px !important;
+  margin-top: 4px !important;
+
+  .mat-mdc-autocomplete-option {
+    min-height: 48px !important;
+    padding: 10px 16px !important;
+  }
+
+  .auth-dropdown-option {
+    display: flex !important;
+    align-items: center !important;
+    gap: 12px !important;
+  }
+
+  .auth-option-flag {
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .auth-option-text {
+    font-weight: 600;
+    color: var(--font-main);
+  }
+
+  .mat-mdc-autocomplete-option:hover,
+  .mat-mdc-autocomplete-option.mat-mdc-option-active {
+    background: var(--surface-soft) !important;
+  }
+
+  .mat-mdc-autocomplete-option.mdc-list-item--selected {
+    background: var(--tertiary) !important;
+  }
+}
+
+.auth-snackbar {
+  &.mdc-snackbar {
+    .mdc-snackbar__surface {
+      background: var(--surface);
+      color: var(--font-main);
+      box-shadow: var(--shadow-soft);
+      border-radius: var(--radius-md);
+    }
+  }
+}
+
+.auth-snackbar--info.mdc-snackbar .mdc-snackbar__surface {
+  border-left: 4px solid var(--primary);
 }
 
 @media (max-width: 991.98px) {

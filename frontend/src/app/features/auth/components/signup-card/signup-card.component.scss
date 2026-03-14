@@ -47,9 +47,24 @@
   color: #ffffff;
 }
 
+.phone-row {
+  .phone-country {
+    flex: 0 0 120px;
+  }
+}
+
 .form-error {
-  color: #b3261e;
+  margin: 0 0 0 16px;
+  padding: 4px 0 0;
   font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--font-main);
+  border-left: 3px solid var(--primary);
+}
+
+.confirm-password-error {
+  margin-top: -8px;
+  margin-bottom: 8px;
 }
 
 @media (max-width: 575.98px) {

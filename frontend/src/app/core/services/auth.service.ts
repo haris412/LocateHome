@@ -2,7 +2,7 @@ import { Injectable, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap, catchError, of, switchMap, map, shareReplay } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, of, switchMap, map, shareReplay, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 const REFRESH_KEY = 'refreshToken';
@@ -25,18 +25,30 @@ export interface LoginPayload {
   password: string;
 }
 
+/** Register request body. phoneNumber: E.164 e.g. +923001234567; location: JSON string of LocationJson. */
 export interface RegisterPayload {
   email: string;
   password: string;
   firstName: string;
   lastName: string;
   roleName: string;
+  phoneNumber: string;
+  location?: string;
 }
 
 interface AuthApiResponse {
   user: User;
   accessToken: string;
   refreshToken: string;
+}
+
+interface VerifyEmailRequestBody {
+  token: string;
+  email?: string;
+}
+
+interface VerifyEmailResponse {
+  success?: boolean;
 }
 
 
@@ -91,28 +103,52 @@ export class AuthService {
     return this.accessToken;
   }
 
+  /** Sends payload as JSON request body. All failures emit error with shape { message: string }. */
   login(payload: LoginPayload): Observable<{ user: User }> {
-    return this.http.post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
-      `${environment.apiUrl}/api/auth/login`,
-      payload
-    ).pipe(
-      tap((response) => this.storeAuthData(response.data ?? response)),
-      switchMap((response) => of({ user: (response.data ?? response).user }))
-    );
+    const fallback = 'Login failed. Please try again.';
+    return this.http
+      .post<
+        {
+          success?: boolean;
+          data?: AuthApiResponse;
+          reason?: string;
+          message?: string;
+        } & AuthApiResponse
+      >(`${environment.apiUrl}/api/auth/login`, payload)
+      .pipe(
+        switchMap((response) => {
+          if (response.success === false) {
+            return throwError(
+              () => ({ message: response.message ?? fallback })
+            );
+          }
+          const data = (response.data ?? response) as AuthApiResponse;
+          this.storeAuthData(data);
+          return of({ user: data.user });
+        }),
+        catchError((err: unknown) =>
+          throwError(() => ({ message: this.getAuthMessage(err, fallback) }))
+        )
+      );
   }
 
   /**
-   * Registers a new user. On success: stores tokens + user, returns user.
-   * Backend response: { success, data: { user, accessToken, refreshToken } } or flat { user, accessToken, refreshToken }.
+   * Registers a new user. Does NOT log the user in; caller should redirect to login with a message.
+   * All failures emit error with shape { message: string }.
    */
   register(payload: RegisterPayload): Observable<{ user: User }> {
-    return this.http.post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
-      `${environment.apiUrl}/api/auth/register`,
-      payload
-    ).pipe(
-      tap((response) => this.storeAuthData(response.data ?? response)),
-      switchMap((response) => of({ user: (response.data ?? response).user }))
-    );
+    const fallback = 'Registration failed. Please try again.';
+    return this.http
+      .post<{ success?: boolean; data?: AuthApiResponse } & AuthApiResponse>(
+        `${environment.apiUrl}/api/auth/register`,
+        payload
+      )
+      .pipe(
+        map((response) => ({ user: (response.data ?? response).user })),
+        catchError((err: unknown) =>
+          throwError(() => ({ message: this.getAuthMessage(err, fallback) }))
+        )
+      );
   }
 
   logout(): void {
@@ -158,6 +194,48 @@ export class AuthService {
     this.userSubject.next(null);
     this.storage?.clear();
     this.router.navigate(['/login']);
+  }
+
+  /**
+   * Verifies email using the token (and optional email) from the verification link.
+   * All failures emit error with shape { message: string }.
+   */
+  verifyEmail(
+    token: string,
+    email?: string | null
+  ): Observable<{ success: boolean }> {
+    const fallback =
+      'This link is invalid or has expired. Please request a new verification email.';
+    const body: VerifyEmailRequestBody = email?.trim()
+      ? { token, email: email.trim() }
+      : { token };
+    return this.http
+      .post<VerifyEmailResponse>(
+        `${environment.apiUrl}/api/auth/verify-email`,
+        body
+      )
+      .pipe(
+        map((res) => ({ success: res.success ?? true })),
+        catchError((err: unknown) =>
+          throwError(() => ({ message: this.getAuthMessage(err, fallback) }))
+        )
+      );
+  }
+
+  /** Normalize API/HTTP error to a single message for callers. */
+  private getAuthMessage(err: unknown, fallback: string): string {
+    if (err == null || typeof err !== 'object') return fallback;
+    if (err instanceof Error) return err.message || fallback;
+    const e = err as {
+      error?: { message?: string; errors?: Array<{ msg?: string }> };
+      message?: string;
+    };
+    return (
+      e.error?.message ??
+      e.error?.errors?.[0]?.msg ??
+      e.message ??
+      fallback
+    );
   }
 
   isLoggedIn(): boolean {
