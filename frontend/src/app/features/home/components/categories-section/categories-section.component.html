@@ -1,0 +1,14 @@
+<section class="categories-section">
+  <app-section-heading
+    title="What are you looking for?"
+    subtitle="Choose your path and we will match you with the right listings, agents and video tours."
+  />
+
+  <div class="row g-4">
+    @for (item of items(); track item.id) {
+      <div class="col-12 col-md-6 col-xl-4">
+        <app-category-card [item]="item" />
+      </div>
+    }
+  </div>
+</section>

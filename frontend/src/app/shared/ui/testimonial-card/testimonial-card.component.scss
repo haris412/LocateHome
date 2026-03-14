@@ -1,0 +1,52 @@
+.testimonial-card {
+  display: grid;
+  gap: 0.9rem;
+  height: 100%;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(234, 217, 208, 0.8);
+  border-radius: 0.8rem;
+  background: var(--surface);
+
+  &__top {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 0.7rem;
+    align-items: center;
+  }
+
+  &__avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  &__name {
+    margin: 0;
+    color: var(--font-main);
+    font-size: 0.95rem;
+    font-weight: 700;
+  }
+
+  &__role {
+    margin: 0.1rem 0 0;
+    color: var(--font-secondary);
+    font-size: 0.78rem;
+  }
+
+  &__rating {
+    color: #8b5cf6;
+    font-size: 0.9rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  &__review {
+    margin: 0;
+    color: var(--font-main);
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+}

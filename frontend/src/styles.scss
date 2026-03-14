@@ -1,13 +1,13 @@
 :root {
   --primary: #ff6b57;
-  --secondary: #ffead9;
-  --tertiary: #fff1ea;
+  --secondary: #ffeadf;
+  --tertiary: #FFF8F3;
 
   --font-main: #1f1630;
   --font-secondary: #7a6676;
 
   --surface: #ffffff;
-  --surface-soft: #fdf6f2;
+  --surface-soft: #fff1ea;
   --surface-muted: #f8eeea;
   --border-soft: #ead9d0;
 
@@ -27,13 +27,34 @@ body {
   margin: 0;
   font-family: Inter, "Segoe UI", Roboto, sans-serif;
   color: var(--font-main);
-  background: #f6f0ec;
+  // background: #f6f0ec;
+}
+
+.mat-icon {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+::-webkit-scrollbar-button:single-button {
+  display: none;
+}
+
+::-webkit-scrollbar-button:start {
+  display: none;
+}
+
+::-webkit-scrollbar-button:end {
+  display: none;
 }
 
 .app-shell-bg {

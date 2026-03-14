@@ -1,0 +1,19 @@
+.stats-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0.5rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  color: #fff;
+  backdrop-filter: blur(8px);
+
+  &__value {
+    font-weight: 800;
+  }
+
+  &__label {
+    font-size: 0.875rem;
+  }
+}

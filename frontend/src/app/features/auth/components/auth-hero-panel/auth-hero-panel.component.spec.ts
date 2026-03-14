@@ -8,10 +8,9 @@ describe('AuthHeroPanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [AuthHeroPanelComponent]
-})
-    .compileComponents();
-    
+      imports: [AuthHeroPanelComponent]
+    }).compileComponents();
+
     fixture = TestBed.createComponent(AuthHeroPanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

@@ -1,0 +1,99 @@
+<div class="home-page">
+  <section class="home-page__hero-band">
+    <div class="home-page__container position-relative">
+      <app-header />
+    </div>
+
+    <app-hero-section
+      backgroundImageUrl="assets/images/home/hero-video-placeholder.png"
+      title="Discover Your Perfect Home"
+      subtitle="Watch guided video tours of exclusive properties tailored to your lifestyle."
+      [stats]="heroStats()"
+    />
+  </section>
+
+  <section class="home-page__band">
+    <div class="home-page__container">
+      <app-search-panel />
+      <div class="home-page__section">
+        <app-listings-carousel-section
+          title="Featured Listings"
+          subtitle="Explore curated properties with exclusive video walkthroughs."
+          linkLabel="View all properties"
+          [items]="featuredListings()"
+          [showEyebrow]="true"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="home-page__band home-page__band--soft">
+    <div class="home-page__container">
+      <div class="home-page__section">
+        <div class="home-page__section-heading">
+          <app-section-heading title="Trending & Hot Properties" subtitle="See what other buyers and renters are viewing the most right now." subText="View trending markets" imgSrc="assets/icons/fire.svg"/>
+        </div>
+        <div class="row g-4 align-items-start">
+          <div class="col-12 col-lg-4">
+            <app-trending-panel [items]="trendItems()" />
+          </div>
+
+          <div class="col-12 col-lg-8">
+            <app-listings-carousel-section
+              title="Hot this week"
+              [titleSmall]="true"
+              subtitle="Based on saved videos and active interest."
+              [items]="hotListings()"
+              [smallContent]="true"
+              
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="home-page__band home-page__band--surface">
+    <div class="home-page__container">
+      <div class="home-page__section">
+        <app-categories-section [items]="categories()" />
+      </div>
+      <div class="home-page__section">
+        <app-testimonials-section [items]="testimonials()" />
+      </div>
+      <div class="home-page__section">
+        <app-listings-carousel-section
+          title="Recently viewed properties"
+          subtitle="Pick up where you left off and revisit homes, apartments and rentals you explored."
+          linkLabel="View history"
+          [items]="recentListings()"
+        />
+      </div>
+    </div>
+  </div>
+
+  <section class="home-page__band home-page__band--muted">
+    <div class="home-page__container">
+      <div class="home-page__section">
+        <app-agents-section [items]="agents()" />
+      </div>
+
+      <div class="home-page__section">
+        <app-app-promo-section
+          title="Take the property portal with you wherever you go"
+          description="Search homes by voice, watch video tours, save listings and connect with agents from anywhere."
+          [bullets]="appPromoBullets()"
+          phoneImageUrl="assets/images/home/mobile-app.png"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="home-page__band home-page__band--footer">
+    <div class="home-page__container">
+      <div class="home-page__section">
+        <app-footer-section [groups]="footerGroups()" />
+      </div>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,60 @@
+<article class="listing-card" [class.listing-card--compact]="variant() === 'compact'">
+  <div class="listing-card__media">
+    <img class="listing-card__image" [src]="item().imageUrl" [alt]="item().title" />
+
+    @if (item().badge) {
+      <span
+        class="listing-card__badge"
+        [class.listing-card__badge--sale]="item().badgeVariant === 'sale'"
+        [class.listing-card__badge--rent]="item().badgeVariant === 'rent'"
+        [class.listing-card__badge--featured]="item().badgeVariant === 'featured'"
+        [class.listing-card__badge--viewed]="item().badgeVariant === 'viewed'"
+        [class.listing-card__badge--new]="item().badgeVariant === 'new'"
+      >
+        {{ item().badge }}
+      </span>
+    }
+
+    <button
+      type="button"
+      class="listing-card__favorite"
+      [attr.aria-label]="'Save ' + item().title"
+      (click)="favoriteToggled.emit(item().id)"
+    >
+      <mat-icon fontSet="material-symbols-outlined" inline>
+        {{ item().favorite ? 'favorite' : 'favorite_border' }}
+      </mat-icon>
+    </button>
+  </div>
+
+  <div class="listing-card__body">
+    <div class="listing-card__price">{{ item().price }}</div>
+    <h3 class="listing-card__title">{{ item().title }}</h3>
+
+    <p class="listing-card__address">
+      <mat-icon fontSet="material-symbols-outlined" inline>
+        location_on
+      </mat-icon>
+      <span>{{ item().address }}</span>
+    </p>
+
+    <div class="listing-card__divider"></div>
+
+    <div class="listing-card__meta">
+      <span>
+        <mat-icon fontSet="material-symbols-outlined" inline>bed</mat-icon>
+        {{ item().beds }} Beds
+      </span>
+
+      <span>
+        <mat-icon fontSet="material-symbols-outlined" inline>bathtub</mat-icon>
+        {{ item().baths }} Baths
+      </span>
+
+      <span>
+        <mat-icon fontSet="material-symbols-outlined" inline>straighten</mat-icon>
+        {{ item().area }}
+      </span>
+    </div>
+  </div>
+</article>

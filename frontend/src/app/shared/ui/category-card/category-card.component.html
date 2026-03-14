@@ -1,0 +1,26 @@
+<article class="category-card">
+  <div class="category-card__icon">
+    <mat-icon fontSet="material-symbols-outlined" inline>
+      {{ item().icon }}
+    </mat-icon>
+  </div>
+
+  <h3 class="category-card__title">{{ item().title }}</h3>
+
+  <p class="category-card__description">
+    {{ item().description }}
+  </p>
+
+  <div class="category-card__meta">
+    @for (entry of item().meta; track entry) {
+      <span class="category-card__meta-item">{{ entry }}</span>
+    }
+  </div>
+
+  <a href="#" class="category-card__cta">
+    <span>{{ item().ctaLabel }}</span>
+    <mat-icon fontSet="material-symbols-outlined" inline>
+      arrow_forward
+    </mat-icon>
+  </a>
+</article>

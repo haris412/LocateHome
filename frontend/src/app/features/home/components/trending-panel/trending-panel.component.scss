@@ -1,0 +1,152 @@
+.trending-panel {
+  padding: 1.5rem;
+  background: var(--surface);
+  display: grid;
+  gap: 1rem;
+
+  &__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__label {
+    min-height: 2rem;
+    padding: 0.375rem 0.75rem;
+    border-radius: 999px;
+    background: var(--surface-soft);
+    color: var(--font-secondary);
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+
+  }
+
+  &__controls {
+    display: flex;
+    gap: 0.6rem;
+  }
+
+  &__arrow {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 1px solid var(--border-soft);
+    border-radius: 50%;
+    background: var(--surface);
+    color: var(--font-main);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+  }
+
+  &__title {
+    margin: 0;
+    color: var(--font-main);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.05;
+  }
+
+  &__track {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 0.5rem;
+
+    scrollbar-width: thin;
+    scrollbar-color: rgba(122, 102, 118, 0.45) rgba(234, 217, 208, 0.45);
+
+    &::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(234, 217, 208, 0.45);
+      border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(122, 102, 118, 0.45);
+      border-radius: 999px;
+    }
+
+    &::-webkit-scrollbar-thumb:hover {
+      background: rgba(122, 102, 118, 0.7);
+    }
+  }
+
+  &__page {
+    flex: 0 0 100%;
+    min-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+    scroll-snap-align: start;
+  }
+
+  &__item {
+    padding: 1rem;
+    border: 1px solid var(--border-soft);
+    border-radius: 0.8rem;
+    background: var(--surface);
+    min-height: 100%;
+  }
+
+  &__item-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.65rem;
+
+    strong {
+      color: var(--font-main);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+  }
+
+  &__growth {
+    color: var(--success);
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  p {
+    margin: 0;
+    color: var(--font-secondary);
+    font-size: 0.75rem;
+    line-height: 1.45;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .trending-panel {
+    padding: 1rem;
+
+    &__title {
+      font-size: 1.5rem;
+    }
+
+    &__page {
+      grid-template-columns: 1fr;
+    }
+
+    &__track {
+      &::-webkit-scrollbar {
+        height: 8px;
+      }
+    }
+  }
+}

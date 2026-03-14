@@ -1,0 +1,14 @@
+<section class="testimonials-section">
+  <app-section-heading
+    title="Loved by buyers, sellers & renters"
+    subtitle="Real stories from people who found their perfect place with EstatePortal."
+  />
+
+  <div class="row g-4">
+    @for (item of items(); track item.id) {
+      <div class="col-12 col-md-6 col-xl-4">
+        <app-testimonial-card [item]="item" />
+      </div>
+    }
+  </div>
+</section>

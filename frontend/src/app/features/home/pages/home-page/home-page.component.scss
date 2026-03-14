@@ -1,0 +1,63 @@
+.home-page {
+  &__container {
+    width: min(100%, 1440px);
+    margin-inline: auto;
+    padding-inline: 1rem;
+    @media (min-width: 768px) {
+      padding-inline: 1.5rem;
+    }
+
+    @media (min-width: 1200px) {
+      padding-inline: 2rem;
+    }
+  }
+
+  &__hero-band {
+    position: relative;
+    width: 100%;
+  }
+
+  &__section {
+    margin-top: 7rem;
+
+    &:first-child {
+      margin-top: 0;
+    }
+    &-heading {
+      margin-bottom: 3rem;
+    }
+  }
+
+  &__band {
+    width: 100%;
+    padding-block: 6.5rem;
+    background-color: var(--tertiary);
+
+    &--soft {
+      background: var(--secondary);
+    }
+
+    &--muted {
+      background: #FFF8F3;
+    }
+
+    &--footer {
+      background: #f7efea;
+    }
+    &--surface {
+      background: var(--surface);
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .home-page {
+    &__section {
+      margin-top: 2.5rem;
+    }
+
+    &__band {
+      padding-block: 4.5rem;
+    }
+  }
+}

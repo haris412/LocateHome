@@ -1,0 +1,14 @@
+<article class="testimonial-card">
+  <div class="testimonial-card__top">
+    <img class="testimonial-card__avatar" [src]="item().avatarUrl" [alt]="item().name" />
+
+    <div>
+      <h3 class="testimonial-card__name">{{ item().name }}</h3>
+      <p class="testimonial-card__role">{{ item().role }}</p>
+    </div>
+
+    <div class="testimonial-card__rating"><mat-icon fontSet="material-symbols-outlined" inline> award_star</mat-icon><span >{{ item().rating }}</span></div>
+  </div>
+
+  <p class="testimonial-card__review">{{ item().review }}</p>
+</article>

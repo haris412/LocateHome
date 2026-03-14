@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthHeroPanelComponent } from '../../components/auth-hero-panel/auth-hero-panel.component';
 import { SignupCardComponent } from '../../components/signup-card/signup-card.component';
 import { LoginCardComponent } from '../../components/login-card/login-card.component';
-import { SegmentTabsComponent } from '../../../../shared/ui/segmented-tabs/segmented-tabs.component';
+import { SegmentedTabsComponent } from '../../../../shared/ui/segmented-tabs/segmented-tabs.component';
 
 @Component({
   selector: 'app-auth-portal-page',
@@ -12,7 +12,7 @@ import { SegmentTabsComponent } from '../../../../shared/ui/segmented-tabs/segme
     AuthHeroPanelComponent,
     SignupCardComponent,
     LoginCardComponent,
-    SegmentTabsComponent
+    SegmentedTabsComponent
   ],
   templateUrl: './auth-portal-page.component.html',
   styleUrl: './auth-portal-page.component.scss',
