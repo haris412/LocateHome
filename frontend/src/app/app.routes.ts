@@ -4,7 +4,8 @@ import { AuthPortalPageComponent } from './features/auth/pages/auth-portal-page/
 import { HomePageComponent } from './features/home/pages/home-page/home-page.component';
 
 export const appRoutes: Routes = [
-  { path: '', component: AuthPortalPageComponent },
+  { path: '', redirectTo: 'home', pathMatch: 'full' },
+  { path: 'home', component: HomePageComponent },
   { path: 'dashboard', component: DashboardComponent },
-  {path: 'home', component: HomePageComponent}
+  { path: 'auth', component: AuthPortalPageComponent },
 ];
