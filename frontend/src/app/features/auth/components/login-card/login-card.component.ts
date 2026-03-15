@@ -98,7 +98,7 @@ export class LoginCardComponent {
       password
     };
     this.auth.login(payload).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
+      next: () => this.router.navigate(['/home']),
       error: (err: unknown) => {
         this.loading.set(false);
         this.error.set(
