@@ -14,6 +14,6 @@ export class AppComponent {
   private router = inject(Router);
 
   get showHeader(): boolean {
-    return this.router.url !== '/auth';
+    return true;
   }
 }
