@@ -1,0 +1,13 @@
+<div class="filter-segment-tabs" role="tablist" aria-label="Listing mode">
+  @for (item of items(); track item.id) {
+    <button
+      type="button"
+      class="filter-segment-tabs__item"
+      [class.filter-segment-tabs__item--active]="active() === item.id"
+      [attr.aria-selected]="active() === item.id"
+      (click)="selectTab(item.id)"
+    >
+      {{ item.label }}
+    </button>
+  }
+</div>

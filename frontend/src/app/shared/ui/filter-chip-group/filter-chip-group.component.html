@@ -1,0 +1,14 @@
+<mat-chip-listbox class="filter-chip-bar" aria-label="Quick filters" multiple>
+  @for (chip of items(); track chip.id) {
+    <mat-chip-option
+      [selected]="chip.selected"
+      (selectionChange)="toggled.emit(chip.id)"
+    >
+      @if (chip.icon) {
+        <mat-icon [fontIcon]="chip.icon"></mat-icon>
+      }
+
+      <span>{{ chip.label }}</span>
+    </mat-chip-option>
+  }
+</mat-chip-listbox>

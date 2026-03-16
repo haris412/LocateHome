@@ -1,0 +1,23 @@
+.filter-chip-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+
+  .mdc-evolution-chip-set__chips {
+    gap: 0.65rem;
+  }
+
+  .mat-mdc-chip-option {
+    --mdc-chip-elevated-container-color: var(--secondary);
+    --mdc-chip-label-text-color: var(--font-main);
+    --mdc-chip-with-icon-icon-color: var(--font-secondary);
+    --mat-chip-elevated-selected-container-color: var(--primary);
+    border-radius: 999px;
+    font-weight: 600;
+  }
+
+  .mat-mdc-chip-option.mdc-evolution-chip--selected {
+    --mdc-chip-elevated-container-color: #ffe1d6;
+    --mdc-chip-label-text-color: var(--font-main);
+  }
+}

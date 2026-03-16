@@ -10,7 +10,7 @@ import {
   viewChild
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ListingItem } from '../../../core/models/home.models';
+import { ListingItem } from '../../../core/models/listing.models';
 import { ListingCardComponent } from '../listing-card/listing-card.component';
 import { SectionHeadingComponent } from '../section-heading/section-heading.component';
 

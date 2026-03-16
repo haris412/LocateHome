@@ -1,0 +1,10 @@
+.listings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: 1.25rem;
+  align-items: start;
+
+  &--list {
+    grid-template-columns: 1fr;
+  }
+}

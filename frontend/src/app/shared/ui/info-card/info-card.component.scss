@@ -1,0 +1,17 @@
+.info-card {
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+  padding: 1.5rem;
+
+  &--compact {
+    padding: 1rem;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 14px 36px rgba(31, 22, 48, 0.06);
+  }
+
+  &--soft {
+    background: var(--tertiary);
+  }
+}

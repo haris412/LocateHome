@@ -1,0 +1,23 @@
+.amenity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 32px;
+
+  &__icon {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 10px;
+    background: var(--surface-soft);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  &__label {
+    color: var(--font-main);
+    font-weight: 600;
+  }
+}

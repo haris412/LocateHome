@@ -1,3 +1,18 @@
+@use '@angular/material' as mat;
+@use './styles/theme-colors' as theme;
+
+html {
+  color-scheme: light dark;
+
+  @include mat.theme((
+    color: (
+      primary: theme.$primary-palette,
+      tertiary: theme.$tertiary-palette
+    ),
+    typography: Inter,
+    density: 0
+  ));
+}
 :root {
   --primary: #ff6b57;
   --secondary: #ffeadf;
@@ -16,6 +31,17 @@
   --radius-xl: 18px;
   --radius-lg: 14px;
   --radius-md: 10px;
+  --radius-sm: 6px;
+
+  --mdc-outlined-text-field-outline-color: #e3cfc5;
+  --mdc-outlined-text-field-hover-outline-color: #d7bfb3;
+  --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  --mdc-outlined-text-field-label-text-color: var(--font-secondary);
+  --mdc-outlined-text-field-input-text-color: var(--font-main);
+  --mdc-outlined-text-field-container-shape: 12px;
+  --mat-form-field-outlined-focus-outline-color: var(--primary);
+  --mat-option-selected-state-label-text-color: var(--primary);
+  --mat-form-field-outlined-container-shape: 12px;
 }
 
 html,
@@ -25,7 +51,7 @@ body {
 
 body {
   margin: 0;
-  font-family: Inter, "Segoe UI", Roboto, sans-serif;
+  font-family: Inter, "Segoe UI", Roboto, sans-serif !important;
   color: var(--font-main);
   // background: #f6f0ec;
 }
@@ -75,13 +101,10 @@ body {
   border-radius: var(--radius-lg);
 }
 
-.mdc-text-field--outlined {
-  --mdc-outlined-text-field-outline-color: #e3cfc5;
-  --mdc-outlined-text-field-hover-outline-color: #d7bfb3;
-  --mdc-outlined-text-field-focus-outline-color: var(--primary);
-  --mdc-outlined-text-field-label-text-color: var(--font-secondary);
-  --mdc-outlined-text-field-input-text-color: var(--font-main);
-  --mdc-outlined-text-field-container-shape: 12px;
+.sort-select {
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
 }
 
 .mat-mdc-form-field {

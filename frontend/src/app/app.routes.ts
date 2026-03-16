@@ -7,9 +7,21 @@ import { authGuard } from './core/guards/auth.guard';
 
 export const appRoutes: Routes = [
   { path: 'login', redirectTo: 'home', pathMatch: 'full' },
+
   { path: 'home', component: HomePageComponent },
+
   { path: 'verify-email', component: VerifyEmailComponent },
+
   { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+
   { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+
   { path: 'auth', component: AuthPortalPageComponent },
+
+  {
+    path: 'listings',
+    loadChildren: () =>
+      import('./features/listings/listings.routes')
+        .then(m => m.LISTINGS_ROUTES)
+  }
 ];

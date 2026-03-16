@@ -1,0 +1,70 @@
+<app-filter-shell>
+  <div class="listings-filters">
+    <div class="listings-filters__top">
+      <app-filter-segment-tabs
+        [items]="tabs"
+        [active]="mode()"
+        (changed)="setMode($event)"
+      />
+      <button
+        type="button"
+        class="listings-filters__more-btn"
+        [class.listings-filters__more-btn--active]="showMoreFilters()"
+        (click)="toggleMoreFilters()"
+      >
+        <mat-icon fontIcon="tune"></mat-icon>
+        <span>More Filters</span>
+      </button>
+    </div>
+
+    <div class="listings-filters__search-row">
+      <div class="listings-filters__search-box">
+        <mat-icon fontIcon="search"></mat-icon>
+
+        <input
+          class="listings-filters__search-input"
+          type="text"
+          [value]="searchQuery()"
+          (input)="updateSearch(($any($event.target).value))"
+          placeholder="Search city, neighborhood or property"
+        />
+
+        <button
+          type="button"
+          class="listings-filters__mic-btn"
+          aria-label="Voice search"
+        >
+          <mat-icon fontIcon="mic_none"></mat-icon>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="listings-filters__search-btn"
+        (click)="runSearch()"
+      >
+        Search
+      </button>
+    </div>
+
+    <div class="listings-filters__fields-row">
+      @for (field of activeFields(); track field.id) {
+        <div class="listings-filters__field">
+          <app-filter-select
+            [config]="field"
+            (valueChanged)="updateField($event)"
+          />
+        </div>
+      }
+
+      
+    </div>
+
+    @if (showMoreFilters()) {
+      <app-filter-chip-group
+        [items]="activeChips()"
+        (toggled)="toggleChip($event)"
+      />
+    }
+  </div>
+</app-filter-shell>

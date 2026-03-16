@@ -1,0 +1,85 @@
+<app-info-card>
+  <div class="agent-form">
+    <div class="agent-form__profile d-flex align-items-center gap-3">
+      <img class="agent-form__avatar" [src]="agent().imageUrl" [alt]="agent().name" />
+
+      <div>
+        <h3 class="agent-form__name mb-0">{{ agent().name }}</h3>
+        <p class="agent-form__role mb-0">{{ agent().role }}</p>
+      </div>
+    </div>
+
+    @if (agent().blurb) {
+      <p class="agent-form__blurb">{{ agent().blurb }}</p>
+    }
+
+    <form [formGroup]="form" class="agent-form__fields" (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Your name</mat-label>
+        <input matInput formControlName="name" />
+        @if (form.controls.name.hasError('required') && form.controls.name.touched) {
+          <mat-error>Name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Your email</mat-label>
+        <input matInput type="email" formControlName="email" />
+        @if (form.controls.email.hasError('required') && form.controls.email.touched) {
+          <mat-error>Email is required</mat-error>
+        }
+        @if (form.controls.email.hasError('email') && form.controls.email.touched) {
+          <mat-error>Enter a valid email</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Your phone</mat-label>
+        <input matInput formControlName="phone" />
+        @if (form.controls.phone.hasError('required') && form.controls.phone.touched) {
+          <mat-error>Phone is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="w-100">
+        <mat-label>Message</mat-label>
+        <textarea matInput rows="5" formControlName="message"></textarea>
+        @if (form.controls.message.hasError('required') && form.controls.message.touched) {
+          <mat-error>Message is required</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-flat-button type="submit" class="agent-form__primary-btn w-100">
+        {{ submitLabel() }}
+      </button>
+    </form>
+
+    <div class="agent-form__secondary d-grid gap-2 mt-3">
+      <button mat-stroked-button type="button">{{ secondary1() }}</button>
+      <button mat-stroked-button type="button">{{ secondary2() }}</button>
+    </div>
+
+    <div class="row g-2 mt-3">
+      <div class="col-4">
+        <div class="agent-form__metric">
+          <strong>{{ agent().rating || '4.9' }}</strong>
+          <span>Rating</span>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="agent-form__metric">
+          <strong>{{ agent().listings || '42' }}</strong>
+          <span>Listings</span>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="agent-form__metric">
+          <strong>{{ agent().responseTime || '12m' }}</strong>
+          <span>Response</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-info-card>
