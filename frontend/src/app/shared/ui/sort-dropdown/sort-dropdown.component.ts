@@ -6,7 +6,7 @@ import { MatIcon } from "@angular/material/icon";
 
 @Component({
   selector: 'app-sort-dropdown',
-  imports: [MatFormFieldModule, MatSelectModule, MatIcon],
+  imports: [MatFormFieldModule, MatSelectModule],
   templateUrl: './sort-dropdown.component.html',
   styleUrl: './sort-dropdown.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

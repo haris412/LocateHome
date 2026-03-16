@@ -1,0 +1,108 @@
+:host {
+  display: block;
+}
+
+.listing-detail-shell {
+  &__topbar {
+    margin-bottom: 1.5rem;
+  }
+
+  &__back-link,
+  &__utility-btn,
+  &__schedule-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--border-soft);
+    background: var(--surface);
+    color: var(--font-main);
+    border-radius: 12px;
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    transition: 0.2s ease;
+
+    &:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+  }
+
+  &__status-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    border-radius: 999px;
+    background: #f4b326;
+    color: #2b1a00;
+    padding: 0.35rem 0.8rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+
+  &__main-stack {
+    display: grid;
+    gap: 1.5rem;
+
+    @media (min-width: 992px) {
+      gap: 2rem;
+    }
+  }
+
+  &__price-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__price {
+    color: var(--font-main);
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    line-height: 1;
+    font-weight: 900;
+  }
+
+  &__price-suffix,
+  &__address,
+  &__section-subtitle {
+    color: var(--font-secondary);
+  }
+
+  &__price-suffix {
+    font-size: 1.1rem;
+    padding-bottom: 0.3rem;
+  }
+
+  &__address {
+    margin-top: 0.5rem;
+    font-size: 1rem;
+  }
+
+  &__schedule-btn {
+    white-space: nowrap;
+  }
+
+  &__rich-text {
+    color: var(--font-secondary);
+    line-height: 1.85;
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__sidebar {
+    @media (min-width: 1200px) {
+      position: sticky;
+      top: 104px;
+    }
+  }
+
+  &__section-title {
+    margin: 0;
+    color: var(--font-main);
+    font-size: clamp(1.4rem, 2vw, 2rem);
+    font-weight: 900;
+  }
+}

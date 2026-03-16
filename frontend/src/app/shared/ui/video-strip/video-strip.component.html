@@ -1,0 +1,21 @@
+<app-section-heading
+  [title]="title()"
+  [subtitle]="subtitle()"
+  [actionLabel]="actionLabel()"
+  actionIcon="videocam"
+  (actionClick)="viewAll.emit()"
+/>
+
+<div class="row g-3">
+  @for (video of videos(); track video.id) {
+    <div class="col-12 col-md-6 col-xl-4">
+      <button type="button" class="video-card" (click)="videoSelected.emit(video.id)">
+        <img class="video-card__image" [src]="video.imageUrl" [alt]="video.title" />
+        <span class="video-card__overlay"></span>
+        <span class="video-card__play">
+          <mat-icon fontSet="material-symbols-outlined">play_arrow</mat-icon>
+        </span>
+      </button>
+    </div>
+  }
+</div>

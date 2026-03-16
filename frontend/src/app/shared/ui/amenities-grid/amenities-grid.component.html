@@ -1,0 +1,16 @@
+<app-section-heading [title]="title()" />
+
+<div class="row g-3">
+  @for (item of items(); track item.label) {
+    <div class="col-12 col-md-6">
+      <app-info-card [compact]="true">
+        <div class="amenity-item">
+          <span class="amenity-item__icon">
+            <mat-icon fontSet="material-symbols-outlined" inline>{{ item.icon || 'check_circle' }}</mat-icon>
+          </span>
+          <span class="amenity-item__label">{{ item.label }}</span>
+        </div>
+      </app-info-card>
+    </div>
+  }
+</div>

@@ -1,4 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
+
 import { SortOption } from '../../../../core/models/filter.models';
 import { ListingItem } from '../../../../core/models/listing.models';
 import { ListingsToolbarComponent } from '../../components/listings-toolbar/listings-toolbar.component';
@@ -7,6 +9,7 @@ import { ListingsGridComponent } from '../../components/listings-grid/listings-g
 
 @Component({
   selector: 'app-listings-page',
+  standalone: true,
   imports: [
     ListingsToolbarComponent,
     ListingsResultsHeaderComponent,
@@ -17,6 +20,8 @@ import { ListingsGridComponent } from '../../components/listings-grid/listings-g
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListingsPageComponent {
+  private readonly router = inject(Router);
+
   readonly listings = signal<ListingItem[]>([
     {
       id: '1',
@@ -117,5 +122,23 @@ export class ListingsPageComponent {
 
   updateSort(value: string): void {
     this.selectedSort.set(value);
+  }
+
+  openListingDetail(id: string): void {
+    console.log('navigating to detail', id);
+    this.router.navigate(['/listings', id]);
+  }
+
+  onFavoriteToggled(id: string): void {
+    this.listings.update((items) =>
+      items.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              favorite: !item.favorite
+            }
+          : item
+      )
+    );
   }
 }

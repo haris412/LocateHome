@@ -23,4 +23,12 @@
     }
   </p>
   }
+  @if (actionLabel()) {
+    <button type="button" class="section-header__action" (click)="actionClick.emit()">
+      @if (icon()) {
+        <mat-icon fontSet="material-symbols-outlined" inline>{{ icon() }}</mat-icon>
+      }
+      <span>{{ actionLabel() }}</span>
+    </button>
+  }
 </div>

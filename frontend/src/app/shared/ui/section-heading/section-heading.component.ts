@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, input, Output } from '@angular/core';
 import { MatIcon, MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -15,4 +15,7 @@ export class SectionHeadingComponent {
   readonly subText = input<string>('');
   readonly icon = input<string>('info');
   readonly imgSrc = input<string>('');
+  readonly actionLabel = input<string>('');
+
+  @Output() readonly actionClick = new EventEmitter<void>();
 }

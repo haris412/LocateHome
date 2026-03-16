@@ -13,6 +13,12 @@
   border: 1px solid rgba(234, 217, 208, 0.82);
   border-radius: 0.9rem;
   background: var(--surface);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+  }
 
   &__media {
     position: relative;

@@ -3,6 +3,11 @@
   [class.listings-grid--list]="viewMode() === 'list'"
 >
   @for (item of items(); track item.id) {
-    <app-listing-card [item]="item" />
+    <app-listing-card
+      [item]="item"
+      [variant]="viewMode() === 'list' ? 'compact' : 'default'"
+      (cardClicked)="onCardClicked($event)"
+      (favoriteToggled)="onFavoriteToggled($event)"
+    />
   }
 </div>

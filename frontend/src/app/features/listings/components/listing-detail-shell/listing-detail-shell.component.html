@@ -1,0 +1,156 @@
+<div class="listing-detail-shell container py-4 py-lg-5">
+  <!-- Top bar -->
+  <div class="listing-detail-shell__topbar d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+      <button type="button" class="listing-detail-shell__back-link" (click)="back.emit()">
+        <mat-icon fontSet="material-symbols-outlined" inline>arrow_back</mat-icon>
+        <span>{{ vm().breadcrumbLabel || 'Back to Search Results' }}</span>
+      </button>
+
+      @if (vm().statusChip) {
+        <span class="listing-detail-shell__status-chip">{{ vm().statusChip }}</span>
+      }
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <button type="button" class="listing-detail-shell__utility-btn" (click)="share.emit()">
+        <mat-icon fontSet="material-symbols-outlined" inline>share</mat-icon>
+        <span>{{ vm().shareLabel || 'Share' }}</span>
+      </button>
+
+      <button type="button" class="listing-detail-shell__utility-btn" (click)="save.emit()">
+        <mat-icon fontSet="material-symbols-outlined" inline>favorite</mat-icon>
+        <span>{{ vm().saveLabel || 'Save' }}</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Gallery -->
+  <app-media-gallery
+    [gallery]="vm().gallery"
+    (openGallery)="openGallery.emit()"
+    (playVideo)="playVideo.emit()"
+  />
+
+  <!-- Main content -->
+  <div class="row g-4 g-xl-5 mt-2 mt-lg-3">
+    <div class="col-12 col-xl-8">
+      <div class="listing-detail-shell__main-stack">
+        <!-- Price / CTA -->
+        <section>
+          <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-4">
+            <div>
+              <div class="listing-detail-shell__price-row">
+                <h1 class="listing-detail-shell__price mb-0">{{ vm().price }}</h1>
+
+                @if (vm().priceSuffix) {
+                  <span class="listing-detail-shell__price-suffix">{{ vm().priceSuffix }}</span>
+                }
+              </div>
+
+              <p class="listing-detail-shell__address mb-0">{{ vm().addressLine }}</p>
+            </div>
+
+            <button type="button" class="listing-detail-shell__schedule-btn" (click)="scheduleVisit.emit()">
+              <mat-icon fontSet="material-symbols-outlined" inline>calendar_month</mat-icon>
+              <span>{{ vm().ctaLabel || 'Schedule a Visit' }}</span>
+            </button>
+          </div>
+
+          <div class="row g-3">
+            @for (stat of vm().stats; track stat.label) {
+              <div class="col-6 col-md-3">
+                <app-stat-card
+                  [value]="stat.value"
+                  [label]="stat.label"
+                  [icon]="stat.icon || ''"
+                />
+              </div>
+            }
+          </div>
+        </section>
+
+        <!-- About -->
+        <section>
+          <app-info-card>
+            <app-section-heading [title]="vm().about.title || 'About this home'" />
+
+            <div class="listing-detail-shell__rich-text">
+              @for (paragraph of vm().about.paragraphs; track $index) {
+                <p>{{ paragraph }}</p>
+              }
+            </div>
+          </app-info-card>
+        </section>
+
+        <!-- Amenities -->
+        <section>
+          <app-amenities-grid
+            [title]="vm().amenities.title || 'Highlights & amenities'"
+            [items]="vm().amenities.items"
+          />
+        </section>
+
+        <!-- Videos -->
+        @if (vm().videos?.items?.length) {
+          <section>
+            <app-video-strip
+              [title]="vm().videos?.title || 'Property videos'"
+              [subtitle]="vm().videos?.subtitle || ''"
+              [actionLabel]="vm().videos?.viewAllLabel || 'View all videos'"
+              [videos]="vm().videos?.items || []"
+              (viewAll)="viewAllVideos.emit()"
+              (videoSelected)="videoSelected.emit($event)"
+            />
+          </section>
+        }
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-12 col-xl-4">
+      <div class="listing-detail-shell__sidebar">
+        <app-contact-agent-form
+          [agent]="vm().agent"
+          [submitLabel]="vm().inquiry.submitLabel || 'Request a tour'"
+          [secondary1]="vm().inquiry.secondary1 || 'Book appointment'"
+          [secondary2]="vm().inquiry.secondary2 || 'Ask a question'"
+          [defaultMessage]="vm().inquiry.defaultMessage || ''"
+          (submitted)="inquirySubmitted.emit($event)"
+        />
+      </div>
+    </div>
+  </div>
+
+  <!-- Nearby -->
+  @if (vm().nearby?.items?.length) {
+    <section class="listing-detail-shell__nearby-section mt-5 pt-2 pt-lg-4">
+      <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-4">
+        <div>
+          <h2 class="listing-detail-shell__section-title mb-1">
+            {{ vm().nearby?.title || 'Featured properties nearby' }}
+          </h2>
+
+          <p class="listing-detail-shell__section-subtitle mb-0">
+            {{ vm().nearby?.subtitle || '' }}
+          </p>
+        </div>
+
+        <button type="button" mat-stroked-button>
+          {{ vm().nearby?.actionLabel || 'Browse all featured' }}
+        </button>
+      </div>
+
+      <div class="row g-3 g-lg-4">
+        @for (item of vm().nearby?.items || []; track item.id) {
+          <div class="col-12 col-sm-6 col-xl-3">
+            <app-listing-card
+              [item]="item"
+              (favoriteToggled)="nearbyFavoriteToggled.emit($event)"
+            />
+          </div>
+        }
+      </div>
+    </section>
+  }
+</div>

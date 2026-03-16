@@ -11,16 +11,18 @@
   <app-listings-toolbar />
 
   <app-listings-results-header
-  [resultsCount]="listings().length"
-  [selectedSort]="selectedSort()"
-  [sortOptions]="sortOptions()"
-  [selectedView]="selectedView()"
-  (sortChanged)="updateSort($event)"
-  (viewChanged)="selectedView.set($event)"
-/>
+    [resultsCount]="listings().length"
+    [selectedSort]="selectedSort()"
+    [sortOptions]="sortOptions()"
+    [selectedView]="selectedView()"
+    (sortChanged)="updateSort($event)"
+    (viewChanged)="selectedView.set($event)"
+  />
 
-<app-listings-grid
-  [items]="listings()"
-  [viewMode]="selectedView()"
-/>
+  <app-listings-grid
+    [items]="listings()"
+    [viewMode]="selectedView()"
+    (cardClicked)="openListingDetail($event)"
+    (favoriteToggled)="onFavoriteToggled($event)"
+  />
 </section>

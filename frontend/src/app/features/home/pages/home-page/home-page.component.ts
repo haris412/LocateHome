@@ -32,7 +32,6 @@ import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/s
     AgentsSectionComponent,
     AppPromoSectionComponent,
     FooterSectionComponent,
-    HeaderComponent,
     SectionHeadingComponent
   ],
   templateUrl: './home-page.component.html',
