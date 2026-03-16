@@ -23,6 +23,7 @@
     "@angular/platform-server": "^20.3.17",
     "@angular/router": "^20.3.17",
     "@angular/ssr": "^20.3.19",
+    "country-state-city": "^4.4.2",
     "bootstrap": "^5.3.8",
     "country-state-city": "^3.2.1",
     "express": "^4.22.1",
