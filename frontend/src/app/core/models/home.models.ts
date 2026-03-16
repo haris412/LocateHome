@@ -1,16 +1,3 @@
-export interface ListingItem {
-  id: string;
-  title: string;
-  address: string;
-  price: string;
-  badge?: string;
-  badgeVariant?: 'sale' | 'rent' | 'featured' | 'viewed' | 'new';
-  imageUrl: string;
-  beds: number;
-  baths: number;
-  area: string;
-  favorite?: boolean;
-}
 
 export interface TrendItem {
   id: string;
@@ -22,7 +9,7 @@ export interface TrendItem {
 
 export interface CategoryItem {
   id: string;
-  icon: string;
+  imgSrc: string;
   title: string;
   description: string;
   meta: string[];

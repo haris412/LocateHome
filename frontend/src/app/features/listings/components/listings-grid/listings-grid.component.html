@@ -1,0 +1,8 @@
+<div
+  class="listings-grid"
+  [class.listings-grid--list]="viewMode() === 'list'"
+>
+  @for (item of items(); track item.id) {
+    <app-listing-card [item]="item" />
+  }
+</div>

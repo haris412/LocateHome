@@ -1,0 +1,157 @@
+.listings-filters {
+  display: grid;
+  gap: 1rem;
+
+  &__top {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  &__search-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.875rem;
+    align-items: stretch;
+  }
+
+  &__search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3rem;
+    padding: 0.75rem 0.9rem;
+    border: 1px solid rgba(234, 217, 208, 0.95);
+    border-radius: 0.75rem;
+    background: var(--surface);
+
+    > .mat-icon {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
+      color: var(--font-secondary);
+      flex-shrink: 0;
+    }
+  }
+
+  &__search-input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--font-main);
+    font-size: 1rem;
+    font-family: inherit;
+    min-width: 0;
+
+    &::placeholder {
+      color: var(--font-secondary);
+    }
+  }
+
+  &__mic-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--secondary);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    .mat-icon {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
+    }
+  }
+
+  &__search-btn {
+    min-width: 6.5rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.25rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: var(--primary);
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  &__fields-row {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr)) auto;
+    gap: 0.875rem;
+    align-items: end;
+  }
+
+  &__field {
+    min-width: 0;
+  }
+
+  &__more-btn {
+    min-height: 3.5rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid rgba(234, 217, 208, 0.95);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    color: var(--font-main);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    white-space: nowrap;
+
+    &--active {
+      background: var(--secondary);
+    }
+
+    .mat-icon {
+      width: 1rem;
+      height: 1rem;
+      font-size: 1rem;
+      color: var(--font-secondary);
+    }
+  }
+}
+
+@media (max-width: 1399.98px) {
+  .listings-filters {
+    &__fields-row {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    &__more-btn {
+      grid-column: span 1;
+    }
+  }
+}
+
+@media (max-width: 991.98px) {
+  .listings-filters {
+    &__search-row {
+      grid-template-columns: 1fr;
+    }
+
+    &__search-btn {
+      width: 100%;
+    }
+
+    &__fields-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .listings-filters {
+    &__fields-row {
+      grid-template-columns: 1fr;
+    }
+  }
+}

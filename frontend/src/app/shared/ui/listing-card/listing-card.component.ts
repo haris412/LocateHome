@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ListingItem } from '../../../core/models/home.models';
+import { ListingItem } from '../../../core/models/listing.models';
 
 @Component({
   selector: 'app-listing-card',

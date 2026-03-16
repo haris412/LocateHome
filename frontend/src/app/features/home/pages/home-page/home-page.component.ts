@@ -3,11 +3,11 @@ import {
   AgentItem,
   CategoryItem,
   FooterLinkGroup,
-  ListingItem,
   StatPillItem,
   TestimonialItem,
   TrendItem
 } from '../../../../core/models/home.models';
+import { ListingItem } from '../../../../core/models/listing.models';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { SearchPanelComponent } from '../../components/search-panel/search-panel.component';
 import { ListingsCarouselSectionComponent } from '../../../../shared/ui/listings-carousel-section/listings-carousel-section.component';
@@ -48,7 +48,7 @@ export class HomePageComponent {
 
   readonly featuredListings = signal<ListingItem[]>([
     { id: '1', title: 'Beverly Hills Mansion', address: '1241 Laurel Way, Beverly Hills, CA', price: '$2,850,000', badge: 'For Sale', badgeVariant: 'sale', imageUrl: 'assets/images/listings/featured-1.png', beds: 5, baths: 6, area: '8,400 sqft', favorite: false },
-    { id: '2', title: 'Skyline Penthouse', address: '620 5th Ave, New York, NY', price: '$8,500 / mo', badge: 'For Rent', badgeVariant: 'rent', imageUrl: 'assets/images/listings/featured-2.png', beds: 3, baths: 2, area: '2,100 sqft', favorite: true },
+    { id: '2', title: 'Skyline Penthouse', address: '620 5th Ave, New York, NY', price: '$8,500', badge: 'For Rent', badgeVariant: 'rent', imageUrl: 'assets/images/listings/featured-2.png', beds: 3, baths: 2, area: '2,100 sqft', favorite: true, rent: true },
     { id: '3', title: 'Cozy Suburban Family Home', address: '32 Oakwood Drive, Austin, TX', price: '$945,000', badge: 'For Sale', badgeVariant: 'sale', imageUrl: 'assets/images/listings/featured-3.png', beds: 4, baths: 3, area: '2,900 sqft', favorite: false },
     { id: '4', title: 'Waterfront Glass Villa', address: '18 Pacific Coast, Miami, FL', price: '$3,400,000', badge: 'Featured', badgeVariant: 'featured', imageUrl: 'assets/images/listings/featured-4.png', beds: 5, baths: 5, area: '7,300 sqft', favorite: false },
     { id: '5', title: 'Waterfront Glass Villa', address: '18 Pacific Coast, Miami, FL', price: '$3,400,000', badge: 'Featured', badgeVariant: 'featured', imageUrl: 'assets/images/listings/featured-4.png', beds: 5, baths: 5, area: '7,300 sqft', favorite: false }
@@ -56,7 +56,7 @@ export class HomePageComponent {
   ]);
 
   readonly hotListings = signal<ListingItem[]>([
-    { id: '5', title: 'Skyline Townhouse', address: '120 Syln Blvd, Seattle, WA', price: '$4,200 / mo', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-1.png', beds: 2, baths: 2, area: '1,300 sqft', favorite: false },
+    { id: '5', title: 'Skyline Townhouse', address: '120 Syln Blvd, Seattle, WA', price: '$4,200', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-1.png', beds: 2, baths: 2, area: '1,300 sqft', favorite: false, rent: true },
     { id: '6', title: 'Lakeview Family Estate', address: '79 Wellington Dr, Chicago, IL', price: '$1,250,000', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-2.png', beds: 4, baths: 3, area: '3,800 sqft', favorite: false },
     { id: '6', title: 'Lakeview Family Estate', address: '79 Wellington Dr, Chicago, IL', price: '$1,250,000', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-2.png', beds: 4, baths: 3, area: '3,800 sqft', favorite: false },
     { id: '6', title: 'Lakeview Family Estate', address: '79 Wellington Dr, Chicago, IL', price: '$1,250,000', badge: 'New', badgeVariant: 'new', imageUrl: 'assets/images/listings/featured-2.png', beds: 4, baths: 3, area: '3,800 sqft', favorite: false }
@@ -64,9 +64,9 @@ export class HomePageComponent {
   ]);
 
   readonly recentListings = signal<ListingItem[]>([
-    { id: '7', title: 'Skyline Boulevard Apartment', address: '302 Green Boulevard, Seattle, WA', price: '$4,200 / mo', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-3.png', beds: 2, baths: 2, area: '950 sqft', favorite: false },
+    { id: '7', title: 'Skyline Boulevard Apartment', address: '302 Green Boulevard, Seattle, WA', price: '$4,200', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-3.png', beds: 2, baths: 2, area: '950 sqft', favorite: false, rent: true },
     { id: '8', title: 'Oakwood Family Residence', address: '22 Oakwood Drive, Austin, TX', price: '$945,000', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-4.png', beds: 4, baths: 2, area: '2,850 sqft', favorite: true },
-    { id: '9', title: 'Fifth Avenue Penthouse', address: '620 5th Ave, New York, NY', price: '$8,500 / mo', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-1.png', beds: 3, baths: 3, area: '2,300 sqft', favorite: false }
+    { id: '9', title: 'Fifth Avenue Penthouse', address: '620 5th Ave, New York, NY', price: '$8,500', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-1.png', beds: 3, baths: 3, area: '2,300 sqft', favorite: false, rent: true },
   ]);
   readonly trendItems = signal<TrendItem[]>([
     { id: '1', city: 'Seattle, WA', demand: 'Hot demand score', growth: '+18.4%', summary: 'Fast rising interest for modern homes and riverfront views.' },
@@ -75,9 +75,9 @@ export class HomePageComponent {
   ]);
 
   readonly categories = signal<CategoryItem[]>([
-    { id: '1', icon: 'home', title: 'Buy a home', description: 'Browse verified listings with HD video tours, neighborhood insights and real-time market data.', meta: ['Market trends', 'Price history', 'Agent support'], ctaLabel: 'Start buying journey' },
-    { id: '2', icon: 'key', title: 'Rent a home', description: 'Find the best rentals with virtual showings, instant applications and secure online payments.', meta: ['Verified rentals', 'Flexible leases', 'No hidden fees'], ctaLabel: 'Explore rentals' },
-    { id: '3', icon: 'sell', title: 'Sell a home', description: 'Showcase your property with immersive video tours, professional insights and smart pricing tools.', meta: ['Free valuation', 'Expert guidance', 'Wider reach'], ctaLabel: 'Start selling' }
+    { id: '1', imgSrc: 'assets/images/home/buy-home.png', title: 'Buy a home', description: 'Browse verified listings with HD video tours, neighborhood insights and real-time market data.', meta: ['Market trends', 'Price history', 'Agent support'], ctaLabel: 'Start buying journey' },
+    { id: '2', imgSrc: 'assets/images/home/rent-home.png', title: 'Rent a home', description: 'Find the best rentals with virtual showings, instant applications and secure online payments.', meta: ['Verified rentals', 'Flexible leases', 'No hidden fees'], ctaLabel: 'Explore rentals' },
+    { id: '3', imgSrc: 'assets/images/home/sell-home.png', title: 'Sell a home', description: 'Showcase your property with immersive video tours, professional insights and smart pricing tools.', meta: ['Free valuation', 'Expert guidance', 'Wider reach'], ctaLabel: 'Start selling' }
   ]);
 
   readonly testimonials = signal<TestimonialItem[]>([

@@ -33,10 +33,10 @@
   &__title {
     margin: 0 0 1rem;
     color: var(--font-main);
-    font-size: 1.125rem;
-    font-weight: 800;
+    font-size: 1.25rem;
+    font-weight: 700;
     line-height: 1.2;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.01em;
   }
 
   &__description {
@@ -57,11 +57,17 @@
   }
 
   &__meta-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem;
+    border-radius: var(--radius-sm);
     color: var(--font-secondary);
     font-size: 0.78rem;
     font-weight: 500;
     line-height: 1.2;
     white-space: nowrap;
+    background-color: var(--tertiary);
   }
 
   &__cta {

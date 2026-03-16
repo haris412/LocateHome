@@ -1,0 +1,39 @@
+<div class="listings-results-header">
+  <h2 class="listings-results-header__title">
+    Showing {{ resultsCount() }} properties in Ontario
+  </h2>
+
+  <div class="listings-results-header__controls">
+    <div class="listings-results-header__sort-group">
+      <span class="listings-results-header__sort-label">Sort by:</span>
+
+      <app-sort-dropdown
+        [value]="selectedSort()"
+        [options]="sortOptions()"
+        (valueChanged)="sortChanged.emit($event)"
+      />
+    </div>
+
+    <!-- <div class="listings-results-header__view-toggle" aria-label="Change results view">
+      <button
+        type="button"
+        class="listings-results-header__view-btn"
+        [class.listings-results-header__view-btn--active]="selectedView() === 'grid'"
+        (click)="viewChanged.emit('grid')"
+        aria-label="Grid view"
+      >
+        <mat-icon fontSet="material-symbols-outlined" inline>grid_view</mat-icon>
+      </button>
+
+      <button
+        type="button"
+        class="listings-results-header__view-btn"
+        [class.listings-results-header__view-btn--active]="selectedView() === 'list'"
+        (click)="viewChanged.emit('list')"
+        aria-label="List view"
+      >
+        <mat-icon fontSet="material-symbols-outlined" inline>view_list</mat-icon>
+      </button>
+    </div> -->
+  </div>
+</div>

@@ -1,8 +1,6 @@
 <article class="category-card">
   <div class="category-card__icon">
-    <mat-icon fontSet="material-symbols-outlined" inline>
-      {{ item().icon }}
-    </mat-icon>
+    <img [src]="item().imgSrc" alt="">
   </div>
 
   <h3 class="category-card__title">{{ item().title }}</h3>

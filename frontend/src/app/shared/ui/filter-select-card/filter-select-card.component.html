@@ -1,0 +1,22 @@
+<div class="filter-select">
+  <label class="filter-select__label">
+    @if (config().icon) {
+      <mat-icon fontSet="material-symbols-outlined">{{config().icon}}</mat-icon>
+    }
+    <span>{{ config().label }}</span>
+  </label>
+
+  <mat-form-field appearance="outline" class="filter-select__field">
+    <mat-select
+      [value]="config().value"
+      [placeholder]="config().placeholder"
+      (valueChange)="onSelectionChange($event)"
+    >
+      @for (option of config().options; track option.id) {
+        <mat-option [value]="option.id">
+          {{ option.label }}
+        </mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
