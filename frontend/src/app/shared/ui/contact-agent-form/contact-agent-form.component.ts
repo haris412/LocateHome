@@ -5,6 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { ListingAgent } from '../../../core/models/listing-detail.vm';
 import { InfoCardComponent } from '../info-card/info-card.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-contact-agent-form',
@@ -14,7 +15,8 @@ import { InfoCardComponent } from '../info-card/info-card.component';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    InfoCardComponent
+    InfoCardComponent,
+    MatIconModule
   ],
   templateUrl: './contact-agent-form.component.html',
   styleUrl: './contact-agent-form.component.scss',

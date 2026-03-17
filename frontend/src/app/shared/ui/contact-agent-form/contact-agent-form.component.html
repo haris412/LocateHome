@@ -49,14 +49,18 @@
         }
       </mat-form-field>
 
-      <button mat-flat-button type="submit" class="agent-form__primary-btn w-100">
+      <button matButton="filled" type="submit" class="agent-form__primary-btn w-100">
         {{ submitLabel() }}
       </button>
     </form>
 
     <div class="agent-form__secondary d-grid gap-2 mt-3">
-      <button mat-stroked-button type="button">{{ secondary1() }}</button>
-      <button mat-stroked-button type="button">{{ secondary2() }}</button>
+      <button matButton="outlined">
+        <mat-icon fontSet="material-symbols-outlined">calendar_add_on</mat-icon>
+        {{ secondary1() }}
+      </button>
+      <button matButton="outlined">
+        {{ secondary2() }}</button>
     </div>
 
     <div class="row g-2 mt-3">

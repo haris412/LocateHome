@@ -28,7 +28,6 @@ import { ListingsCarouselSectionComponent } from 'src/app/shared/ui/listings-car
     AmenitiesGridComponent,
     VideoStripComponent,
     ContactAgentFormComponent,
-    ListingCardComponent,
     ListingsCarouselSectionComponent
   ],
   templateUrl: './listing-detail-shell.component.html',

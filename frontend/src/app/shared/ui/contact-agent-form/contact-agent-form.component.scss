@@ -34,8 +34,8 @@
   }
 
   &__primary-btn {
-    --mdc-filled-button-container-color: var(--primary);
-    --mdc-filled-button-label-text-color: #fff;
+    --mat-button-filled-container-color: var(--primary);
+    --mat-button-filled-label-text-color: #fff;
     min-height: 48px;
     border-radius: 12px;
     font-weight: 800;

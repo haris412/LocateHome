@@ -126,7 +126,7 @@
   @if (vm().nearby?.items?.length) {
     <div class="row g-4 g-xl-5 mt-2 mt-lg-3">
       <div class="col-12">
-        <app-listings-carousel-section [items]="vm().nearby?.items" [title]="vm().nearby?.title || 'Featured properties nearby'" [isFeatured]="true" [scrollSnap]="false" />
+        <app-listings-carousel-section [items]="vm().nearby?.items" [title]="vm().nearby?.title || 'Featured properties nearby'" [isFeatured]="true" [scrollSnap]="false" variant="standalone" />
       </div>
     </div>
     

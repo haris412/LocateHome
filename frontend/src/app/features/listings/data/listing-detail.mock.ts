@@ -8,11 +8,11 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
   saveLabel: 'Save',
 
   gallery: {
-    primaryImage: 'assets/images/listings/detail/living-room.jpg',
+    primaryImage: 'assets/images/listings/featured-1.png',
     images: [
-      'assets/images/listings/detail/living-room.jpg',
-      'assets/images/listings/detail/kitchen.jpg',
-      'assets/images/listings/detail/bedroom.jpg'
+      'assets/images/listings/featured-1.png',
+      'assets/images/listings/featured-2.png',
+      'assets/images/listings/featured-3.png'
     ],
     moreCount: 15,
     featuredTag: 'Featured rental',
@@ -60,17 +60,17 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
       {
         id: 'video-1',
         title: 'Luxury living walkthrough',
-        imageUrl: 'assets/images/listings/videos/video-1.jpg'
+        imageUrl: 'assets/images/listings/featured-1.png'
       },
       {
         id: 'video-2',
         title: 'Skyline rooftop tour',
-        imageUrl: 'assets/images/listings/videos/video-2.jpg'
+        imageUrl: 'assets/images/listings/featured-2.png'
       },
       {
         id: 'video-3',
         title: 'Downtown Seattle living',
-        imageUrl: 'assets/images/listings/videos/video-3.jpg'
+        imageUrl: 'assets/images/listings/featured-3.png'
       }
     ]
   },
@@ -78,7 +78,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
   agent: {
     name: 'Sarah Jenkins',
     role: 'Listing agent',
-    imageUrl: 'assets/images/agents/agent-1.jpg',
+    imageUrl: 'assets/images/people/agent-1.png',
     blurb: 'Ask about rent terms, availability, move-in date or request an in-person or video tour.',
     rating: '4.9',
     listings: '42',
@@ -102,7 +102,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '900 1st Avenue, Apt 12C',
         address: '900 1st Avenue, Apt 12C, Downtown Seattle, WA 98104',
         price: '$3,800 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-1.jpg',
+        imageUrl: 'assets/images/listings/featured-1.png',
         badge: 'For Rent',
         badgeVariant: 'rent',
         beds: 1,
@@ -114,7 +114,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '1400 3rd Avenue, Apt 8A',
         address: '1400 3rd Avenue, Apt 8A, Downtown Seattle, WA 98101',
         price: '$4,500 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-2.jpg',
+        imageUrl: 'assets/images/listings/featured-2.png',
         badge: 'For Rent',
         badgeVariant: 'rent',
         beds: 2,
@@ -126,7 +126,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '200 Pine Street, Apt 15F',
         address: '200 Pine Street, Apt 15F, Downtown Seattle, WA 98101',
         price: '$3,200 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-3.jpg',
+        imageUrl: 'assets/images/listings/featured-3.png',
         badge: 'For Rent',
         badgeVariant: 'rent',
         beds: 1,
@@ -138,7 +138,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '1101 Western Avenue, Penthouse B',
         address: '1101 Western Avenue, Penthouse B, Downtown Seattle, WA 98101',
         price: '$5,100 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-4.jpg',
+        imageUrl: 'assets/images/listings/featured-4.png',
         badge: 'New',
         badgeVariant: 'new',
         beds: 3,
