@@ -2,20 +2,37 @@
   [title]="title()"
   [subtitle]="subtitle()"
   [actionLabel]="actionLabel()"
-  actionIcon="videocam"
-  (actionClick)="viewAll.emit()"
+  icon="video_camera_back"
+  (actionClick)="openAll()"
+  [isBorderless]="true"
 />
 
-<div class="row g-3">
-  @for (video of videos(); track video.id) {
-    <div class="col-12 col-md-6 col-xl-4">
-      <button type="button" class="video-card" (click)="videoSelected.emit(video.id)">
-        <img class="video-card__image" [src]="video.imageUrl" [alt]="video.title" />
-        <span class="video-card__overlay"></span>
-        <span class="video-card__play">
-          <mat-icon fontSet="material-symbols-outlined">play_arrow</mat-icon>
-        </span>
-      </button>
-    </div>
+<div class="video-strip">
+  @for (video of videos(); track video.id; let i = $index) {
+    <button
+      type="button"
+      class="video-card"
+      (click)="openVideo(i)"
+    >
+      <img class="video-card__image" [src]="video.imageUrl" [alt]="video.title" />
+
+      <span class="video-card__overlay"></span>
+
+      <span class="video-card__play">
+        <mat-icon fontSet="material-symbols-outlined" inline>play_arrow</mat-icon>
+      </span>
+
+      <div class="video-card__content">
+        <h3 class="video-card__title">{{ video.title }}</h3>
+      </div>
+    </button>
   }
 </div>
+
+@if (isOverlayOpen()) {
+  <app-video-gallery-overlay
+    [videos]="videos()"
+    [startIndex]="selectedIndex()"
+    (close)="closeOverlay()"
+  />
+}

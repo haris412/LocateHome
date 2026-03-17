@@ -24,7 +24,7 @@
   </p>
   }
   @if (actionLabel()) {
-    <button type="button" class="section-header__action" (click)="actionClick.emit()">
+    <button type="button" class="section-heading__action" [class.no-border]="isBorderless()" (click)="actionClick.emit()">
       @if (icon()) {
         <mat-icon fontSet="material-symbols-outlined" inline>{{ icon() }}</mat-icon>
       }

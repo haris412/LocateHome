@@ -1,0 +1,30 @@
+<div class="gallery-overlay">
+
+  <button class="gallery-overlay__close" (click)="close.emit()">
+    <mat-icon fontSet="material-symbols-outlined" inline>close</mat-icon>
+  </button>
+
+  <div class="gallery-overlay__main">
+
+    <button class="nav prev" (click)="prev()">‹</button>
+
+    <img
+      [src]="images()[currentIndex]"
+      class="gallery-overlay__image"
+    />
+
+    <button class="nav next" (click)="next()">›</button>
+
+  </div>
+
+  <div class="gallery-overlay__thumbs">
+    @for (img of images(); track img; let i = $index) {
+      <img
+        [src]="img"
+        [class.active]="i === currentIndex"
+        (click)="select(i)"
+      />
+    }
+  </div>
+
+</div>

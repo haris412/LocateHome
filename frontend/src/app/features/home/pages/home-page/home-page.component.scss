@@ -28,6 +28,12 @@
     }
   }
 
+  &__filter {
+    margin-top: -12rem;
+    position: relative;
+    z-index: 1;
+  }
+
   &__band {
     width: 100%;
     padding-block: 6.5rem;
@@ -54,6 +60,10 @@
   .home-page {
     &__section {
       margin-top: 2.5rem;
+    }
+
+    &__filter {
+      margin-top: -8rem;
     }
 
     &__band {

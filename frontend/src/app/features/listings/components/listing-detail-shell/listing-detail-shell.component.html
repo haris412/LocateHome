@@ -59,7 +59,7 @@
 
           <div class="row g-3">
             @for (stat of vm().stats; track stat.label) {
-              <div class="col-6 col-md-3">
+              <div class="col-lg-3 col-sm-6">
                 <app-stat-card
                   [value]="stat.value"
                   [label]="stat.label"
@@ -124,33 +124,11 @@
 
   <!-- Nearby -->
   @if (vm().nearby?.items?.length) {
-    <section class="listing-detail-shell__nearby-section mt-5 pt-2 pt-lg-4">
-      <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-4">
-        <div>
-          <h2 class="listing-detail-shell__section-title mb-1">
-            {{ vm().nearby?.title || 'Featured properties nearby' }}
-          </h2>
-
-          <p class="listing-detail-shell__section-subtitle mb-0">
-            {{ vm().nearby?.subtitle || '' }}
-          </p>
-        </div>
-
-        <button type="button" mat-stroked-button>
-          {{ vm().nearby?.actionLabel || 'Browse all featured' }}
-        </button>
+    <div class="row g-4 g-xl-5 mt-2 mt-lg-3">
+      <div class="col-12">
+        <app-listings-carousel-section [items]="vm().nearby?.items" [title]="vm().nearby?.title || 'Featured properties nearby'" [isFeatured]="true" [scrollSnap]="false" />
       </div>
-
-      <div class="row g-3 g-lg-4">
-        @for (item of vm().nearby?.items || []; track item.id) {
-          <div class="col-12 col-sm-6 col-xl-3">
-            <app-listing-card
-              [item]="item"
-              (favoriteToggled)="nearbyFavoriteToggled.emit($event)"
-            />
-          </div>
-        }
-      </div>
-    </section>
+    </div>
+    
   }
 </div>

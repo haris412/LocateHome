@@ -13,6 +13,7 @@ import { ContactAgentFormComponent } from '../../../../shared/ui/contact-agent-f
 import { ListingCardComponent } from '../../../../shared/ui/listing-card/listing-card.component';
 import { SectionHeadingComponent } from 'src/app/shared/ui/section-heading/section-heading.component';
 import { StatCardComponent } from 'src/app/shared/ui/stat-card/stat-card.component';
+import { ListingsCarouselSectionComponent } from 'src/app/shared/ui/listings-carousel-section/listings-carousel-section.component';
 
 @Component({
   selector: 'app-listing-detail-shell',
@@ -27,7 +28,8 @@ import { StatCardComponent } from 'src/app/shared/ui/stat-card/stat-card.compone
     AmenitiesGridComponent,
     VideoStripComponent,
     ContactAgentFormComponent,
-    ListingCardComponent
+    ListingCardComponent,
+    ListingsCarouselSectionComponent
   ],
   templateUrl: './listing-detail-shell.component.html',
   styleUrl: './listing-detail-shell.component.scss',

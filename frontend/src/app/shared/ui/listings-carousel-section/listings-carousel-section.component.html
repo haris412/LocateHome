@@ -18,6 +18,11 @@
       <mat-icon fontIcon="arrow_forward"></mat-icon>
     </a>
     }
+    @if(isFeatured()) {
+    <div class="listings-carousel-section__primary-btn">
+      Browse all featured
+    </div>
+    }
     @if (smallContent()) {
     <div class="listings-carousel-section__actions"
          [class.justify-content-end]="!showEyebrow()">
@@ -30,6 +35,8 @@
       }
 
       @if (isOverflowing()) {
+      
+
       <div class="listings-carousel-section__controls">
         <button type="button"
                 class="listings-carousel-section__arrow"
@@ -48,6 +55,7 @@
         </button>
       </div>
       }
+
     </div>
     }
   </div>
@@ -63,6 +71,8 @@
     }
 
     @if (isOverflowing()) {
+    
+    @if (scrollSnap()) {
     <div class="listings-carousel-section__controls">
       <button type="button"
               class="listings-carousel-section__arrow"
@@ -80,6 +90,7 @@
         <mat-icon fontIcon="arrow_forward"></mat-icon>
       </button>
     </div>
+    }
     }
   </div>
   }

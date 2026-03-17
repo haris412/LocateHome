@@ -26,10 +26,12 @@ export class ListingsCarouselSectionComponent {
   readonly titleSmall = input<boolean>(false);
   readonly subtitle = input<string>('');
   readonly linkLabel = input<string>('');
-  readonly items = input.required<readonly ListingItem[]>();
-  readonly variant = input<'default' | 'compact'>('default');
+  readonly items = input.required<readonly ListingItem[] | undefined>();
+  readonly variant = input<'default' | 'compact' | 'standalone'>('standalone');
   readonly showEyebrow = input<boolean>(false);
   readonly smallContent = input<boolean>(false);
+  readonly isFeatured = input<boolean>(false);
+  readonly scrollSnap = input<boolean>(true);
 
   readonly trackRef = viewChild<ElementRef<HTMLDivElement>>('track');
 
@@ -37,7 +39,7 @@ export class ListingsCarouselSectionComponent {
   readonly clientWidth = signal(0);
   readonly scrollWidth = signal(0);
 
-  readonly hasItems = computed(() => this.items().length > 0);
+  readonly hasItems = computed(() => !!this.items() && this.items()!.length > 0);
   readonly isOverflowing = computed(() => this.scrollWidth() > this.clientWidth() + 1);
   readonly canScrollPrev = computed(() => this.scrollLeft() > 0);
   readonly canScrollNext = computed(() => {
