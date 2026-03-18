@@ -49,14 +49,26 @@
         }
       </mat-form-field>
 
-      <button mat-flat-button type="submit" class="agent-form__primary-btn w-100">
+      <button type="submit" class="agent-form__primary-btn w-100">
         {{ submitLabel() }}
       </button>
     </form>
 
     <div class="agent-form__secondary d-grid gap-2 mt-3">
-      <button mat-stroked-button type="button">{{ secondary1() }}</button>
-      <button mat-stroked-button type="button">{{ secondary2() }}</button>
+      <button
+        type="button"
+        class="agent-form__secondary-btn"
+        (click)="openBookAppointmentOverlay()"
+      >
+        {{ secondary1() }}
+      </button>
+
+      <button
+        type="button"
+        class="agent-form__secondary-btn"
+      >
+        {{ secondary2() }}
+      </button>
     </div>
 
     <div class="row g-2 mt-3">
@@ -83,3 +95,22 @@
     </div>
   </div>
 </app-info-card>
+
+<app-appointment-overlay
+  [open]="isAppointmentOpen()"
+  [data]="{
+    agentName: agent().name,
+    listing: {
+      id: listingId(),
+      imageUrl: listingImageUrl(),
+      price: listingPrice(),
+      address: listingAddress()
+    },
+    dateSlots: appointmentDateSlots(),
+    initialName: form.controls.name.value,
+    initialEmail: form.controls.email.value,
+    initialPhone: form.controls.phone.value
+  }"
+  (closed)="closeBookAppointmentOverlay()"
+  (confirmed)="handleAppointmentConfirmed($event)"
+/>

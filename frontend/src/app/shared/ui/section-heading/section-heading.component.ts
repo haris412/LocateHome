@@ -16,6 +16,7 @@ export class SectionHeadingComponent {
   readonly icon = input<string>('info');
   readonly imgSrc = input<string>('');
   readonly actionLabel = input<string>('');
+  readonly isBorderless = input<boolean>(false);
 
   @Output() readonly actionClick = new EventEmitter<void>();
 }

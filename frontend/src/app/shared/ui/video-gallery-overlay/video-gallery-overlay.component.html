@@ -1,0 +1,76 @@
+<div class="video-overlay" (click)="onBackdropClick($event)">
+  <div class="video-overlay__dialog">
+    <button
+      type="button"
+      class="video-overlay__close"
+      aria-label="Close video gallery"
+      (click)="close.emit()"
+    >
+      <mat-icon fontSet="material-symbols-outlined" inline>close</mat-icon>
+    </button>
+
+    @if (currentVideo; as video) {
+      <div class="video-overlay__content">
+        <div
+          class="video-overlay__player-shell"
+          (touchstart)="onTouchStart($event)"
+          (touchend)="onTouchEnd($event)"
+        >
+          <video
+            class="video-overlay__player"
+            [src]="video.videoUrl"
+            controls
+            autoplay
+            playsinline
+          ></video>
+
+          @if (videos().length > 1) {
+            <button
+              type="button"
+              class="video-overlay__nav video-overlay__nav--prev"
+              aria-label="Previous video"
+              (click)="prev()"
+            >
+              <mat-icon fontSet="material-symbols-outlined" inline>chevron_left</mat-icon>
+            </button>
+
+            <button
+              type="button"
+              class="video-overlay__nav video-overlay__nav--next"
+              aria-label="Next video"
+              (click)="next()"
+            >
+              <mat-icon fontSet="material-symbols-outlined" inline>chevron_right</mat-icon>
+            </button>
+          }
+        </div>
+
+        <div class="video-overlay__meta">
+          <div>
+            <h3 class="video-overlay__title">{{ video.title }}</h3>
+          </div>
+
+          <p class="video-overlay__count">
+            {{ currentIndex() + 1 }} / {{ videos().length }}
+          </p>
+        </div>
+
+        <div class="video-overlay__thumbs">
+          @for (item of videos(); track item.id; let i = $index) {
+            <button
+              type="button"
+              class="video-overlay__thumb"
+              [class.video-overlay__thumb--active]="i === currentIndex()"
+              (click)="select(i)"
+            >
+              <img [src]="item.imageUrl" [alt]="item.title" />
+              <span class="video-overlay__thumb-play">
+                <mat-icon fontSet="material-symbols-outlined" inline>play_arrow</mat-icon>
+              </span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

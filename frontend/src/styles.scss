@@ -14,7 +14,7 @@ html {
   ));
 }
 :root {
-  --primary: #ff6b57;
+  --primary: rgb(255, 107, 87);
   --secondary: #ffeadf;
   --tertiary: #FFF8F3;
 
@@ -42,6 +42,8 @@ html {
   --mat-form-field-outlined-focus-outline-color: var(--primary);
   --mat-option-selected-state-label-text-color: var(--primary);
   --mat-form-field-outlined-container-shape: 12px;
+  --mat-button-filled-label-text-font: Inter;
+  --mat-button-outlined-container-shape: 12px;
 }
 
 html,
@@ -53,7 +55,7 @@ body {
   margin: 0;
   font-family: Inter, "Segoe UI", Roboto, sans-serif !important;
   color: var(--font-main);
-  // background: #f6f0ec;
+  background: #f6f0ec;
 }
 
 .mat-icon {
@@ -105,6 +107,11 @@ body {
   .mat-mdc-form-field-subscript-wrapper {
     display: none;
   }
+}
+
+.mat-mdc-text-field-wrapper {
+  background-color: #fff;
+  border-radius: 12px !important;
 }
 
 .mat-mdc-form-field {

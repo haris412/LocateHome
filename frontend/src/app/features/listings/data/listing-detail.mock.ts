@@ -1,4 +1,159 @@
 import { ListingDetailModel } from '../../../core/models/listing-detail.vm';
+import { AppointmentDateSlots } from '../../../core/models/appointment.models';
+
+const MOCK_APPOINTMENT_DATE_SLOTS: AppointmentDateSlots[] = [
+  {
+    date: '2026-03-18',
+    slots: [
+      { id: '2026-03-18-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-18-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'confirmed', note: 'Agent on-site' },
+      { id: '2026-03-18-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'booked', note: 'Already reserved' },
+      { id: '2026-03-18-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-18-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-18-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Office closed' },
+      { id: '2026-03-18-1700', label: '05:00 PM', hour24: 17, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  },
+  {
+    date: '2026-03-19',
+    slots: [
+      { id: '2026-03-19-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'booked' },
+      { id: '2026-03-19-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'booked' },
+      { id: '2026-03-19-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-19-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'confirmed' },
+      { id: '2026-03-19-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Internal meeting' },
+      { id: '2026-03-19-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-19-1600', label: '04:00 PM', hour24: 16, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  },
+  {
+    date: '2026-03-20',
+    slots: [
+      { id: '2026-03-20-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'blocked', note: 'Agent unavailable' },
+      { id: '2026-03-20-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'blocked', note: 'Agent unavailable' },
+      { id: '2026-03-20-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-20-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-20-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-20-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'confirmed', note: 'Virtual tour slot' },
+      { id: '2026-03-20-1700', label: '05:00 PM', hour24: 17, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  },
+  {
+    date: '2026-03-21',
+    slots: [
+      { id: '2026-03-21-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-21-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-21-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-21-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-21-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-21-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Office closed' }
+    ]
+  },
+  {
+    date: '2026-03-22',
+    slots: [
+      { id: '2026-03-22-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'blocked', note: 'Sunday off' },
+      { id: '2026-03-22-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Sunday off' },
+      { id: '2026-03-22-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Sunday off' },
+      { id: '2026-03-22-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Sunday off' }
+    ]
+  },
+  {
+    date: '2026-03-23',
+    slots: [
+      { id: '2026-03-23-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-23-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-23-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'confirmed' },
+      { id: '2026-03-23-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-23-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-23-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-23-1600', label: '04:00 PM', hour24: 16, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  },
+  {
+    date: '2026-03-24',
+    slots: [
+      { id: '2026-03-24-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'booked' },
+      { id: '2026-03-24-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'booked' },
+      { id: '2026-03-24-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'booked' },
+      { id: '2026-03-24-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'confirmed' },
+      { id: '2026-03-24-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-24-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-24-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Travel time' }
+    ]
+  },
+  {
+    date: '2026-03-25',
+    slots: [
+      { id: '2026-03-25-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-25-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-25-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-25-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-25-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-25-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'confirmed' },
+      { id: '2026-03-25-1700', label: '05:00 PM', hour24: 17, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  },
+  {
+    date: '2026-03-26',
+    slots: [
+      { id: '2026-03-26-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'blocked', note: 'Maintenance visit' },
+      { id: '2026-03-26-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-26-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-26-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-26-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'confirmed' },
+      { id: '2026-03-26-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-26-1600', label: '04:00 PM', hour24: 16, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  },
+  {
+    date: '2026-03-27',
+    slots: [
+      { id: '2026-03-27-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-27-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-27-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-27-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-27-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-27-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'confirmed' },
+      { id: '2026-03-27-1700', label: '05:00 PM', hour24: 17, minute: 0, meridiem: 'PM', status: 'booked' }
+    ]
+  },
+  {
+    date: '2026-03-28',
+    slots: [
+      { id: '2026-03-28-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-28-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'booked' },
+      { id: '2026-03-28-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-28-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'blocked', note: 'Office closed' },
+      { id: '2026-03-28-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-28-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'confirmed' }
+    ]
+  },
+  {
+    date: '2026-03-30',
+    slots: [
+      { id: '2026-03-30-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-30-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-30-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'confirmed' },
+      { id: '2026-03-30-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-30-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-30-1400', label: '02:00 PM', hour24: 14, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-30-1600', label: '04:00 PM', hour24: 16, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  },
+  {
+    date: '2026-03-31',
+    slots: [
+      { id: '2026-03-31-0900', label: '09:00 AM', hour24: 9, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-31-1000', label: '10:00 AM', hour24: 10, minute: 0, meridiem: 'AM', status: 'blocked', note: 'Team sync' },
+      { id: '2026-03-31-1100', label: '11:00 AM', hour24: 11, minute: 0, meridiem: 'AM', status: 'available' },
+      { id: '2026-03-31-1200', label: '12:00 PM', hour24: 12, minute: 0, meridiem: 'PM', status: 'available' },
+      { id: '2026-03-31-1300', label: '01:00 PM', hour24: 13, minute: 0, meridiem: 'PM', status: 'confirmed' },
+      { id: '2026-03-31-1500', label: '03:00 PM', hour24: 15, minute: 0, meridiem: 'PM', status: 'booked' },
+      { id: '2026-03-31-1700', label: '05:00 PM', hour24: 17, minute: 0, meridiem: 'PM', status: 'available' }
+    ]
+  }
+];
 
 export const LISTING_DETAIL_MOCK: ListingDetailModel = {
   id: 'listing-1200-skyline',
@@ -8,11 +163,11 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
   saveLabel: 'Save',
 
   gallery: {
-    primaryImage: 'assets/images/listings/detail/living-room.jpg',
+    primaryImage: 'assets/images/listings/featured-1.png',
     images: [
-      'assets/images/listings/detail/living-room.jpg',
-      'assets/images/listings/detail/kitchen.jpg',
-      'assets/images/listings/detail/bedroom.jpg'
+      'assets/images/listings/featured-1.png',
+      'assets/images/listings/featured-2.png',
+      'assets/images/listings/featured-3.png'
     ],
     moreCount: 15,
     featuredTag: 'Featured rental',
@@ -60,17 +215,17 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
       {
         id: 'video-1',
         title: 'Luxury living walkthrough',
-        imageUrl: 'assets/images/listings/videos/video-1.jpg'
+        imageUrl: 'assets/images/listings/featured-1.png'
       },
       {
         id: 'video-2',
         title: 'Skyline rooftop tour',
-        imageUrl: 'assets/images/listings/videos/video-2.jpg'
+        imageUrl: 'assets/images/listings/featured-2.png'
       },
       {
         id: 'video-3',
         title: 'Downtown Seattle living',
-        imageUrl: 'assets/images/listings/videos/video-3.jpg'
+        imageUrl: 'assets/images/listings/featured-3.png'
       }
     ]
   },
@@ -78,7 +233,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
   agent: {
     name: 'Sarah Jenkins',
     role: 'Listing agent',
-    imageUrl: 'assets/images/agents/agent-1.jpg',
+    imageUrl: 'assets/images/people/agent-1.png',
     blurb: 'Ask about rent terms, availability, move-in date or request an in-person or video tour.',
     rating: '4.9',
     listings: '42',
@@ -102,7 +257,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '900 1st Avenue, Apt 12C',
         address: '900 1st Avenue, Apt 12C, Downtown Seattle, WA 98104',
         price: '$3,800 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-1.jpg',
+        imageUrl: 'assets/images/listings/featured-1.png',
         badge: 'For Rent',
         badgeVariant: 'rent',
         beds: 1,
@@ -114,7 +269,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '1400 3rd Avenue, Apt 8A',
         address: '1400 3rd Avenue, Apt 8A, Downtown Seattle, WA 98101',
         price: '$4,500 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-2.jpg',
+        imageUrl: 'assets/images/listings/featured-2.png',
         badge: 'For Rent',
         badgeVariant: 'rent',
         beds: 2,
@@ -126,7 +281,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '200 Pine Street, Apt 15F',
         address: '200 Pine Street, Apt 15F, Downtown Seattle, WA 98101',
         price: '$3,200 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-3.jpg',
+        imageUrl: 'assets/images/listings/featured-3.png',
         badge: 'For Rent',
         badgeVariant: 'rent',
         beds: 1,
@@ -138,7 +293,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         title: '1101 Western Avenue, Penthouse B',
         address: '1101 Western Avenue, Penthouse B, Downtown Seattle, WA 98101',
         price: '$5,100 /mo',
-        imageUrl: 'assets/images/listings/nearby/nearby-4.jpg',
+        imageUrl: 'assets/images/listings/featured-4.png',
         badge: 'New',
         badgeVariant: 'new',
         beds: 3,
@@ -146,5 +301,6 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
         area: '1,500 sqft'
       }
     ]
-  }
+  },
+  appointmentDateSlots: MOCK_APPOINTMENT_DATE_SLOTS
 };

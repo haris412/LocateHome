@@ -58,9 +58,9 @@
 
   &__price {
     color: var(--font-main);
-    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
     line-height: 1;
-    font-weight: 900;
+    font-weight: 700;
   }
 
   &__price-suffix,

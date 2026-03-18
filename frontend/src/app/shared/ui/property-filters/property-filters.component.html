@@ -1,0 +1,193 @@
+<app-filter-shell>
+  <section class="property-filters"
+           [class.property-filters--hero]="variant() === 'hero'"
+           [class.property-filters--toolbar]="variant() === 'toolbar'">
+    <div class="property-filters__top">
+      <app-filter-segment-tabs [items]="tabs"
+                               [active]="mode()"
+                               (changed)="setMode($event)" />
+
+      <div class="property-filters__actions">
+        @if (voiceEnabled()) {
+        <button type="button"
+                class="property-filters__action-btn"
+                [disabled]="!micSupported()"
+                (click)="startVoiceSearch()">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>
+            {{ isListening() ? 'graphic_eq' : 'mic_none' }}
+          </mat-icon>
+          <span>Voice search</span>
+        </button>
+        }
+
+        @if (showMoreFiltersToggle()) {
+        <button type="button"
+                class="property-filters__action-btn"
+                [class.property-filters__action-btn--active]="showMoreFilters()"
+                (click)="toggleMoreFilters()"
+                [attr.aria-expanded]="showMoreFilters()"
+                aria-controls="property-filters-more">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline
+                    class="property-filters__action-icon">
+            tune
+          </mat-icon>
+          <span>More filters</span>
+        </button>
+        }
+      </div>
+    </div>
+
+    @if (variant() === 'hero') {
+    <div class="property-filters__hero-layout">
+      <div class="property-filters__hero-search-card">
+        <div class="property-filters__hero-label">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>search</mat-icon>
+          <span>Search by keyword or voice</span>
+        </div>
+
+        <div class="property-filters__hero-query-wrap">
+          <input class="property-filters__hero-query-input"
+                 type="text"
+                 [value]="searchQuery()"
+                 (input)="updateSearch(($any($event.target).value))"
+                 placeholder="Search by keyword or voice" />
+        </div>
+
+        <div class="property-filters__hero-voice-row">
+          <span class="property-filters__hero-voice-hint">
+            {{ isListening() ? 'Listening… speak now' : 'Tap to speak' }}
+          </span>
+
+          @if (voiceEnabled()) {
+          <button type="button"
+                  class="property-filters__hero-mic-btn"
+                  [class.property-filters__hero-mic-btn--active]="isListening()"
+                  [disabled]="!micSupported()"
+                  (click)="startVoiceSearch()"
+                  [attr.aria-label]="isListening() ? 'Stop voice search' : 'Start voice search'">
+            <mat-icon fontSet="material-symbols-outlined"
+                      inline>
+              {{ isListening() ? 'graphic_eq' : 'mic' }}
+            </mat-icon>
+          </button>
+          }
+        </div>
+
+        @if (micError()) {
+        <p class="property-filters__mic-error">{{ micError() }}</p>
+        }
+      </div>
+
+      <!-- @if (activeFields().length > 0) {
+      <div class="property-filters__hero-summary-card">
+        <div class="property-filters__summary-label">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>
+            {{ activeFields()[0].icon || 'apartment' }}
+          </mat-icon>
+          <span>{{ activeFields()[0].label }}</span>
+        </div>
+
+        <div class="property-filters__summary-value">
+          {{ heroSummaryValue }}
+        </div>
+      </div>
+      } -->
+
+      <button type="button"
+              class="property-filters__hero-search-btn"
+              (click)="runSearch()">
+        <span class="property-filters__hero-search-btn-icon">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>search</mat-icon>
+        </span>
+
+        <span class="property-filters__hero-search-btn-copy">
+          <strong>Search properties</strong>
+          <small>Find homes fast</small>
+        </span>
+
+        <span class="property-filters__hero-search-btn-arrow">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>arrow_forward</mat-icon>
+        </span>
+      </button>
+    </div>
+
+    <div class="property-filters__hero-fields-grid">
+      @for (field of activeFields().slice(1); track field.id) {
+      <app-filter-select [config]="field"
+                         (valueChanged)="updateField($event)" />
+      }
+    </div>
+    }
+
+    @if (variant() === 'toolbar') {
+    <div class="property-filters__toolbar-search-row">
+      <div class="property-filters__toolbar-search-box">
+        <mat-icon fontSet="material-symbols-outlined"
+                  inline>search</mat-icon>
+
+        <input class="property-filters__toolbar-search-input"
+               type="text"
+               [value]="searchQuery()"
+               (input)="updateSearch(($any($event.target).value))"
+               placeholder="Search location, area, project" />
+
+        @if (voiceEnabled()) {
+        <button type="button"
+                class="property-filters__toolbar-mic-btn"
+                [disabled]="!micSupported()"
+                (click)="startVoiceSearch()"
+                aria-label="Voice search">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>
+            {{ isListening() ? 'graphic_eq' : 'mic' }}
+          </mat-icon>
+        </button>
+        }
+      </div>
+
+      <button type="button"
+              class="property-filters__toolbar-search-btn"
+              (click)="runSearch()">
+        Search
+      </button>
+    </div>
+
+    <div class="property-filters__toolbar-fields-row">
+      @for (field of activeFields(); track field.id) {
+      <div class="property-filters__toolbar-field">
+        <app-filter-select [config]="field"
+                           (valueChanged)="updateField($event)" />
+      </div>
+      }
+
+      <!-- @if (showMoreFiltersToggle()) {
+      <button type="button"
+              class="property-filters__toolbar-more-btn"
+              [class.property-filters__toolbar-more-btn--active]="showMoreFilters()"
+              (click)="toggleMoreFilters()"
+              [attr.aria-expanded]="showMoreFilters()"
+              aria-controls="property-filters-more">
+        <mat-icon fontSet="material-symbols-outlined"
+                  inline>tune</mat-icon>
+        <span>More Filters</span>
+      </button>
+      } -->
+    </div>
+    }
+
+    <div id="property-filters-more"
+         class="property-filters__more-panel"
+         [class.property-filters__more-panel--open]="showMoreFilters()">
+      <div class="property-filters__more-panel-inner">
+        <app-filter-chip-group [items]="activeChips()"
+                               (toggled)="toggleChip($event)" />
+      </div>
+    </div>
+  </section>
+</app-filter-shell>

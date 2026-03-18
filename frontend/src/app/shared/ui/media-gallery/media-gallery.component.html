@@ -1,6 +1,9 @@
 <div class="media-gallery row g-3">
   <div class="col-12 col-lg-8">
-    <div class="media-gallery__tile media-gallery__tile--primary">
+    <div
+      class="media-gallery__tile media-gallery__tile--primary"
+      (click)="openOverlay(0)"
+    >
       @if (gallery().featuredTag || gallery().videoTag) {
         <div class="media-gallery__badges">
           @if (gallery().featuredTag) {
@@ -17,10 +20,18 @@
         </div>
       }
 
-      <img class="media-gallery__img" [src]="gallery().primaryImage" alt="Listing image" />
+      <img
+        class="media-gallery__img"
+        [src]="gallery().primaryImage"
+        alt="Listing image"
+      />
 
       @if (gallery().showPlay) {
-        <button type="button" class="media-gallery__play" (click)="playVideo.emit()">
+        <button
+          type="button"
+          class="media-gallery__play"
+          (click)="$event.stopPropagation(); playVideo.emit()"
+        >
           <mat-icon fontSet="material-symbols-outlined">play_arrow</mat-icon>
         </button>
       }
@@ -29,21 +40,47 @@
 
   <div class="col-12 col-lg-4">
     <div class="media-gallery__stack">
-      <div class="media-gallery__tile media-gallery__tile--secondary">
-        <img class="media-gallery__img" [src]="topImage" alt="Listing image 2" />
+      
+      <!-- Top image -->
+      <div
+        class="media-gallery__tile media-gallery__tile--secondary"
+        (click)="openOverlay(1)"
+      >
+        <img
+          class="media-gallery__img"
+          [src]="topImage"
+          alt="Listing image 2"
+        />
       </div>
 
+      <!-- Bottom image + more -->
       <button
         type="button"
         class="media-gallery__tile media-gallery__tile--secondary media-gallery__tile--action"
-        (click)="openGallery.emit()"
+        (click)="openOverlay(2)"
       >
-        <img class="media-gallery__img" [src]="bottomImage" alt="Listing image 3" />
+        <img
+          class="media-gallery__img"
+          [src]="bottomImage"
+          alt="Listing image 3"
+        />
 
         @if ((gallery().moreCount || 0) > 0) {
-          <span class="media-gallery__more">+ {{ gallery().moreCount }} more photos</span>
+          <span class="media-gallery__more">
+            + {{ gallery().moreCount }} more photos
+          </span>
         }
       </button>
+
     </div>
   </div>
 </div>
+
+<!-- 🔥 Overlay -->
+ @if (isOverlayOpen) {
+   <app-media-gallery-overlay
+     [images]="gallery().images"
+     [startIndex]="selectedIndex"
+     (close)="closeOverlay()"
+   />
+ }

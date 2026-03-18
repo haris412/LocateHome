@@ -1,25 +1,29 @@
 <div class="home-page">
   <section class="home-page__hero-band">
 
-    <app-hero-section
-      backgroundImageUrl="assets/images/home/hero-video-placeholder.png"
-      title="Discover Your Perfect Home"
-      subtitle="Watch guided video tours of exclusive properties tailored to your lifestyle."
-      [stats]="heroStats()"
-    />
+    <app-hero-section backgroundImageUrl="assets/images/home/hero-video-placeholder.png"
+                      title="Discover Your Perfect Home"
+                      subtitle="Watch guided video tours of exclusive properties tailored to your lifestyle."
+                      [stats]="heroStats()" />
   </section>
 
   <section class="home-page__band">
     <div class="home-page__container">
-      <app-search-panel />
+      <div class="home-page__filter">
+        <app-property-filters variant="hero"
+                              [buyFields]="buyFields()"
+                              [rentFields]="rentFields()"
+                              [buyChips]="buyChips()"
+                              [rentChips]="rentChips()"
+                              [searchQueryInput]="searchQuery()"
+                              (searchQueryChange)="onSearchQueryChange($event)" />
+      </div>
       <div class="home-page__section">
-        <app-listings-carousel-section
-          title="Featured Listings"
-          subtitle="Explore curated properties with exclusive video walkthroughs."
-          linkLabel="View all properties"
-          [items]="featuredListings()"
-          [showEyebrow]="true"
-        />
+        <app-listings-carousel-section title="Featured Listings"
+                                       subtitle="Explore curated properties with exclusive video walkthroughs."
+                                       linkLabel="View all properties"
+                                       [items]="featuredListings()"
+                                       [showEyebrow]="true" />
       </div>
     </div>
   </section>
@@ -28,7 +32,10 @@
     <div class="home-page__container">
       <div class="home-page__section">
         <div class="home-page__section-heading">
-          <app-section-heading title="Trending & Hot Properties" subtitle="See what other buyers and renters are viewing the most right now." subText="View trending markets" imgSrc="assets/icons/fire.svg"/>
+          <app-section-heading title="Trending & Hot Properties"
+                               subtitle="See what other buyers and renters are viewing the most right now."
+                               subText="View trending markets"
+                               imgSrc="assets/icons/fire.svg" />
         </div>
         <div class="row g-4 align-items-start">
           <div class="col-12 col-lg-4">
@@ -36,14 +43,11 @@
           </div>
 
           <div class="col-12 col-lg-8">
-            <app-listings-carousel-section
-              title="Hot this week"
-              [titleSmall]="true"
-              subtitle="Based on saved videos and active interest."
-              [items]="hotListings()"
-              [smallContent]="true"
-              
-            />
+            <app-listings-carousel-section title="Hot this week"
+                                           [titleSmall]="true"
+                                           subtitle="Based on saved videos and active interest."
+                                           [items]="hotListings()"
+                                           [smallContent]="true" />
           </div>
         </div>
       </div>
@@ -59,12 +63,10 @@
         <app-testimonials-section [items]="testimonials()" />
       </div>
       <div class="home-page__section">
-        <app-listings-carousel-section
-          title="Recently viewed properties"
-          subtitle="Pick up where you left off and revisit homes, apartments and rentals you explored."
-          linkLabel="View history"
-          [items]="recentListings()"
-        />
+        <app-listings-carousel-section title="Recently viewed properties"
+                                       subtitle="Pick up where you left off and revisit homes, apartments and rentals you explored."
+                                       linkLabel="View history"
+                                       [items]="recentListings()" />
       </div>
     </div>
   </div>
@@ -76,12 +78,10 @@
       </div>
 
       <div class="home-page__section">
-        <app-app-promo-section
-          title="Take the property portal with you wherever you go"
-          description="Search homes by voice, watch video tours, save listings and connect with agents from anywhere."
-          [bullets]="appPromoBullets()"
-          phoneImageUrl="assets/images/home/mobile-app.png"
-        />
+        <app-app-promo-section title="Take the property portal with you wherever you go"
+                               description="Search homes by voice, watch video tours, save listings and connect with agents from anywhere."
+                               [bullets]="appPromoBullets()"
+                               phoneImageUrl="assets/images/home/mobile-app.png" />
       </div>
     </div>
   </section>

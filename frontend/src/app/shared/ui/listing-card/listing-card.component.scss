@@ -1,19 +1,25 @@
 .listing-card {
-  --listing-card-width: 22rem;
-  --listing-card-min-width: 18rem;
-  --listing-card-max-width: 24rem;
-
   display: flex;
   flex-direction: column;
-  width: min(100%, var(--listing-card-width));
-  min-width: var(--listing-card-min-width);
-  max-width: var(--listing-card-max-width);
+  width: 100%;
+  min-width: 0;
+  max-width: none;
   height: 100%;
   overflow: hidden;
   border: 1px solid rgba(234, 217, 208, 0.82);
   border-radius: 0.9rem;
   background: var(--surface);
   cursor: pointer;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 34px rgba(31, 22, 48, 0.1);
+    border-color: rgba(234, 217, 208, 1);
+  }
 
   &:focus-visible {
     outline: 2px solid var(--primary);
@@ -32,12 +38,18 @@
     height: 100%;
     object-fit: cover;
     display: block;
+    transition: transform 0.35s ease;
+  }
+
+  &:hover &__image {
+    transform: scale(1.03);
   }
 
   &__badge {
     position: absolute;
     top: 1rem;
     left: 1rem;
+    z-index: 1;
     min-height: 2rem;
     padding: 0.25rem 0.75rem;
     border-radius: 0.45rem;
@@ -45,9 +57,10 @@
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
+    font-weight: 700;
 
     &--sale,
     &--featured,
@@ -59,12 +72,17 @@
     &--viewed {
       background: #7c3aed;
     }
+
+    &--verified {
+      background: #12b3b6;
+    }
   }
 
   &__favorite {
     position: absolute;
     top: 1rem;
     right: 1rem;
+    z-index: 1;
     width: 2.5rem;
     height: 2.5rem;
     border: 0;
@@ -74,23 +92,37 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover {
+      background: #fff;
+      color: var(--primary);
+      transform: scale(1.04);
+    }
   }
 
   &__body {
     display: grid;
     gap: 0.8rem;
     padding: 1.3rem 1.4rem 1.2rem;
+    min-width: 0;
   }
 
-  &__price, &__rent {
+  &__price,
+  &__rent {
     color: var(--primary);
     font-size: 1.5rem;
     line-height: 1;
     font-weight: 700;
+
     .listing-card__rent-subtext {
-        font-size: 0.9rem;
-        color: var(--font-secondary);
-      }
+      font-size: 0.9rem;
+      color: var(--font-secondary);
+      font-weight: 500;
+    }
   }
 
   &__title {
@@ -110,13 +142,21 @@
     color: var(--font-secondary);
     font-size: 0.875rem;
     line-height: 1.45;
+    min-width: 0;
+
+    span {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     .mat-icon {
       width: 1rem;
       height: 1rem;
       font-size: 1rem;
-      
       color: var(--font-secondary);
+      flex-shrink: 0;
     }
   }
 
@@ -137,6 +177,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.35rem;
+      min-width: 0;
     }
 
     .mat-icon {
@@ -144,46 +185,132 @@
       height: 1rem;
       font-size: 1rem;
       color: var(--font-secondary);
+      flex-shrink: 0;
     }
   }
 
   &--compact {
-    --listing-card-width: 19rem;
-    --listing-card-min-width: 16.5rem;
-    --listing-card-max-width: 21rem;
-
-    .listing-card__price {
-      font-size: 1.55rem;
-      
+    .listing-card__price,
+    .listing-card__rent {
+      font-size: 1.35rem;
     }
 
     .listing-card__title {
-      font-size: 1.25rem;
+      font-size: 1.05rem;
     }
 
     .listing-card__body {
-      padding: 1.1rem 1.2rem;
+      padding: 1.05rem 1.1rem;
+      gap: 0.7rem;
     }
+
+    .listing-card__meta {
+      gap: 0.85rem 1rem;
+      font-size: 0.92rem;
+    }
+  }
+
+  &--standalone {
+    width: 22rem;
+    min-width: 18rem;
+    max-width: 24rem;
+  }
+
+  &--compact.listing-card--standalone {
+    width: min(100%, 19rem);
+    min-width: 16.5rem;
+    max-width: 21rem;
   }
 }
 
-@media (max-width: 575.98px) {
+@media (max-width: 991.98px) {
   .listing-card {
-    --listing-card-width: 100%;
-    --listing-card-min-width: 0;
-    --listing-card-max-width: 100%;
+    border-radius: 0.75rem;
 
-    &__price {
-      font-size: 1.5rem;
+    &__media {
+      aspect-ratio: 1.6 / 1;
+    }
+
+    &__body {
+      padding: 0.85rem 0.9rem;
+      gap: 0.55rem;
+    }
+
+    &__price,
+    &__rent {
+      font-size: 1.15rem;
+    }
+
+    &__rent-subtext {
+      font-size: 0.75rem;
     }
 
     &__title {
-      font-size: 1.2rem;
+      font-size: 0.95rem;
+      line-height: 1.2;
     }
 
-    &__address,
+    &__address {
+      font-size: 0.75rem;
+
+      .mat-icon {
+        font-size: 0.85rem;
+      }
+    }
+
     &__meta {
-      font-size: 0.9rem;
+      font-size: 0.75rem;
+      gap: 0.6rem;
+
+      .mat-icon {
+        font-size: 0.85rem;
+      }
+    }
+
+    &__badge {
+      top: 0.75rem;
+      left: 0.75rem;
+      font-size: 0.65rem;
+      padding: 0.2rem 0.5rem;
+      min-height: 1.7rem;
+    }
+
+    &__favorite {
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 2rem;
+      height: 2rem;
+
+      .mat-icon {
+        font-size: 1rem;
+      }
+    }
+
+    &--compact {
+      .listing-card__price,
+      .listing-card__rent {
+        font-size: 1.1rem;
+      }
+
+      .listing-card__title {
+        font-size: 0.92rem;
+      }
+
+      .listing-card__body {
+        padding: 0.8rem 0.85rem;
+      }
+    }
+
+    &--standalone {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    &--compact.listing-card--standalone {
+      width: 100%;
+      min-width: 0;
+      max-width: 100%;
     }
   }
 }

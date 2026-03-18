@@ -1,3 +1,4 @@
+import { AppointmentDateSlots } from './appointment.models';
 import { ListingItem } from './listing.models';
 
 export interface ListingAmenityItem {
@@ -8,7 +9,8 @@ export interface ListingAmenityItem {
 export interface ListingVideoItem {
   id: string;
   title: string;
-  imageUrl: string;
+  videoUrl?: string;
+  imageUrl?: string;
 }
 
 export interface ListingAgent {
@@ -79,6 +81,8 @@ export interface ListingDetailModel {
     title?: string;
     subtitle?: string;
     actionLabel?: string;
-    items: ListingItem[];
+    items?: ListingItem[];
   };
+
+  appointmentDateSlots?: AppointmentDateSlots[];
 }

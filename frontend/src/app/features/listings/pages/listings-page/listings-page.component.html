@@ -8,21 +8,23 @@
     </p>
   </div>
 
-  <app-listings-toolbar />
+  <app-property-filters variant="toolbar"
+                        [buyFields]="buyFields()"
+                        [rentFields]="rentFields()"
+                        [buyChips]="buyChips()"
+                        [rentChips]="rentChips()"
+                        [searchQueryInput]="searchQuery()"
+                        (searchQueryChange)="onSearchQueryChange($event)" />
 
-  <app-listings-results-header
-    [resultsCount]="listings().length"
-    [selectedSort]="selectedSort()"
-    [sortOptions]="sortOptions()"
-    [selectedView]="selectedView()"
-    (sortChanged)="updateSort($event)"
-    (viewChanged)="selectedView.set($event)"
-  />
+  <app-listings-results-header [resultsCount]="listings().length"
+                               [selectedSort]="selectedSort()"
+                               [sortOptions]="sortOptions()"
+                               [selectedView]="selectedView()"
+                               (sortChanged)="updateSort($event)"
+                               (viewChanged)="selectedView.set($event)" />
 
-  <app-listings-grid
-    [items]="listings()"
-    [viewMode]="selectedView()"
-    (cardClicked)="openListingDetail($event)"
-    (favoriteToggled)="onFavoriteToggled($event)"
-  />
+  <app-listings-grid [items]="listings()"
+                     [viewMode]="selectedView()"
+                     (cardClicked)="openListingDetail($event)"
+                     (favoriteToggled)="onFavoriteToggled($event)" />
 </section>

@@ -12,7 +12,7 @@ import { ListingItem } from '../../../core/models/listing.models';
 })
 export class ListingCardComponent {
   readonly item = input.required<ListingItem>();
-  readonly variant = input<'default' | 'compact'>('default');
+  readonly variant = input<'default' | 'compact' | 'standalone'>('default');
 
   @Output() readonly favoriteToggled = new EventEmitter<string>();
   @Output() readonly cardClicked = new EventEmitter<string>();
