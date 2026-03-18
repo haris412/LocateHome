@@ -4,6 +4,19 @@ import { HomePageComponent } from './features/home/pages/home-page/home-page.com
 
 export const appRoutes: Routes = [
   { path: 'home', component: HomePageComponent },
-  { path: 'dashboard', component: DashboardComponent },
-  { path: '', pathMatch: 'full', redirectTo: 'home' },
+
+  // { path: 'verify-email', component: VerifyEmailComponent },
+
+  // { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
+
+  { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+
+  // { path: 'auth', component: AuthPortalPageComponent },
+
+  {
+    path: 'listings',
+    loadChildren: () =>
+      import('./features/listings/listings.routes')
+        .then(m => m.LISTINGS_ROUTES)
+  }
 ];
