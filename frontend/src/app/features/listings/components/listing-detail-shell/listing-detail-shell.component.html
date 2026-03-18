@@ -2,35 +2,42 @@
   <!-- Top bar -->
   <div class="listing-detail-shell__topbar d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
     <div class="d-flex flex-wrap align-items-center gap-3">
-      <button type="button" class="listing-detail-shell__back-link" (click)="back.emit()">
-        <mat-icon fontSet="material-symbols-outlined" inline>arrow_back</mat-icon>
+      <button type="button"
+              class="listing-detail-shell__back-link"
+              (click)="back.emit()">
+        <mat-icon fontSet="material-symbols-outlined"
+                  inline>arrow_back</mat-icon>
         <span>{{ vm().breadcrumbLabel || 'Back to Search Results' }}</span>
       </button>
 
       @if (vm().statusChip) {
-        <span class="listing-detail-shell__status-chip">{{ vm().statusChip }}</span>
+      <span class="listing-detail-shell__status-chip">{{ vm().statusChip }}</span>
       }
     </div>
 
     <div class="d-flex align-items-center gap-2">
-      <button type="button" class="listing-detail-shell__utility-btn" (click)="share.emit()">
-        <mat-icon fontSet="material-symbols-outlined" inline>share</mat-icon>
+      <button type="button"
+              class="listing-detail-shell__utility-btn"
+              (click)="share.emit()">
+        <mat-icon fontSet="material-symbols-outlined"
+                  inline>share</mat-icon>
         <span>{{ vm().shareLabel || 'Share' }}</span>
       </button>
 
-      <button type="button" class="listing-detail-shell__utility-btn" (click)="save.emit()">
-        <mat-icon fontSet="material-symbols-outlined" inline>favorite</mat-icon>
+      <button type="button"
+              class="listing-detail-shell__utility-btn"
+              (click)="save.emit()">
+        <mat-icon fontSet="material-symbols-outlined"
+                  inline>favorite</mat-icon>
         <span>{{ vm().saveLabel || 'Save' }}</span>
       </button>
     </div>
   </div>
 
   <!-- Gallery -->
-  <app-media-gallery
-    [gallery]="vm().gallery"
-    (openGallery)="openGallery.emit()"
-    (playVideo)="playVideo.emit()"
-  />
+  <app-media-gallery [gallery]="vm().gallery"
+                     (openGallery)="openGallery.emit()"
+                     (playVideo)="playVideo.emit()" />
 
   <!-- Main content -->
   <div class="row g-4 g-xl-5 mt-2 mt-lg-3">
@@ -44,28 +51,29 @@
                 <h1 class="listing-detail-shell__price mb-0">{{ vm().price }}</h1>
 
                 @if (vm().priceSuffix) {
-                  <span class="listing-detail-shell__price-suffix">{{ vm().priceSuffix }}</span>
+                <span class="listing-detail-shell__price-suffix">{{ vm().priceSuffix }}</span>
                 }
               </div>
 
               <p class="listing-detail-shell__address mb-0">{{ vm().addressLine }}</p>
             </div>
 
-            <button type="button" class="listing-detail-shell__schedule-btn" (click)="scheduleVisit.emit()">
-              <mat-icon fontSet="material-symbols-outlined" inline>calendar_month</mat-icon>
+            <button type="button"
+                    class="listing-detail-shell__schedule-btn"
+                    (click)="scheduleVisit.emit()">
+              <mat-icon fontSet="material-symbols-outlined"
+                        inline>calendar_month</mat-icon>
               <span>{{ vm().ctaLabel || 'Schedule a Visit' }}</span>
             </button>
           </div>
 
           <div class="row g-3">
             @for (stat of vm().stats; track stat.label) {
-              <div class="col-lg-3 col-sm-6">
-                <app-stat-card
-                  [value]="stat.value"
-                  [label]="stat.label"
-                  [icon]="stat.icon || ''"
-                />
-              </div>
+            <div class="col-lg-3 col-sm-6">
+              <app-stat-card [value]="stat.value"
+                             [label]="stat.label"
+                             [icon]="stat.icon || ''" />
+            </div>
             }
           </div>
         </section>
@@ -77,7 +85,7 @@
 
             <div class="listing-detail-shell__rich-text">
               @for (paragraph of vm().about.paragraphs; track $index) {
-                <p>{{ paragraph }}</p>
+              <p>{{ paragraph }}</p>
               }
             </div>
           </app-info-card>
@@ -85,24 +93,20 @@
 
         <!-- Amenities -->
         <section>
-          <app-amenities-grid
-            [title]="vm().amenities.title || 'Highlights & amenities'"
-            [items]="vm().amenities.items"
-          />
+          <app-amenities-grid [title]="vm().amenities.title || 'Highlights & amenities'"
+                              [items]="vm().amenities.items" />
         </section>
 
         <!-- Videos -->
         @if (vm().videos?.items?.length) {
-          <section>
-            <app-video-strip
-              [title]="vm().videos?.title || 'Property videos'"
-              [subtitle]="vm().videos?.subtitle || ''"
-              [actionLabel]="vm().videos?.viewAllLabel || 'View all videos'"
-              [videos]="vm().videos?.items || []"
-              (viewAll)="viewAllVideos.emit()"
-              (videoSelected)="videoSelected.emit($event)"
-            />
-          </section>
+        <section>
+          <app-video-strip [title]="vm().videos?.title || 'Property videos'"
+                           [subtitle]="vm().videos?.subtitle || ''"
+                           [actionLabel]="vm().videos?.viewAllLabel || 'View all videos'"
+                           [videos]="vm().videos?.items || []"
+                           (viewAll)="viewAllVideos.emit()"
+                           (videoSelected)="videoSelected.emit($event)" />
+        </section>
         }
       </div>
     </div>
@@ -110,25 +114,33 @@
     <!-- Sidebar -->
     <div class="col-12 col-xl-4">
       <div class="listing-detail-shell__sidebar">
-        <app-contact-agent-form
-          [agent]="vm().agent"
-          [submitLabel]="vm().inquiry.submitLabel || 'Request a tour'"
-          [secondary1]="vm().inquiry.secondary1 || 'Book appointment'"
-          [secondary2]="vm().inquiry.secondary2 || 'Ask a question'"
-          [defaultMessage]="vm().inquiry.defaultMessage || ''"
-          (submitted)="inquirySubmitted.emit($event)"
-        />
+        <app-contact-agent-form [agent]="vm().agent"
+                                [submitLabel]="vm().inquiry.submitLabel || 'Request a tour'"
+                                [secondary1]="vm().inquiry.secondary1 || 'Book appointment'"
+                                [secondary2]="vm().inquiry.secondary2 || 'Ask a question'"
+                                [defaultMessage]="vm().inquiry.defaultMessage || ''"
+                                [listingId]="vm().id"
+                                [listingPrice]="vm().price + (vm().priceSuffix || '')"
+                                [listingAddress]="vm().addressLine"
+                                [listingImageUrl]="vm().gallery.primaryImage"
+                                [appointmentDateSlots]="vm().appointmentDateSlots || []"
+                                (submitted)="inquirySubmitted.emit($event)"
+                                (appointmentBooked)="appointmentBooked.emit($event)" />
       </div>
     </div>
   </div>
 
   <!-- Nearby -->
   @if (vm().nearby?.items?.length) {
-    <div class="row g-4 g-xl-5 mt-2 mt-lg-3">
-      <div class="col-12">
-        <app-listings-carousel-section [items]="vm().nearby?.items" [title]="vm().nearby?.title || 'Featured properties nearby'" [isFeatured]="true" [scrollSnap]="false" variant="standalone" />
-      </div>
+  <div class="row g-4 g-xl-5 mt-2 mt-lg-3">
+    <div class="col-12">
+      <app-listings-carousel-section [items]="vm().nearby?.items"
+                                     [title]="vm().nearby?.title || 'Featured properties nearby'"
+                                     [isFeatured]="true"
+                                     [scrollSnap]="false"
+                                     variant="standalone" />
     </div>
-    
+  </div>
+
   }
 </div>

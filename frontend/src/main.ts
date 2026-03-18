@@ -22,6 +22,7 @@ bootstrapApplication(AppComponent, {
       useFactory: (auth: AuthService) => () => auth.tryRestoreSession(),
       deps: [AuthService],
       multi: true
-    }
+    },
+    ...config.providers
   ]
 }).catch(err => console.error(err));

@@ -33,14 +33,6 @@
     gap: 0.4rem;
   }
 
-  &__primary-btn {
-    --mat-button-filled-container-color: var(--primary);
-    --mat-button-filled-label-text-color: #fff;
-    min-height: 48px;
-    border-radius: 12px;
-    font-weight: 800;
-  }
-
   &__metric {
     background: var(--tertiary);
     border: 1px solid var(--border-soft);
@@ -58,6 +50,42 @@
     span {
       color: var(--font-secondary);
       font-size: 0.82rem;
+    }
+  }
+  &__primary-btn {
+    width: 100%;
+    min-height: 48px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    transition:
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 14px 28px rgba(255, 107, 87, 0.2);
+    }
+  }
+
+  &__secondary-btn {
+    min-height: 44px;
+    border: 1px solid var(--border-soft);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--font-main);
+    font-weight: 600;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      color 0.2s ease;
+
+    &:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--surface-soft);
     }
   }
 }

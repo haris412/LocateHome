@@ -1,0 +1,210 @@
+@if (open()) {
+<div class="appointment-overlay"
+     (click)="onBackdropClick($event)">
+  <div class="appointment-overlay__dialog">
+    <div class="appointment-overlay__header">
+      <div>
+        <h2 class="appointment-overlay__title">Book a Tour</h2>
+        <p class="appointment-overlay__subtitle">
+          Select a date and time to visit the property in person or via video call.
+        </p>
+      </div>
+
+      <button type="button"
+              class="appointment-overlay__close"
+              aria-label="Close booking overlay"
+              (click)="close()">
+        ×
+      </button>
+    </div>
+
+    <div class="appointment-overlay__scroll">
+      <div class="appointment-overlay__listing-card">
+        <img class="appointment-overlay__listing-image"
+             [src]="data().listing.imageUrl"
+             alt="Listing image" />
+
+        <div class="appointment-overlay__listing-copy">
+          <div class="appointment-overlay__listing-price">
+            {{ data().listing.price }}
+          </div>
+          <p class="appointment-overlay__listing-address">
+            {{ data().listing.address }}
+          </p>
+          <span class="appointment-overlay__listing-agent">
+            Agent: {{ data().agentName }}
+          </span>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-12 col-xl-5">
+          <section class="appointment-overlay__panel">
+            <div class="appointment-overlay__section-head">
+              <h3>Select a Date</h3>
+            </div>
+
+            <div class="appointment-overlay__calendar-wrap">
+              <mat-calendar [selected]="selectedDate()"
+                            [startAt]="selectedDate()"
+                            [dateClass]="dateClass"
+                            (selectedChange)="onDateChange($event)" />
+            </div>
+          </section>
+        </div>
+
+        <div class="col-12 col-xl-7">
+          <section class="appointment-overlay__panel">
+            <div class="appointment-overlay__section-head">
+              <h3>Select a Time</h3>
+              <div class="appointment-overlay__status-legend">
+                <span class="status-chip status-chip--available">Available</span>
+                <span class="status-chip status-chip--selected">Selected</span>
+                <span class="status-chip status-chip--confirmed">Confirmed</span>
+                <span class="status-chip status-chip--booked">Booked</span>
+                <span class="status-chip status-chip--blocked">Blocked</span>
+              </div>
+            </div>
+
+            <div class="appointment-overlay__period-switch">
+              <button type="button"
+                      class="period-btn"
+                      [class.period-btn--active]="selectedPeriod() === 'AM'"
+                      (click)="selectPeriod('AM')">
+                AM
+              </button>
+
+              <button type="button"
+                      class="period-btn"
+                      [class.period-btn--active]="selectedPeriod() === 'PM'"
+                      (click)="selectPeriod('PM')">
+                PM
+              </button>
+
+              <span class="appointment-overlay__schedule-chip">
+                12-hour schedule
+              </span>
+            </div>
+
+            <div class="appointment-overlay__time-group-label">
+              @if (selectedPeriod() === 'AM') {
+              Morning slots
+              } @else {
+              Afternoon & evening slots
+              }
+            </div>
+
+            @if (visibleSlots().length > 0) {
+            <div class="appointment-overlay__slots-grid">
+              @for (slot of visibleSlots(); track slot.id) {
+              <button type="button"
+                      class="time-slot"
+                      [class.time-slot--selected]="selectedSlotId() === slot.id"
+                      [class.time-slot--available]="slot.status === 'available'"
+                      [class.time-slot--confirmed]="slot.status === 'confirmed'"
+                      [class.time-slot--booked]="slot.status === 'booked'"
+                      [class.time-slot--blocked]="slot.status === 'blocked'"
+                      [disabled]="slot.status === 'booked' || slot.status === 'blocked'"
+                      (click)="selectSlot(slot)">
+                <strong>{{ slot.label }}</strong>
+                <span>
+                  {{ getSlotStatusText(slot.status, selectedSlotId() === slot.id) }}
+                </span>
+                @if (slot.note) {
+                <small>{{ slot.note }}</small>
+                }
+              </button>
+              }
+            </div>
+            } @else {
+            <div class="appointment-overlay__empty-slots">
+              No slots available for this date.
+            </div>
+            }
+          </section>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-1">
+        <div class="col-12 col-xl-7">
+          <section class="appointment-overlay__panel">
+            <div class="appointment-overlay__section-head">
+              <h3>Your Details</h3>
+            </div>
+
+            <form class="row g-3"
+                  [formGroup]="form">
+              <div class="col-12">
+                <mat-form-field appearance="outline"
+                                class="w-100">
+                  <mat-label>Name</mat-label>
+                  <input matInput
+                         formControlName="name" />
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <mat-form-field appearance="outline"
+                                class="w-100">
+                  <mat-label>Email</mat-label>
+                  <input matInput
+                         type="email"
+                         formControlName="email" />
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <mat-form-field appearance="outline"
+                                class="w-100">
+                  <mat-label>Phone number</mat-label>
+                  <input matInput
+                         formControlName="phone" />
+                </mat-form-field>
+              </div>
+            </form>
+          </section>
+        </div>
+
+        <div class="col-12 col-xl-5">
+          <section class="appointment-overlay__panel">
+            <div class="appointment-overlay__section-head">
+              <h3>Booking Summary</h3>
+            </div>
+
+            <div class="appointment-overlay__summary">
+              <div class="appointment-overlay__summary-row">
+                <span>Date</span>
+                <strong>{{ selectedDateLabel() }}</strong>
+              </div>
+
+              <div class="appointment-overlay__summary-row">
+                <span>Time</span>
+                <strong>{{ selectedSlot()?.label || 'Not selected' }}</strong>
+              </div>
+
+              <div class="appointment-overlay__summary-row">
+                <span>Agent</span>
+                <strong>{{ data().agentName }}</strong>
+              </div>
+            </div>
+
+            <div class="appointment-overlay__footer-actions">
+              <button type="button"
+                      class="appointment-overlay__cancel-btn"
+                      (click)="close()">
+                Cancel
+              </button>
+
+              <button type="button"
+                      class="appointment-overlay__confirm-btn"
+                      (click)="confirm()">
+                Confirm Appointment
+              </button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+}

@@ -1,3 +1,4 @@
+import { AppointmentDateSlots } from './appointment.models';
 import { ListingItem } from './listing.models';
 
 export interface ListingAmenityItem {
@@ -82,4 +83,6 @@ export interface ListingDetailModel {
     actionLabel?: string;
     items?: ListingItem[];
   };
+
+  appointmentDateSlots?: AppointmentDateSlots[];
 }
