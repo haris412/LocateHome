@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { Router } from '@angular/router';
 import {
   AgentItem,
   CategoryItem,
@@ -8,6 +9,7 @@ import {
   TrendItem
 } from '../../../../core/models/home.models';
 import { ListingItem } from '../../../../core/models/listing.models';
+import { SearchPanelSearchPayload } from '../../components/search-panel/search-panel.component';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { SearchPanelComponent } from '../../components/search-panel/search-panel.component';
 import { ListingsCarouselSectionComponent } from '../../../../shared/ui/listings-carousel-section/listings-carousel-section.component';
@@ -19,14 +21,12 @@ import { AppPromoSectionComponent } from '../../components/app-promo-section/app
 import { FooterSectionComponent } from '../../components/footer-section/footer-section.component';
 import { HeaderComponent } from '../../../../shared/ui/header/header.component';
 import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/section-heading.component';
-import { PropertyFiltersComponent } from 'src/app/shared/ui/property-filters/property-filters.component';
-import { FilterTabItem, FilterSelectConfig, FilterChipItem } from 'src/app/core/models/filter.models';
 
 @Component({
   selector: 'app-home-page',
   imports: [
     HeroSectionComponent,
-    PropertyFiltersComponent,
+    SearchPanelComponent,
     ListingsCarouselSectionComponent,
     TrendingPanelComponent,
     CategoriesSectionComponent,
@@ -41,189 +41,7 @@ import { FilterTabItem, FilterSelectConfig, FilterChipItem } from 'src/app/core/
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomePageComponent {
-  readonly searchQuery = signal('Ontario, Canada');
-
-  onSearchQueryChange(value: string) {
-    this.searchQuery.set(value);
-  }
-  readonly tabs: readonly FilterTabItem[] = [
-    { id: 'buy', label: 'Buy' },
-    { id: 'rent', label: 'Rent' }
-  ];
-
-  readonly buyFields = signal<FilterSelectConfig[]>([
-    {
-      id: 'province',
-      label: 'Province',
-      icon: 'location_on',
-      placeholder: 'Province',
-      value: 'ontario',
-      options: [
-        { id: 'ontario', label: 'Ontario' },
-        { id: 'alberta', label: 'Alberta' },
-        { id: 'bc', label: 'British Columbia' }
-      ]
-    },
-    {
-      id: 'state',
-      label: 'State',
-      icon: 'map',
-      placeholder: 'State',
-      value: 'any-state',
-      options: [
-        { id: 'any-state', label: 'Any State' },
-        { id: 'toronto', label: 'Toronto' },
-        { id: 'ottawa', label: 'Ottawa' }
-      ]
-    },
-    {
-      id: 'area',
-      label: 'Area',
-      icon: 'pin_drop',
-      placeholder: 'Area',
-      value: 'downtown',
-      options: [
-        { id: 'downtown', label: 'Downtown' },
-        { id: 'midtown', label: 'Midtown' },
-        { id: 'suburbs', label: 'Suburbs' }
-      ]
-    },
-    {
-      id: 'type',
-      label: 'Property Type',
-      icon: 'apartment',
-      placeholder: 'Property type',
-      value: 'house-apartment',
-      options: [
-        { id: 'house-apartment', label: 'House, Apartment' },
-        { id: 'house', label: 'House' },
-        { id: 'apartment', label: 'Apartment' },
-        { id: 'condo', label: 'Condo' }
-      ]
-    },
-    {
-      id: 'beds',
-      label: 'Bedrooms',
-      icon: 'bed',
-      placeholder: 'Bedrooms',
-      value: '3plus',
-      options: [
-        { id: 'any', label: 'Any' },
-        { id: '1plus', label: '1+ Beds' },
-        { id: '2plus', label: '2+ Beds' },
-        { id: '3plus', label: '3+ Beds' },
-        { id: '4plus', label: '4+ Beds' }
-      ]
-    },
-    {
-      id: 'price',
-      label: 'Price Range',
-      icon: 'monetization_on',
-      placeholder: 'Price range',
-      value: 'mid',
-      options: [
-        { id: 'low', label: 'Under $500k' },
-        { id: 'mid', label: '$500k - $2.5M' },
-        { id: 'high', label: '$2.5M+' }
-      ]
-    }
-  ]);
-
-  readonly rentFields = signal<FilterSelectConfig[]>([
-    {
-      id: 'province',
-      label: 'Province',
-      icon: 'location_on',
-      placeholder: 'Province',
-      value: 'ontario',
-      options: [
-        { id: 'ontario', label: 'Ontario' },
-        { id: 'alberta', label: 'Alberta' },
-        { id: 'bc', label: 'British Columbia' }
-      ]
-    },
-    {
-      id: 'state',
-      label: 'State',
-      icon: 'map',
-      placeholder: 'State',
-      value: 'any-state',
-      options: [
-        { id: 'any-state', label: 'Any State' },
-        { id: 'toronto', label: 'Toronto' },
-        { id: 'ottawa', label: 'Ottawa' }
-      ]
-    },
-    {
-      id: 'area',
-      label: 'Area',
-      icon: 'pin_drop',
-      placeholder: 'Area',
-      value: 'downtown',
-      options: [
-        { id: 'downtown', label: 'Downtown' },
-        { id: 'midtown', label: 'Midtown' },
-        { id: 'suburbs', label: 'Suburbs' }
-      ]
-    },
-    {
-      id: 'type',
-      label: 'Property Type',
-      icon: 'apartment',
-      placeholder: 'Property type',
-      value: 'apartment',
-      options: [
-        { id: 'apartment', label: 'Apartment' },
-        { id: 'studio', label: 'Studio' },
-        { id: 'condo', label: 'Condo' },
-        { id: 'townhouse', label: 'Townhouse' }
-      ]
-    },
-    {
-      id: 'beds',
-      label: 'Bedrooms',
-      icon: 'bed',
-      placeholder: 'Bedrooms',
-      value: '2plus',
-      options: [
-        { id: 'any', label: 'Any' },
-        { id: 'studio', label: 'Studio' },
-        { id: '1plus', label: '1+ Beds' },
-        { id: '2plus', label: '2+ Beds' },
-        { id: '3plus', label: '3+ Beds' }
-      ]
-    },
-    {
-      id: 'price',
-      label: 'Monthly Rent',
-      icon: 'payments',
-      placeholder: 'Monthly rent',
-      value: 'mid',
-      options: [
-        { id: 'low', label: 'Under $1,500' },
-        { id: 'mid', label: '$1,500 - $3,500' },
-        { id: 'high', label: '$3,500+' }
-      ]
-    }
-  ]);
-
-  readonly buyChips = signal<FilterChipItem[]>([
-    { id: 'open-house', label: 'Open house' },
-    { id: 'new-projects', label: 'New projects' },
-    { id: 'ready-to-move', label: 'Ready to move' },
-    { id: 'video-tours', label: 'Video tours' },
-    { id: 'verified', label: 'Verified listings' },
-    { id: 'parking', label: 'Parking' }
-  ]);
-
-  readonly rentChips = signal<FilterChipItem[]>([
-    { id: 'furnished', label: 'Furnished' },
-    { id: 'pet-friendly', label: 'Pet friendly' },
-    { id: 'utilities', label: 'Utilities included' },
-    { id: 'available-now', label: 'Available now' },
-    { id: 'video-tours', label: 'Video tours' },
-    { id: 'parking', label: 'Parking' }
-  ]);
+  private readonly router = inject(Router);
   readonly heroStats = signal<StatPillItem[]>([
     { id: '1', label: 'Properties', value: '12k+' },
     { id: '2', label: 'Verified agents', value: '1.2k' },
@@ -259,8 +77,8 @@ export class HomePageComponent {
   ]);
 
   readonly categories = signal<CategoryItem[]>([
-    { id: '1', imgSrc: 'assets/images/home/buy-home.png', title: 'Buy a home', description: 'Browse verified listings with HD video tours, neighborhood insights and real-time market data.', meta: ['Market trends', 'Price history', 'Agent support'], ctaLabel: 'Start buying journey' },
-    { id: '2', imgSrc: 'assets/images/home/rent-home.png', title: 'Rent a home', description: 'Find the best rentals with virtual showings, instant applications and secure online payments.', meta: ['Verified rentals', 'Flexible leases', 'No hidden fees'], ctaLabel: 'Explore rentals' },
+    { id: '1', imgSrc: 'assets/images/home/buy-home.png', title: 'Buy a home', description: 'Browse verified listings with HD video tours, neighborhood insights and real-time market data.', meta: ['Market trends', 'Price history', 'Agent support'], ctaLabel: 'Start buying journey', purpose: 'For Sale' },
+    { id: '2', imgSrc: 'assets/images/home/rent-home.png', title: 'Rent a home', description: 'Find the best rentals with virtual showings, instant applications and secure online payments.', meta: ['Verified rentals', 'Flexible leases', 'No hidden fees'], ctaLabel: 'Explore rentals', purpose: 'For Rent' },
     { id: '3', imgSrc: 'assets/images/home/sell-home.png', title: 'Sell a home', description: 'Showcase your property with immersive video tours, professional insights and smart pricing tools.', meta: ['Free valuation', 'Expert guidance', 'Wider reach'], ctaLabel: 'Start selling' }
   ]);
 
@@ -312,4 +130,64 @@ export class HomePageComponent {
     'Pick up where you left off',
     'Saved homes sync across devices'
   ]);
+
+  onSearchRequested(payload: SearchPanelSearchPayload): void {
+    this.router.navigate(['/listings'], {
+      queryParams: this.buildListingsRouteQuery(payload)
+    });
+  }
+
+  onCategoryCtaClicked(category: CategoryItem): void {
+    const purpose = category.purpose;
+    if (!purpose) return;
+    this.router.navigate(['/listings'], {
+      queryParams: {
+        page: 1,
+        limit: 20,
+        purpose,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      }
+    });
+  }
+
+  private buildListingsRouteQuery(
+    payload: SearchPanelSearchPayload
+  ): Record<string, string | number | null> {
+    const city = payload.city !== 'Any' ? payload.city : undefined;
+    const { minPrice, maxPrice } = this.parseBudget(payload.budget);
+    const category =
+      payload.primaryType && payload.primaryType !== 'any' ? payload.primaryType : undefined;
+    const subtype =
+      payload.subtype && payload.subtype !== 'any' ? payload.subtype : undefined;
+
+    return {
+      page: 1,
+      limit: 20,
+      purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
+      city: city ?? null,
+      propertyType: category ?? null,
+      subType: subtype ?? null,
+      category: null,
+      subtype: null,
+      minPrice: minPrice ?? null,
+      maxPrice: maxPrice ?? null,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    };
+  }
+
+  private parseBudget(budget: string): { minPrice?: number; maxPrice?: number } {
+    const value = budget.trim();
+
+    if (value === 'Any') return {};
+    if (value === '$0 - $500k' || value === 'Under $500k') return { minPrice: 0, maxPrice: 500000 };
+    if (value === '$500k - $2.5M') return { minPrice: 500000, maxPrice: 2500000 };
+    if (value === '$2.5M+') return { minPrice: 2500000 };
+    if (value === 'Under $1,500') return { minPrice: 0, maxPrice: 1500 };
+    if (value === '$1,500 - $3,500') return { minPrice: 1500, maxPrice: 3500 };
+    if (value === '$3,500+') return { minPrice: 3500 };
+
+    return {};
+  }
 }

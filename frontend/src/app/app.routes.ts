@@ -9,7 +9,7 @@ export const appRoutes: Routes = [
 
   // { path: 'dashboard', component: DashboardComponent, canActivate: [authGuard] },
 
-  { path: '', pathMatch: 'full', redirectTo: 'dashboard' },
+  { path: '', pathMatch: 'full', redirectTo: 'home' },
 
   // { path: 'auth', component: AuthPortalPageComponent },
 

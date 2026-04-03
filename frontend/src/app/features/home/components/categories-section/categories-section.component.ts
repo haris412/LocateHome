@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CategoryItem } from '../../../../core/models/home.models';
 import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/section-heading.component';
 import { CategoryCardComponent } from '../../../../shared/ui/category-card/category-card.component';
@@ -12,4 +12,5 @@ import { CategoryCardComponent } from '../../../../shared/ui/category-card/categ
 })
 export class CategoriesSectionComponent {
   readonly items = input.required<readonly CategoryItem[]>();
+  readonly categoryCtaClicked = output<CategoryItem>();
 }

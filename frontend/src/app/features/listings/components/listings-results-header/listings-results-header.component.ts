@@ -14,6 +14,7 @@ export type ListingsViewMode = 'grid' | 'list';
 })
 export class ListingsResultsHeaderComponent {
   readonly resultsCount = input.required<number>();
+  readonly locationLabel = input('All locations');
   readonly selectedSort = input.required<string>();
   readonly sortOptions = input.required<readonly SortOption[]>();
   readonly selectedView = input<ListingsViewMode>('grid');

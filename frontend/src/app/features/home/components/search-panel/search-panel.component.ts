@@ -4,12 +4,22 @@ import {
   PLATFORM_ID,
   computed,
   inject,
-  signal
+  signal,
+  EventEmitter,
+  Output
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
 
-type SearchMode = 'buy' | 'rent';
+import {
+  PROPERTY_TYPE_SELECT_OPTIONS,
+  categoryForSubtypeId,
+  subtypeFilterOptions
+} from '../../../../core/models/property-categories.model';
+
+export type SearchMode = 'buy' | 'rent';
 
 interface SearchTab {
   id: SearchMode;
@@ -28,6 +38,27 @@ interface QuickChip {
   label: string;
   icon?: string;
   active?: boolean;
+}
+
+export interface SearchPanelSearchPayload {
+  mode: SearchMode;
+  keyword: string;
+  /** Top-level property type: homes | plots | commercial | any */
+  primaryType: string;
+  /** Subtype id (kebab-case) or any */
+  subtype: string;
+  fields: readonly SearchSummaryField[];
+  filters: QuickChip[];
+  city: string;
+  budget: string;
+  bedrooms: string;
+  bathrooms: string;
+  size: string;
+}
+
+interface SelectOption {
+  id: string;
+  label: string;
 }
 
 interface SpeechRecognitionConstructor {
@@ -66,7 +97,7 @@ interface SpeechRecognitionEventLike {
 
 @Component({
   selector: 'app-search-panel',
-  imports: [MatIconModule],
+  imports: [MatIconModule, MatFormFieldModule, MatSelectModule],
   templateUrl: './search-panel.component.html',
   styleUrl: './search-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -74,6 +105,8 @@ interface SpeechRecognitionEventLike {
 export class SearchPanelComponent {
   private readonly platformId = inject(PLATFORM_ID);
   readonly showMoreFilters = signal(false);
+
+  @Output() readonly search = new EventEmitter<SearchPanelSearchPayload>();
 
   readonly tabs = signal<readonly SearchTab[]>([
     { id: 'buy', label: 'Buy' },
@@ -83,14 +116,48 @@ export class SearchPanelComponent {
   readonly activeTab = signal<SearchMode>('buy');
 
   readonly keyword = signal('“2 bed apartment in downtown Seattle”');
-  readonly propertyType = signal('House');
+  /** Homes, Plots, Commercial (property type), or any. */
+  readonly primaryType = signal('any');
+  readonly subtype = signal('any');
 
-  readonly summaryFields = signal<readonly SearchSummaryField[]>([
-    { id: 'city', icon: 'location_on', label: 'City', value: 'New York' },
-    { id: 'budget', icon: 'monetization_on', label: 'Budget', value: '$500k - $2.5M' },
-    { id: 'bedrooms', icon: 'bed', label: 'Bedrooms', value: 'Any' },
-    { id: 'bathrooms', icon: 'bathtub', label: 'Bathrooms', value: 'Any' },
-    { id: 'size', icon: 'straighten', label: 'Size', value: '1,000+ sqft' }
+  // Individual filter state
+  readonly province = signal('any');
+  readonly state = signal('any');
+  readonly area = signal('any');
+  readonly city = signal('New York');
+  readonly budget = signal('$500k - $2.5M');
+  readonly bedrooms = signal('Any');
+  readonly bathrooms = signal('Any');
+  readonly size = signal('1,000+ sqft');
+
+  // Options for selects
+  readonly cityOptions = ['Any', 'New York', 'Seattle', 'Austin', 'Miami', 'Karachi', 'Lahore'];
+  readonly provinceOptions = ['Any', 'Ontario', 'Alberta', 'British Columbia'];
+  readonly stateOptions = ['Any', 'Toronto', 'Ottawa'];
+  readonly areaOptions = ['Any', 'Downtown', 'Midtown', 'Suburbs'];
+
+  readonly propertyTypeOptions = PROPERTY_TYPE_SELECT_OPTIONS;
+
+  readonly subtypeOptions = computed<readonly SelectOption[]>(() =>
+    subtypeFilterOptions(this.primaryType()).map((o) => ({ id: o.id, label: o.label }))
+  );
+
+  readonly buyBudgetOptions = ['Any', 'Under $500k', '$500k - $2.5M', '$2.5M+'];
+  readonly rentBudgetOptions = ['Any', 'Under $1,500', '$1,500 - $3,500', '$3,500+'];
+  readonly budgetOptions = computed<readonly string[]>(() =>
+    this.activeTab() === 'buy' ? this.buyBudgetOptions : this.rentBudgetOptions
+  );
+
+  readonly bedroomOptions = ['Any', '1+', '2+', '3+', '4+'];
+  readonly bathroomOptions = ['Any', '1+', '2+', '3+'];
+  readonly sizeOptions = ['Any', '500+ sqft', '1,000+ sqft', '2,000+ sqft'];
+
+  readonly summaryFields = computed<readonly SearchSummaryField[]>(() => [
+    { id: 'city', icon: 'location_on', label: 'City', value: this.city() },
+    { id: 'budget', icon: 'monetization_on', label: 'Budget', value: this.budget() },
+    { id: 'bedrooms', icon: 'bed', label: 'Bedrooms', value: this.bedrooms() },
+    { id: 'bathrooms', icon: 'bathtub', label: 'Bathrooms', value: this.bathrooms() },
+    { id: 'size', icon: 'straighten', label: 'Size', value: this.size() }
   ]);
 
   readonly quickChips = signal<QuickChip[]>([
@@ -118,6 +185,32 @@ export class SearchPanelComponent {
 
   setActiveTab(tab: SearchMode): void {
     this.activeTab.set(tab);
+    this.primaryType.set('any');
+    this.subtype.set('any');
+    if (tab === 'buy') {
+      this.budget.set('$500k - $2.5M');
+    } else {
+      this.budget.set('$1,500 - $3,500');
+    }
+  }
+
+  onPrimaryTypeSelected(value: string): void {
+    this.primaryType.set(value);
+    const opts = subtypeFilterOptions(value);
+    const current = this.subtype();
+    if (!opts.some((o) => o.id === current)) {
+      this.subtype.set('any');
+    }
+  }
+
+  onSubtypeSelected(value: string): void {
+    this.subtype.set(value);
+    if (value && value !== 'any') {
+      const groupId = categoryForSubtypeId(value);
+      if (groupId) {
+        this.primaryType.set(groupId);
+      }
+    }
   }
 
   toggleChip(id: string): void {
@@ -144,15 +237,21 @@ export class SearchPanelComponent {
   }
 
   runSearch(): void {
-    const payload = {
+    const payload: SearchPanelSearchPayload = {
       mode: this.activeTab(),
       keyword: this.keyword(),
-      propertyType: this.propertyType(),
+      primaryType: this.primaryType(),
+      subtype: this.subtype(),
       fields: this.summaryFields(),
-      filters: this.quickChips().filter((chip) => chip.active)
+      filters: this.quickChips().filter((chip) => chip.active),
+      city: this.city(),
+      budget: this.budget(),
+      bedrooms: this.bedrooms(),
+      bathrooms: this.bathrooms(),
+      size: this.size()
     };
 
-    console.log('search payload', payload);
+    this.search.emit(payload);
   }
 
   private setupSpeechRecognition(): void {
