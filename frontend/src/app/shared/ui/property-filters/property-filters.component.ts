@@ -19,6 +19,10 @@ import {
   FilterSelectConfig,
   FilterTabItem
 } from '../../../core/models/filter.models';
+import {
+  categoryForSubtypeId,
+  subtypeFilterOptions
+} from '../../../core/models/property-categories.model';
 
 import { FilterShellComponent } from '../filter-shell/filter-shell.component';
 import { FilterSegmentTabsComponent } from '../filter-segment-tabs/filter-segment-tabs.component';
@@ -202,13 +206,47 @@ export class PropertyFiltersComponent {
   updateField(payload: { id: string; value: string | null }): void {
     const store = this.mode() === 'buy' ? this.localBuyFields : this.localRentFields;
 
-    store.update((fields) =>
-      fields.map((field) =>
+    store.update((fields) => {
+      let next = fields.map((field) =>
         field.id === payload.id
           ? { ...field, value: payload.value }
           : field
-      )
-    );
+      );
+
+      if (payload.id === 'primaryType') {
+        const cat = payload.value || 'any';
+        const opts = subtypeFilterOptions(cat);
+        next = next.map((field) => {
+          if (field.id !== 'subtype') return field;
+          const stillValid = opts.some((o) => o.id === field.value);
+          return {
+            ...field,
+            options: opts,
+            value: stillValid ? field.value : 'any'
+          };
+        });
+      }
+
+      if (payload.id === 'subtype') {
+        const sid = payload.value || 'any';
+        if (sid !== 'any') {
+          const catId = categoryForSubtypeId(sid);
+          if (catId) {
+            next = next.map((field) =>
+              field.id === 'primaryType' ? { ...field, value: catId } : field
+            );
+            const opts = subtypeFilterOptions(catId);
+            next = next.map((field) =>
+              field.id === 'subtype'
+                ? { ...field, options: opts, value: sid }
+                : field
+            );
+          }
+        }
+      }
+
+      return next;
+    });
 
     this.emitFiltersChanged();
   }
