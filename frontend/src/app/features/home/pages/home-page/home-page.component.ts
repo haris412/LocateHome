@@ -155,6 +155,10 @@ export class HomePageComponent {
     payload: SearchPanelSearchPayload
   ): Record<string, string | number | null> {
     const city = payload.city !== 'Any' ? payload.city : undefined;
+    const area =
+      payload.area && payload.area !== 'Any' && payload.area.trim() !== ''
+        ? payload.area.trim()
+        : undefined;
     const { minPrice, maxPrice } = this.parseBudget(payload.budget);
     const category =
       payload.primaryType && payload.primaryType !== 'any' ? payload.primaryType : undefined;
@@ -166,6 +170,7 @@ export class HomePageComponent {
       limit: 20,
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
       city: city ?? null,
+      area: area ?? null,
       propertyType: category ?? null,
       subType: subtype ?? null,
       category: null,

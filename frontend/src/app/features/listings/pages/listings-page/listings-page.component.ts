@@ -45,6 +45,7 @@ export class ListingsPageComponent {
         page: 1,
         limit: 20,
         city: value.trim() || null,
+        area: null,
         purpose: null,
         propertyType: null,
         subType: null,
@@ -216,6 +217,10 @@ export class ListingsPageComponent {
       propertyType: propertyTypeTop,
       subType: subTypeApi,
       city: params.get('city') ?? undefined,
+      area: (() => {
+        const a = params.get('area');
+        return a && a.trim() !== '' ? a.trim() : undefined;
+      })(),
       minPrice: this.toNumber(params.get('minPrice')),
       maxPrice: this.toNumber(params.get('maxPrice')),
       sortBy: params.get('sortBy') ?? 'createdAt',
@@ -245,14 +250,20 @@ export class ListingsPageComponent {
       if (cat) primary = cat;
     }
 
-    this.buyFields.update((fields) => this.patchCategoryTypeFields(fields, primary, subtype));
-    this.rentFields.update((fields) => this.patchCategoryTypeFields(fields, primary, subtype));
+    const areaParam = params.get('area') ?? '';
+    this.buyFields.update((fields) =>
+      this.patchCategoryTypeFields(fields, primary, subtype, areaParam)
+    );
+    this.rentFields.update((fields) =>
+      this.patchCategoryTypeFields(fields, primary, subtype, areaParam)
+    );
   }
 
   private patchCategoryTypeFields(
     fields: FilterSelectConfig[],
     category: string,
-    subtype: string
+    subtype: string,
+    areaParam: string
   ): FilterSelectConfig[] {
     const subtypeOpts = subtypeFilterOptions(category);
     const subtypeValue = subtypeOpts.some((o) => o.id === subtype) ? subtype : 'any';
@@ -266,6 +277,9 @@ export class ListingsPageComponent {
       }
       if (field.id === 'subtype') {
         return { ...field, value: subtypeValue, options: subtypeOpts };
+      }
+      if (field.id === 'area' && field.locationRole === 'area') {
+        return { ...field, value: areaParam || '' };
       }
       return field;
     });
@@ -353,14 +367,10 @@ export class ListingsPageComponent {
         id: 'area',
         label: 'Area',
         icon: 'pin_drop',
-        placeholder: 'Area',
-        value: 'any',
-        options: [
-          { id: 'any', label: 'Any' },
-          { id: 'downtown', label: 'Downtown' },
-          { id: 'midtown', label: 'Midtown' },
-          { id: 'suburbs', label: 'Suburbs' }
-        ]
+        placeholder: 'Neighbourhood, road, restaurant',
+        value: '',
+        options: [],
+        locationRole: 'area'
       },
       {
         id: 'primaryType',
@@ -423,6 +433,9 @@ export class ListingsPageComponent {
     const primaryType = fieldValue('primaryType');
     const subtype = fieldValue('subtype');
     const price = fieldValue('price');
+    const areaRaw = fieldValue('area');
+    const area =
+      areaRaw && typeof areaRaw === 'string' && areaRaw.trim() !== '' ? areaRaw.trim() : null;
 
     const { minPrice, maxPrice } = this.mapPriceRange(price, payload.mode);
 
@@ -431,6 +444,7 @@ export class ListingsPageComponent {
       limit: 20,
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
       city: payload.query?.trim() || null,
+      area,
       propertyType: !primaryType || primaryType === 'any' ? null : primaryType,
       subType: !subtype || subtype === 'any' ? null : subtype,
       category: null,

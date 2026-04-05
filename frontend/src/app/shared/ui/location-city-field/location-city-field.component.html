@@ -1,0 +1,28 @@
+<div class="location-city-field">
+  @if (label()) {
+    <label class="location-city-field__label">
+      <mat-icon fontSet="material-symbols-outlined">location_on</mat-icon>
+      <span>{{ label() }}</span>
+    </label>
+  }
+
+  <mat-form-field appearance="outline" class="location-city-field__field" subscriptSizing="dynamic">
+    <input
+      type="text"
+      matInput
+      [placeholder]="placeholder()"
+      [matAutocomplete]="cityAuto"
+      [value]="draft()"
+      (input)="onInput($event)"
+    />
+    <mat-autocomplete
+      #cityAuto="matAutocomplete"
+      [displayWith]="displayPlace"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      @for (p of filteredPlaces(); track p.geonameId) {
+        <mat-option [value]="p">{{ p.toponymName || p.name }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

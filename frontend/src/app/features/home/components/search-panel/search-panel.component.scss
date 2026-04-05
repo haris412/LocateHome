@@ -285,6 +285,16 @@
       box-shadow: inset 0 0 0 1px rgba(255, 107, 87, 0.28);
     }
   }
+
+  &__area-option {
+    margin-inline-end: 0.5rem;
+  }
+
+  &__area-kind {
+    font-size: 0.75rem;
+    color: var(--font-secondary, #666);
+    text-transform: capitalize;
+  }
 }
 
 @media (max-width: 1199.98px) {

@@ -28,6 +28,7 @@ import { FilterShellComponent } from '../filter-shell/filter-shell.component';
 import { FilterSegmentTabsComponent } from '../filter-segment-tabs/filter-segment-tabs.component';
 import { FilterSelectComponent } from '../filter-select-card/filter-select-card.component';
 import { FilterChipGroupComponent } from '../filter-chip-group/filter-chip-group.component';
+import { LocationCityFieldComponent } from '../location-city-field/location-city-field.component';
 
 export interface PropertyFilterPayload {
   mode: FilterMode;
@@ -78,7 +79,8 @@ interface SpeechRecognitionEventLike {
     FilterShellComponent,
     FilterSegmentTabsComponent,
     FilterSelectComponent,
-    FilterChipGroupComponent
+    FilterChipGroupComponent,
+    LocationCityFieldComponent
   ],
   templateUrl: './property-filters.component.html',
   styleUrl: './property-filters.component.scss',

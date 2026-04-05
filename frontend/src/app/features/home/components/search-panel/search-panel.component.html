@@ -128,18 +128,32 @@
   </div>
 
   <div class="search-panel__bottom-grid">
-    <!-- City -->
+    <!-- City (GeoNames) -->
     <div class="search-panel__mini-field">
       <span class="search-panel__field-label">
         <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
         <span>City</span>
       </span>
       <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="city()" (selectionChange)="city.set($any($event.value))">
-          @for (option of cityOptions; track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
+        <input
+          matInput
+          [formControl]="cityControl"
+          [matAutocomplete]="cityAuto"
+          placeholder="Search city"
+          autocomplete="off"
+        />
+        <mat-autocomplete
+          #cityAuto="matAutocomplete"
+          [displayWith]="displayCity"
+          [autoActiveFirstOption]="true"
+          (optionSelected)="onCityOptionSelected($event)"
+        >
+          @for (p of filteredCities(); track trackGeoPlace($index, p)) {
+            <mat-option [value]="p">
+              {{ p.name }}{{ p.adminName1 ? ', ' + p.adminName1 : '' }}
+            </mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
     </div>
 
@@ -173,18 +187,33 @@
       </mat-form-field>
     </div>
 
-    <!-- Area -->
+    <!-- Area (Overpass: suburbs, roads, restaurants) -->
     <div class="search-panel__mini-field">
       <span class="search-panel__field-label">
         <mat-icon fontSet="material-symbols-outlined" inline>pin_drop</mat-icon>
         <span>Area</span>
       </span>
       <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="area()" (selectionChange)="area.set($any($event.value))">
-          @for (option of areaOptions; track option) {
-            <mat-option [value]="option.toLowerCase()">{{ option }}</mat-option>
+        <input
+          matInput
+          [formControl]="areaControl"
+          [matAutocomplete]="areaAuto"
+          placeholder="Neighbourhood, road, restaurant"
+          autocomplete="off"
+        />
+        <mat-autocomplete
+          #areaAuto="matAutocomplete"
+          [displayWith]="displayArea"
+          [autoActiveFirstOption]="true"
+          (optionSelected)="onAreaOptionSelected($event)"
+        >
+          @for (a of filteredAreas(); track trackAreaItem($index, a)) {
+            <mat-option [value]="a">
+              <span class="search-panel__area-option">{{ a.name }}</span>
+              <span class="search-panel__area-kind">{{ a.kind }}</span>
+            </mat-option>
           }
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
     </div>
 
