@@ -9,14 +9,17 @@
   </div>
 
   <app-property-filters variant="toolbar"
+                        [initialMode]="selectedMode()"
                         [buyFields]="buyFields()"
                         [rentFields]="rentFields()"
                         [buyChips]="buyChips()"
                         [rentChips]="rentChips()"
                         [searchQueryInput]="searchQuery()"
-                        (searchQueryChange)="onSearchQueryChange($event)" />
+                        (searchQueryChange)="onSearchQueryChange($event)"
+                        (searchSubmitted)="onSearchSubmitted($event)" />
 
-  <app-listings-results-header [resultsCount]="listings().length"
+  <app-listings-results-header [resultsCount]="totalResults()"
+                               [locationLabel]="selectedCityLabel()"
                                [selectedSort]="selectedSort()"
                                [sortOptions]="sortOptions()"
                                [selectedView]="selectedView()"

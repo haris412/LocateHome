@@ -1,22 +1,38 @@
 <div class="filter-select">
-  <label class="filter-select__label">
-    @if (config().icon) {
-      <mat-icon fontSet="material-symbols-outlined">{{config().icon}}</mat-icon>
-    }
-    <span>{{ config().label }}</span>
-  </label>
-
-  <mat-form-field appearance="outline" class="filter-select__field">
-    <mat-select
-      [value]="config().value"
+  @if (config().locationRole === 'city') {
+    <app-location-city-field
+      [label]="config().label"
       [placeholder]="config().placeholder"
-      (valueChange)="onSelectionChange($event)"
-    >
-      @for (option of config().options; track option.id) {
-        <mat-option [value]="option.id">
-          {{ option.label }}
-        </mat-option>
+      [value]="config().value ?? ''"
+      (valueChanged)="onSelectionChange($event)"
+    />
+  } @else if (config().locationRole === 'area') {
+    <app-location-area-field
+      [label]="config().label"
+      [placeholder]="config().placeholder"
+      [value]="config().value ?? ''"
+      (valueChanged)="onSelectionChange($event)"
+    />
+  } @else {
+    <label class="filter-select__label">
+      @if (config().icon) {
+        <mat-icon fontSet="material-symbols-outlined">{{ config().icon }}</mat-icon>
       }
-    </mat-select>
-  </mat-form-field>
+      <span>{{ config().label }}</span>
+    </label>
+
+    <mat-form-field appearance="outline" class="filter-select__field">
+      <mat-select
+        [value]="config().value"
+        [placeholder]="config().placeholder"
+        (valueChange)="onSelectionChange($event)"
+      >
+        @for (option of config().options; track option.id) {
+          <mat-option [value]="option.id">
+            {{ option.label }}
+          </mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
 </div>

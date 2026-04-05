@@ -72,11 +72,38 @@
 
     <div class="search-panel__type-field">
       <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>apartment</mat-icon>
-        <span>Property Type</span>
+        <mat-icon fontSet="material-symbols-outlined" inline>domain</mat-icon>
+        <span>Property type</span>
       </span>
 
-      <strong class="search-panel__field-value">{{ propertyType() }}</strong>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select
+          [value]="primaryType()"
+          (selectionChange)="onPrimaryTypeSelected($any($event.value))"
+        >
+          @for (option of propertyTypeOptions; track option.id) {
+            <mat-option [value]="option.id">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="search-panel__type-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>format_list_bulleted</mat-icon>
+        <span>Subtype</span>
+      </span>
+
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select
+          [value]="subtype()"
+          (selectionChange)="onSubtypeSelected($any($event.value))"
+        >
+          @for (option of subtypeOptions(); track option.id) {
+            <mat-option [value]="option.id">{{ option.label }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
     </div>
 
     <button
@@ -101,18 +128,154 @@
   </div>
 
   <div class="search-panel__bottom-grid">
-    @for (field of summaryFields(); track field.id) {
-      <div class="search-panel__mini-field">
-        <span class="search-panel__field-label">
-          <mat-icon fontSet="material-symbols-outlined" inline>
-            {{ field.icon }}
-          </mat-icon>
-          <span>{{ field.label }}</span>
-        </span>
+    <!-- City (GeoNames) -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
+        <span>City</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <input
+          matInput
+          [formControl]="cityControl"
+          [matAutocomplete]="cityAuto"
+          placeholder="Search city"
+          autocomplete="off"
+        />
+        <mat-autocomplete
+          #cityAuto="matAutocomplete"
+          [displayWith]="displayCity"
+          [autoActiveFirstOption]="true"
+          (optionSelected)="onCityOptionSelected($event)"
+        >
+          @for (p of filteredCities(); track trackGeoPlace($index, p)) {
+            <mat-option [value]="p">
+              {{ p.name }}{{ p.adminName1 ? ', ' + p.adminName1 : '' }}
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
 
-        <strong class="search-panel__field-value">{{ field.value }}</strong>
-      </div>
-    }
+    <!-- Province -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
+        <span>Province</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select [value]="province()" (selectionChange)="province.set($any($event.value))">
+          @for (option of provinceOptions; track option) {
+            <mat-option [value]="option.toLowerCase()">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- State -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>map</mat-icon>
+        <span>State</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select [value]="state()" (selectionChange)="state.set($any($event.value))">
+          @for (option of stateOptions; track option) {
+            <mat-option [value]="option.toLowerCase().replace(' ', '-')">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Area (Overpass: suburbs, roads, restaurants) -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>pin_drop</mat-icon>
+        <span>Area</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <input
+          matInput
+          [formControl]="areaControl"
+          [matAutocomplete]="areaAuto"
+          placeholder="Neighbourhood, road, restaurant"
+          autocomplete="off"
+        />
+        <mat-autocomplete
+          #areaAuto="matAutocomplete"
+          [displayWith]="displayArea"
+          [autoActiveFirstOption]="true"
+          (optionSelected)="onAreaOptionSelected($event)"
+        >
+          @for (a of filteredAreas(); track trackAreaItem($index, a)) {
+            <mat-option [value]="a">
+              <span class="search-panel__area-option">{{ a.name }}</span>
+              <span class="search-panel__area-kind">{{ a.kind }}</span>
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+    </div>
+
+    <!-- Budget -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>monetization_on</mat-icon>
+        <span>Price Range</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select [value]="budget()" (selectionChange)="budget.set($any($event.value))">
+          @for (option of budgetOptions(); track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Bedrooms -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>bed</mat-icon>
+        <span>Bedrooms</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select [value]="bedrooms()" (selectionChange)="bedrooms.set($any($event.value))">
+          @for (option of bedroomOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Bathrooms -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>bathtub</mat-icon>
+        <span>Bathrooms</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select [value]="bathrooms()" (selectionChange)="bathrooms.set($any($event.value))">
+          @for (option of bathroomOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- Size -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>straighten</mat-icon>
+        <span>Size</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select [value]="size()" (selectionChange)="size.set($any($event.value))">
+          @for (option of sizeOptions; track option) {
+            <mat-option [value]="option">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
   </div>
 
   @if (showMoreFilters()) {

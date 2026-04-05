@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { CategoryItem } from '../../../core/models/home.models';
 
@@ -11,4 +11,10 @@ import { CategoryItem } from '../../../core/models/home.models';
 })
 export class CategoryCardComponent {
   readonly item = input.required<CategoryItem>();
+  readonly ctaClicked = output<CategoryItem>();
+
+  onCtaClick(event: Event): void {
+    event.preventDefault();
+    this.ctaClicked.emit(this.item());
+  }
 }

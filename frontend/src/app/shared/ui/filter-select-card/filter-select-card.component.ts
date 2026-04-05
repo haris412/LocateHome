@@ -3,10 +3,19 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { FilterSelectConfig } from '../../../core/models/filter.models';
+import { LocationAreaFieldComponent } from '../location-area-field/location-area-field.component';
+import { LocationCityFieldComponent } from '../location-city-field/location-city-field.component';
 
 @Component({
   selector: 'app-filter-select',
-  imports: [MatFormFieldModule, MatSelectModule, MatIconModule],
+  standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatSelectModule,
+    MatIconModule,
+    LocationCityFieldComponent,
+    LocationAreaFieldComponent
+  ],
   templateUrl: './filter-select-card.component.html',
   styleUrl: './filter-select-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
