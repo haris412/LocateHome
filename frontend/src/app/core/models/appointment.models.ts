@@ -3,7 +3,9 @@ export type AppointmentSlotStatus =
   | 'selected'
   | 'confirmed'
   | 'booked'
-  | 'blocked';
+  | 'blocked'
+  /** Hour not returned by availability API (outside agent schedule for this day) */
+  | 'not_available';
 
 export interface AppointmentTimeSlot {
   id: string;
@@ -21,7 +23,8 @@ export interface AppointmentDateSlots {
 }
 
 export interface AppointmentListingSummary {
-  id: string;
+  /** Backend mongo property `_id` */
+  propertyId: string;
   imageUrl: string;
   price: string;
   address: string;
@@ -29,6 +32,8 @@ export interface AppointmentListingSummary {
 
 export interface AppointmentOverlayData {
   agentName: string;
+  /** When set, overlay loads schedule from user availability + appointments APIs */
+  agentUserId?: string;
   listing: AppointmentListingSummary;
   dateSlots: AppointmentDateSlots[];
   initialName?: string;

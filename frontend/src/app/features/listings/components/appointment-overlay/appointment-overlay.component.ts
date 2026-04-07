@@ -1,9 +1,11 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   EventEmitter,
   Output,
   computed,
+  effect,
   inject,
   input,
   signal
@@ -14,13 +16,25 @@ import { MatCalendar, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
+import { Observable, Subscription, forkJoin, of, throwError } from 'rxjs';
+import { switchMap, tap } from 'rxjs/operators';
+
+import { ListingsService } from '../../services/listings.service';
 
 import {
   AppointmentBookingPayload,
+  AppointmentDateSlots,
   AppointmentOverlayData,
   AppointmentSlotStatus,
   AppointmentTimeSlot
 } from '../../../../core/models/appointment.models';
+import { AppointmentBookingService } from '../../services/appointment-booking.service';
+import {
+  WeeklyAvailability,
+  mergeWeeklyAvailabilityAndAppointments,
+  parseAppointmentsResponse,
+  parseWeeklyAvailabilityResponse
+} from '../../utils/appointment-schedule.util';
 
 @Component({
   selector: 'app-appointment-overlay',
@@ -41,12 +55,53 @@ import {
 })
 export class AppointmentOverlayComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly appointmentApi = inject(AppointmentBookingService);
+  private readonly listingsService = inject(ListingsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private fetchSub: Subscription | null = null;
+  private propertyIdSub: Subscription | null = null;
+
+  /**
+   * `_id` from GET /api/properties?page=1&limit=20&sortBy=createdAt&sortOrder=desc
+   * when it matches `data().listing.propertyId`; otherwise falls back to parent id.
+   */
+  readonly propertyIdFromPropertiesApi = signal<string | null>(null);
 
   readonly open = input(false);
   readonly data = input.required<AppointmentOverlayData>();
 
   @Output() readonly closed = new EventEmitter<void>();
   @Output() readonly confirmed = new EventEmitter<AppointmentBookingPayload>();
+
+  /** Loaded from availability + appointments APIs when agentUserId is set */
+  readonly liveSchedule = signal<AppointmentDateSlots[] | null>(null);
+  readonly scheduleLoading = signal(false);
+  readonly scheduleError = signal<string | null>(null);
+  readonly confirmLoading = signal(false);
+  readonly confirmError = signal<string | null>(null);
+  readonly resolvedAgentName = signal<string | null>(null);
+
+  /** Kept in sync when availability loads so we can re-merge after POST with a fresh GET /appointments/user. */
+  private readonly weeklyAvailabilityCache = signal<WeeklyAvailability | null>(null);
+
+  private readonly now = signal(new Date());
+  readonly today = computed(() => this.startOfDay(new Date()));
+  private readonly horizonDays = 60;
+
+  readonly upcomingDateKeys = computed(() => {
+    const start = this.today();
+    const out: string[] = [];
+    for (let i = 0; i <= this.horizonDays; i++) {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      out.push(this.formatDateKey(d));
+    }
+    return out;
+  });
+  readonly dateFilter = (d: Date | null): boolean => {
+    if (!d) return false;
+    return d.getTime() >= this.today().getTime();
+  };
 
   readonly selectedDate = signal<Date | null>(null);
   readonly selectedSlotId = signal<string | null>(null);
@@ -58,19 +113,14 @@ export class AppointmentOverlayComponent {
     phone: ['', [Validators.required, Validators.minLength(7)]]
   });
 
-  ngOnInit(): void {
-    const firstDate = this.data().dateSlots[0]?.date;
+  readonly effectiveDateSlots = computed(() => {
+    const live = this.liveSchedule();
+    return live?.length ? live : this.data().dateSlots;
+  });
 
-    this.form.patchValue({
-      name: this.data().initialName ?? '',
-      email: this.data().initialEmail ?? '',
-      phone: this.data().initialPhone ?? ''
-    });
-
-    if (firstDate) {
-      this.selectedDate.set(this.parseISODate(firstDate));
-    }
-  }
+  readonly displayAgentName = computed(
+    () => this.resolvedAgentName()?.trim() || this.data().agentName
+  );
 
   readonly selectedDateKey = computed(() => {
     const value = this.selectedDate();
@@ -79,7 +129,7 @@ export class AppointmentOverlayComponent {
 
   readonly selectedDateSlots = computed(() => {
     const key = this.selectedDateKey();
-    return this.data().dateSlots.find(item => item.date === key)?.slots ?? [];
+    return this.effectiveDateSlots().find(item => item.date === key)?.slots ?? [];
   });
 
   readonly amSlots = computed(() =>
@@ -90,9 +140,18 @@ export class AppointmentOverlayComponent {
     this.selectedDateSlots().filter(slot => slot.meridiem === 'PM')
   );
 
-  readonly visibleSlots = computed(() =>
-    this.selectedPeriod() === 'AM' ? this.amSlots() : this.pmSlots()
-  );
+  readonly visibleSlots = computed(() => {
+    const base = this.selectedPeriod() === 'AM' ? this.amSlots() : this.pmSlots();
+    const key = this.selectedDateKey();
+    if (!key) return base;
+
+    const now = this.now();
+    const todayKey = this.formatDateKey(now);
+    if (key !== todayKey) return base;
+
+    const currentMinutes = now.getHours() * 60 + now.getMinutes();
+    return base.filter(slot => slot.hour24 * 60 + slot.minute > currentMinutes);
+  });
 
   readonly selectedSlot = computed(() =>
     this.selectedDateSlots().find(slot => slot.id === this.selectedSlotId()) ?? null
@@ -102,15 +161,134 @@ export class AppointmentOverlayComponent {
     const value = this.selectedDate();
     return value
       ? value.toLocaleDateString(undefined, {
-        weekday: 'long',
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric'
-      })
+          weekday: 'long',
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })
       : 'No date selected';
   });
 
+  constructor() {
+    const timer = setInterval(() => this.now.set(new Date()), 30_000);
+    this.destroyRef.onDestroy(() => clearInterval(timer));
+
+    effect(() => {
+      if (!this.open()) {
+        this.fetchSub?.unsubscribe();
+        this.fetchSub = null;
+        this.propertyIdSub?.unsubscribe();
+        this.propertyIdSub = null;
+        this.propertyIdFromPropertiesApi.set(null);
+        this.weeklyAvailabilityCache.set(null);
+        return;
+      }
+
+      this.confirmError.set(null);
+      this.form.patchValue({
+        name: this.data().initialName ?? '',
+        email: this.data().initialEmail ?? '',
+        phone: this.data().initialPhone ?? ''
+      });
+
+      const candidatePropertyId = this.data().listing.propertyId?.trim() ?? '';
+      this.propertyIdSub?.unsubscribe();
+      if (!candidatePropertyId) {
+        this.propertyIdFromPropertiesApi.set(null);
+      } else {
+        // Show parent id immediately; replace with `._id` from the list API when it matches.
+        this.propertyIdFromPropertiesApi.set(candidatePropertyId);
+        this.propertyIdSub = this.listingsService
+          .resolvePropertyMongoId(candidatePropertyId)
+          .subscribe({
+            next: (id) => {
+              const resolved = (id ?? candidatePropertyId).trim();
+              this.propertyIdFromPropertiesApi.set(resolved || candidatePropertyId);
+            },
+            error: () => this.propertyIdFromPropertiesApi.set(candidatePropertyId)
+          });
+      }
+
+      const userId = this.data().agentUserId?.trim();
+      if (!userId) {
+        this.liveSchedule.set(null);
+        this.scheduleLoading.set(false);
+        this.scheduleError.set(null);
+        this.resolvedAgentName.set(null);
+        this.weeklyAvailabilityCache.set(null);
+        return;
+      }
+
+      this.scheduleLoading.set(true);
+      this.scheduleError.set(null);
+      this.resolvedAgentName.set(null);
+
+      this.fetchSub?.unsubscribe();
+      this.fetchSub = forkJoin({
+        availability: this.appointmentApi.getUserAvailability(userId),
+        appointments: this.appointmentApi.getAppointmentsForUser(userId),
+        profile: this.appointmentApi.getUserProfile(userId)
+      }).subscribe({
+        next: ({ availability, appointments, profile }) => {
+          this.scheduleLoading.set(false);
+          const weekly = parseWeeklyAvailabilityResponse(availability);
+          this.weeklyAvailabilityCache.set(weekly);
+          const apMap = parseAppointmentsResponse(appointments);
+
+          const datesFromAppointments = [...apMap.keys()];
+          const dates = [...new Set([...this.upcomingDateKeys(), ...datesFromAppointments])];
+
+          this.liveSchedule.set(
+            mergeWeeklyAvailabilityAndAppointments({
+              weeklyAvailability: weekly,
+              appointments: apMap,
+              dates
+            })
+          );
+
+          const agent = [profile.firstname, profile.lastname].filter(Boolean).join(' ').trim();
+          if (agent) this.resolvedAgentName.set(agent);
+        },
+        error: () => {
+          this.scheduleLoading.set(false);
+          this.scheduleError.set('Could not load availability. Using sample slots if present.');
+          this.liveSchedule.set(null);
+          this.weeklyAvailabilityCache.set(null);
+        }
+      });
+    });
+
+    effect(() => {
+      if (!this.open()) return;
+
+      const slots = this.effectiveDateSlots();
+      if (!slots.length) return;
+
+      const key = this.selectedDateKey();
+      const todayKey = this.formatDateKey(new Date());
+
+      // Keep current selection if it exists in our generated range; otherwise default to today (or the first slot date).
+      if (!key || !slots.some(s => s.date === key)) {
+        const preferred = slots.some(s => s.date === todayKey) ? todayKey : slots[0].date;
+        this.selectedDate.set(this.parseISODate(preferred));
+        this.selectedSlotId.set(null);
+      }
+    });
+  }
+
   onDateChange(date: Date | null): void {
+    if (!date) {
+      this.selectedDate.set(null);
+      this.selectedSlotId.set(null);
+      return;
+    }
+
+    // Prevent selecting past dates (in case of manual typing / edge cases)
+    const picked = this.startOfDay(date);
+    if (picked.getTime() < this.today().getTime()) {
+      return;
+    }
+
     this.selectedDate.set(date);
     this.selectedSlotId.set(null);
   }
@@ -121,7 +299,12 @@ export class AppointmentOverlayComponent {
   }
 
   selectSlot(slot: AppointmentTimeSlot): void {
-    if (slot.status === 'booked' || slot.status === 'blocked') {
+    if (
+      slot.status === 'confirmed' ||
+      slot.status === 'booked' ||
+      slot.status === 'blocked' ||
+      slot.status === 'not_available'
+    ) {
       return;
     }
 
@@ -130,7 +313,7 @@ export class AppointmentOverlayComponent {
 
   dateHasAvailability = (date: Date | null): boolean => {
     if (!date) return false;
-    return this.data().dateSlots.some(item => item.date === this.formatDateKey(date));
+    return this.effectiveDateSlots().some(item => item.date === this.formatDateKey(date));
   };
 
   getSlotStatusText(status: AppointmentSlotStatus, isSelected: boolean): string {
@@ -145,6 +328,8 @@ export class AppointmentOverlayComponent {
         return 'Booked';
       case 'blocked':
         return 'Blocked';
+      case 'not_available':
+        return 'Not Available';
       default:
         return status;
     }
@@ -167,18 +352,112 @@ export class AppointmentOverlayComponent {
     }
 
     const slot = this.selectedSlot()!;
-    const formValue = this.form.getRawValue();
+    if (
+      slot.status === 'not_available' ||
+      slot.status === 'blocked' ||
+      slot.status === 'booked' ||
+      slot.status === 'confirmed'
+    ) {
+      return;
+    }
 
-    this.confirmed.emit({
-      listingId: this.data().listing.id,
-      agentName: this.data().agentName,
+    const formValue = this.form.getRawValue();
+    const userId = this.data().agentUserId?.trim();
+
+    const payload: AppointmentBookingPayload = {
+      listingId: this.data().listing.propertyId,
+      agentName: this.displayAgentName(),
       date: this.selectedDateKey(),
       slotId: slot.id,
       slotLabel: slot.label,
       name: formValue.name,
       email: formValue.email,
       phone: formValue.phone
-    });
+    };
+
+    if (!userId) {
+      this.confirmed.emit(payload);
+      return;
+    }
+
+    this.confirmLoading.set(true);
+    this.confirmError.set(null);
+
+    const appointmentDateIso = this.toAppointmentDateUtcMidnight(this.selectedDateKey());
+    const appointmentTime = `${String(slot.hour24).padStart(2, '0')}:${String(slot.minute).padStart(2, '0')}`;
+
+    const resolvePropertyId$ = (): Observable<string> => {
+      const cached = this.propertyIdFromPropertiesApi()?.trim();
+      const candidate = this.data().listing.propertyId?.trim();
+      if (cached) {
+        return of(cached);
+      }
+      if (!candidate) {
+        return throwError(() => new Error('missing-property'));
+      }
+      return this.listingsService.resolvePropertyMongoId(candidate);
+    };
+
+    resolvePropertyId$()
+      .pipe(
+        tap((resolved) => {
+          const v = resolved?.trim();
+          if (v) {
+            this.propertyIdFromPropertiesApi.set(v);
+          }
+        }),
+        switchMap(() => {
+          const propertyId = this.propertyIdFromPropertiesApi()?.trim();
+          if (!propertyId) {
+            return throwError(() => new Error('missing-property'));
+          }
+          return this.appointmentApi.createAppointment({
+            propertyId,
+            userId,
+            date: appointmentDateIso,
+            time: appointmentTime,
+            client: {
+              name: formValue.name,
+              email: formValue.email,
+              phone: formValue.phone
+            },
+            appointmentType: 'Property viewing'
+          });
+        }),
+        switchMap(() => this.appointmentApi.getAppointmentsForUser(userId)),
+        tap((appointmentsRaw) => {
+          this.mergeAppointmentsIntoLiveSchedule(appointmentsRaw);
+          this.selectedSlotId.set(null);
+        })
+      )
+      .subscribe({
+        next: () => {
+          this.confirmLoading.set(false);
+          this.confirmed.emit(payload);
+        },
+        error: () => {
+          this.confirmLoading.set(false);
+          this.confirmError.set('Could not confirm appointment. Try again.');
+        }
+      });
+  }
+
+  /** Rebuilds `liveSchedule` after POST using fresh GET /api/appointments/user/:userId + cached weekly rules. */
+  private mergeAppointmentsIntoLiveSchedule(appointmentsRaw: unknown): void {
+    const weekly = this.weeklyAvailabilityCache();
+    if (!weekly) {
+      return;
+    }
+    const apMap = parseAppointmentsResponse(appointmentsRaw);
+    const datesFromAppointments = [...apMap.keys()];
+    const dates = [...new Set([...this.upcomingDateKeys(), ...datesFromAppointments])];
+    this.liveSchedule.set(
+      mergeWeeklyAvailabilityAndAppointments({
+        weeklyAvailability: weekly,
+        appointments: apMap,
+        dates
+      })
+    );
   }
 
   private formatDateKey(date: Date): string {
@@ -192,9 +471,22 @@ export class AppointmentOverlayComponent {
     const [year, month, day] = value.split('-').map(Number);
     return new Date(year, month - 1, day);
   }
+
+  /** YYYY-MM-DD → ISO string at UTC midnight (matches typical appointment `date` field). */
+  private toAppointmentDateUtcMidnight(dateKey: string): string {
+    const [y, m, d] = dateKey.split('-').map(Number);
+    return new Date(Date.UTC(y, m - 1, d, 0, 0, 0, 0)).toISOString();
+  }
+
+  private startOfDay(d: Date): Date {
+    const x = new Date(d);
+    x.setHours(0, 0, 0, 0);
+    return x;
+  }
+
   readonly dateClass = (date: Date): string => {
     const key = this.formatDateKey(date);
-    const match = this.data().dateSlots.find(item => item.date === key);
+    const match = this.effectiveDateSlots().find(item => item.date === key);
 
     if (!match) {
       return '';
@@ -205,7 +497,10 @@ export class AppointmentOverlayComponent {
     );
 
     const allBlocked = match.slots.every(
-      slot => slot.status === 'blocked' || slot.status === 'booked'
+      slot =>
+        slot.status === 'blocked' ||
+        slot.status === 'booked' ||
+        slot.status === 'not_available'
     );
 
     if (allBlocked) {

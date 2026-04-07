@@ -246,6 +246,21 @@
     text-align: center;
     padding: 1rem;
   }
+
+  &__schedule-warning {
+    margin-bottom: 0.75rem;
+    padding: 0.65rem 0.9rem;
+    border-radius: 12px;
+    background: rgba(255, 193, 7, 0.12);
+    color: var(--font-main);
+    font-size: 0.9rem;
+  }
+
+  &__confirm-error {
+    margin: 0.75rem 0 0;
+    color: #c62828;
+    font-size: 0.9rem;
+  }
 }
 
 .period-btn {
@@ -297,6 +312,11 @@
   &--blocked {
     background: rgba(122, 102, 118, 0.12);
     color: #7a6676;
+  }
+
+  &--not-available {
+    background: rgba(90, 90, 90, 0.1);
+    color: #666;
   }
 }
 
@@ -380,6 +400,14 @@
     border-color: rgba(122, 102, 118, 0.18);
     span {
       color: rgba(122, 102, 118, 0.18);
+    }
+  }
+
+  &--not-available {
+    background: rgba(90, 90, 90, 0.08);
+    border-color: rgba(90, 90, 90, 0.22);
+    span {
+      color: #6b6b6b;
     }
   }
 }

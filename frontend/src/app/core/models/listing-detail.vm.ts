@@ -17,6 +17,8 @@ export interface ListingAgent {
   name: string;
   role: string;
   imageUrl: string;
+  /** Backend user id for availability & appointments APIs */
+  userId?: string;
   blurb?: string;
   rating?: string;
   listings?: string;
