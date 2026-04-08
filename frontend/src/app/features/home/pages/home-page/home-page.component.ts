@@ -19,7 +19,6 @@ import { TestimonialsSectionComponent } from '../../components/testimonials-sect
 import { AgentsSectionComponent } from '../../components/agents-section/agents-section.component';
 import { AppPromoSectionComponent } from '../../components/app-promo-section/app-promo-section.component';
 import { FooterSectionComponent } from '../../components/footer-section/footer-section.component';
-import { HeaderComponent } from '../../../../shared/ui/header/header.component';
 import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/section-heading.component';
 
 @Component({
@@ -159,7 +158,8 @@ export class HomePageComponent {
       payload.area && payload.area !== 'Any' && payload.area.trim() !== ''
         ? payload.area.trim()
         : undefined;
-    const { minPrice, maxPrice } = this.parseBudget(payload.budget);
+    const minPrice = payload.minPrice ?? undefined;
+    const maxPrice = payload.maxPrice ?? undefined;
     const category =
       payload.primaryType && payload.primaryType !== 'any' ? payload.primaryType : undefined;
     const subtype =
@@ -182,17 +182,4 @@ export class HomePageComponent {
     };
   }
 
-  private parseBudget(budget: string): { minPrice?: number; maxPrice?: number } {
-    const value = budget.trim();
-
-    if (value === 'Any') return {};
-    if (value === '$0 - $500k' || value === 'Under $500k') return { minPrice: 0, maxPrice: 500000 };
-    if (value === '$500k - $2.5M') return { minPrice: 500000, maxPrice: 2500000 };
-    if (value === '$2.5M+') return { minPrice: 2500000 };
-    if (value === 'Under $1,500') return { minPrice: 0, maxPrice: 1500 };
-    if (value === '$1,500 - $3,500') return { minPrice: 1500, maxPrice: 3500 };
-    if (value === '$3,500+') return { minPrice: 3500 };
-
-    return {};
-  }
 }

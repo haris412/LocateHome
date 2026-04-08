@@ -1,0 +1,105 @@
+<!-- Trigger button -->
+<button
+  type="button"
+  class="prf__trigger"
+  cdkOverlayOrigin
+  #origin="cdkOverlayOrigin"
+  [class.prf__trigger--open]="isOpen()"
+  [class.prf__trigger--active]="minValue() !== null || maxValue() !== null"
+  (click)="open()"
+>
+  <span class="prf__trigger-label">{{ triggerLabel() }}</span>
+  <mat-icon fontSet="material-symbols-outlined" class="prf__trigger-icon" inline>
+    {{ isOpen() ? 'keyboard_arrow_up' : 'keyboard_arrow_down' }}
+  </mat-icon>
+</button>
+
+<!-- Dropdown panel -->
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="origin"
+  [cdkConnectedOverlayOpen]="isOpen()"
+  [cdkConnectedOverlayMinWidth]="320"
+  [cdkConnectedOverlayPositions]="overlayPositions"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  [cdkConnectedOverlayBackdropClass]="'cdk-overlay-transparent-backdrop'"
+  (backdropClick)="close()"
+  (detach)="close()"
+>
+  <div class="prf__panel" role="dialog" aria-label="Price range selector">
+
+    <div class="prf__panel-header">
+      <span class="prf__panel-title">
+        Price Range ({{ catalog.priceRanges()?.currency ?? 'PKR' }})
+      </span>
+    </div>
+
+    <div class="prf__inputs">
+
+      <!-- MIN -->
+      <div class="prf__col">
+        <label class="prf__col-label" for="prf-min">MIN</label>
+        <mat-form-field appearance="outline" class="prf__field">
+          <input
+            id="prf-min"
+            matInput
+            type="text"
+            inputmode="numeric"
+            [formControl]="minControl"
+            [matAutocomplete]="minAuto"
+            #minTrigger="matAutocompleteTrigger"
+            placeholder="0"
+            (focus)="onMinFocus()"
+            (blur)="onMinBlur()"
+          />
+          <mat-autocomplete
+            #minAuto
+            [displayWith]="displayWith"
+            (optionSelected)="onMinOptionSelected($event)"
+          >
+            @for (opt of filteredMinOptions(); track opt) {
+              <mat-option [value]="opt">{{ formatPreset(opt) }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <span class="prf__sep" aria-hidden="true">–</span>
+
+      <!-- MAX -->
+      <div class="prf__col">
+        <label class="prf__col-label" for="prf-max">MAX</label>
+        <mat-form-field appearance="outline" class="prf__field">
+          <input
+            id="prf-max"
+            matInput
+            type="text"
+            inputmode="numeric"
+            [formControl]="maxControl"
+            [matAutocomplete]="maxAuto"
+            #maxTrigger="matAutocompleteTrigger"
+            placeholder="Any"
+            (focus)="onMaxFocus()"
+            (blur)="onMaxBlur()"
+          />
+          <mat-autocomplete
+            #maxAuto
+            [displayWith]="displayWith"
+            (optionSelected)="onMaxOptionSelected($event)"
+          >
+            @for (opt of filteredMaxOptions(); track opt) {
+              <mat-option [value]="opt">{{ formatPreset(opt) }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+    </div>
+
+    <div class="prf__actions">
+      <button type="button" class="prf__btn prf__btn--reset" (click)="reset()">Reset</button>
+      <button type="button" class="prf__btn prf__btn--apply" (click)="apply()">Apply</button>
+    </div>
+
+  </div>
+</ng-template>

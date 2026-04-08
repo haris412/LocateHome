@@ -19,10 +19,7 @@ import {
   FilterSelectConfig,
   FilterTabItem
 } from '../../../core/models/filter.models';
-import {
-  categoryForSubtypeId,
-  subtypeFilterOptions
-} from '../../../core/models/property-categories.model';
+import { FiltersCatalogService } from '../../../core/services/filters-catalog.service';
 
 import { FilterShellComponent } from '../filter-shell/filter-shell.component';
 import { FilterSegmentTabsComponent } from '../filter-segment-tabs/filter-segment-tabs.component';
@@ -103,6 +100,7 @@ export class PropertyFiltersComponent {
     return selectedOption?.label || field.placeholder || 'Select';
   }
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly filtersCatalog = inject(FiltersCatalogService);
 
   readonly variant = input<'hero' | 'toolbar'>('hero');
   readonly initialMode = input<FilterMode>('buy');
@@ -217,7 +215,7 @@ export class PropertyFiltersComponent {
 
       if (payload.id === 'primaryType') {
         const cat = payload.value || 'any';
-        const opts = subtypeFilterOptions(cat);
+        const opts = this.filtersCatalog.getSubtypeOptions(cat);
         next = next.map((field) => {
           if (field.id !== 'subtype') return field;
           const stillValid = opts.some((o) => o.id === field.value);
@@ -232,12 +230,12 @@ export class PropertyFiltersComponent {
       if (payload.id === 'subtype') {
         const sid = payload.value || 'any';
         if (sid !== 'any') {
-          const catId = categoryForSubtypeId(sid);
-          if (catId) {
+          const catSlug = this.filtersCatalog.categoryForSubtypeSlug(sid);
+          if (catSlug) {
             next = next.map((field) =>
-              field.id === 'primaryType' ? { ...field, value: catId } : field
+              field.id === 'primaryType' ? { ...field, value: catSlug } : field
             );
-            const opts = subtypeFilterOptions(catId);
+            const opts = this.filtersCatalog.getSubtypeOptions(catSlug);
             next = next.map((field) =>
               field.id === 'subtype'
                 ? { ...field, options: opts, value: sid }
@@ -274,9 +272,7 @@ export class PropertyFiltersComponent {
   }
 
   runSearch(): void {
-    const payload = this.buildPayload();
-    console.log('FILTER SEARCH', payload);
-    this.searchSubmitted.emit(payload);
+    this.searchSubmitted.emit(this.buildPayload());
   }
 
   startVoiceSearch(): void {

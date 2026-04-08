@@ -156,7 +156,8 @@ const MOCK_APPOINTMENT_DATE_SLOTS: AppointmentDateSlots[] = [
 ];
 
 export const LISTING_DETAIL_MOCK: ListingDetailModel = {
-  id: 'listing-1200-skyline',
+  /** Same as GET /api/properties `._id` for this listing */
+  id: '69d41533bebdffe528467380',
   breadcrumbLabel: 'Back to Search Results',
   statusChip: 'For Rent',
   shareLabel: 'Share',
@@ -234,6 +235,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
     name: 'Sarah Jenkins',
     role: 'Listing agent',
     imageUrl: 'assets/images/people/agent-1.png',
+    userId: '69c98f7b76bde59142889030',
     blurb: 'Ask about rent terms, availability, move-in date or request an in-person or video tour.',
     rating: '4.9',
     listings: '42',

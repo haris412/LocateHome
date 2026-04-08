@@ -56,7 +56,7 @@ export class LocationAreaFieldComponent {
       }
       const lat = Number(place.lat);
       const lng = Number(place.lng);
-      const sub = this.catalog.getMergedLocationSuggestionsAround({ lat, lng }).subscribe({
+      const sub = this.catalog.getAreaSuggestionsAround(lat, lng).subscribe({
         next: (items) => this.suggestions.set(items),
         error: () => this.suggestions.set([])
       });
