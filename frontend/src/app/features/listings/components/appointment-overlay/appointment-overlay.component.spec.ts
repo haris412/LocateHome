@@ -12,7 +12,7 @@ describe('AppointmentOverlayComponent', () => {
   const mockData: AppointmentOverlayData = {
     agentName: 'Test Agent',
     listing: {
-      id: 'listing-1',
+      propertyId: 'listing-1',
       imageUrl: '',
       price: '$1',
       address: '1 Main St'

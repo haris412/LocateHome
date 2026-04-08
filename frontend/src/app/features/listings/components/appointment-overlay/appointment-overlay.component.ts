@@ -67,6 +67,9 @@ export class AppointmentOverlayComponent {
    */
   readonly propertyIdFromPropertiesApi = signal<string | null>(null);
 
+  /** User id used for availability / bookings (prefer owner id from GET /api/properties match). */
+  private readonly scheduleUserId = signal<string | null>(null);
+
   readonly open = input(false);
   readonly data = input.required<AppointmentOverlayData>();
 
@@ -180,6 +183,7 @@ export class AppointmentOverlayComponent {
         this.propertyIdSub?.unsubscribe();
         this.propertyIdSub = null;
         this.propertyIdFromPropertiesApi.set(null);
+        this.scheduleUserId.set(null);
         this.weeklyAvailabilityCache.set(null);
         return;
       }
@@ -192,68 +196,85 @@ export class AppointmentOverlayComponent {
       });
 
       const candidatePropertyId = this.data().listing.propertyId?.trim() ?? '';
-      this.propertyIdSub?.unsubscribe();
-      if (!candidatePropertyId) {
-        this.propertyIdFromPropertiesApi.set(null);
-      } else {
-        // Show parent id immediately; replace with `._id` from the list API when it matches.
-        this.propertyIdFromPropertiesApi.set(candidatePropertyId);
-        this.propertyIdSub = this.listingsService
-          .resolvePropertyMongoId(candidatePropertyId)
-          .subscribe({
-            next: (id) => {
-              const resolved = (id ?? candidatePropertyId).trim();
-              this.propertyIdFromPropertiesApi.set(resolved || candidatePropertyId);
-            },
-            error: () => this.propertyIdFromPropertiesApi.set(candidatePropertyId)
-          });
-      }
+      const fallbackAgentUserId = this.data().agentUserId?.trim() ?? '';
 
-      const userId = this.data().agentUserId?.trim();
-      if (!userId) {
-        this.liveSchedule.set(null);
-        this.scheduleLoading.set(false);
+      this.fetchSub?.unsubscribe();
+      this.propertyIdSub?.unsubscribe();
+
+      const runScheduleFetch = (userId: string): void => {
+        const trimmed = userId.trim();
+        this.scheduleUserId.set(trimmed || null);
+        if (!trimmed) {
+          this.liveSchedule.set(null);
+          this.scheduleLoading.set(false);
+          this.scheduleError.set(null);
+          this.resolvedAgentName.set(null);
+          this.weeklyAvailabilityCache.set(null);
+          return;
+        }
+
+        this.scheduleLoading.set(true);
         this.scheduleError.set(null);
         this.resolvedAgentName.set(null);
-        this.weeklyAvailabilityCache.set(null);
+
+        this.fetchSub = forkJoin({
+          availability: this.appointmentApi.getUserAvailability(trimmed),
+          appointments: this.appointmentApi.getAppointmentsForUser(trimmed),
+          profile: this.appointmentApi.getUserProfile(trimmed)
+        }).subscribe({
+          next: ({ availability, appointments, profile }) => {
+            this.scheduleLoading.set(false);
+            const weekly = parseWeeklyAvailabilityResponse(availability);
+            this.weeklyAvailabilityCache.set(weekly);
+            const apMap = parseAppointmentsResponse(appointments);
+
+            const datesFromAppointments = [...apMap.keys()];
+            const dates = [...new Set([...this.upcomingDateKeys(), ...datesFromAppointments])];
+
+            this.liveSchedule.set(
+              mergeWeeklyAvailabilityAndAppointments({
+                weeklyAvailability: weekly,
+                appointments: apMap,
+                dates
+              })
+            );
+
+            const agent = [profile.firstname, profile.lastname].filter(Boolean).join(' ').trim();
+            if (agent) this.resolvedAgentName.set(agent);
+          },
+          error: () => {
+            this.scheduleLoading.set(false);
+            this.scheduleError.set('Could not load availability. Using sample slots if present.');
+            this.liveSchedule.set(null);
+            this.weeklyAvailabilityCache.set(null);
+          }
+        });
+      };
+
+      if (!candidatePropertyId) {
+        this.propertyIdFromPropertiesApi.set(null);
+        runScheduleFetch(fallbackAgentUserId);
         return;
       }
 
+      this.propertyIdFromPropertiesApi.set(candidatePropertyId);
+      this.liveSchedule.set(null);
       this.scheduleLoading.set(true);
       this.scheduleError.set(null);
       this.resolvedAgentName.set(null);
+      this.weeklyAvailabilityCache.set(null);
+      this.scheduleUserId.set(null);
 
-      this.fetchSub?.unsubscribe();
-      this.fetchSub = forkJoin({
-        availability: this.appointmentApi.getUserAvailability(userId),
-        appointments: this.appointmentApi.getAppointmentsForUser(userId),
-        profile: this.appointmentApi.getUserProfile(userId)
-      }).subscribe({
-        next: ({ availability, appointments, profile }) => {
-          this.scheduleLoading.set(false);
-          const weekly = parseWeeklyAvailabilityResponse(availability);
-          this.weeklyAvailabilityCache.set(weekly);
-          const apMap = parseAppointmentsResponse(appointments);
-
-          const datesFromAppointments = [...apMap.keys()];
-          const dates = [...new Set([...this.upcomingDateKeys(), ...datesFromAppointments])];
-
-          this.liveSchedule.set(
-            mergeWeeklyAvailabilityAndAppointments({
-              weeklyAvailability: weekly,
-              appointments: apMap,
-              dates
-            })
-          );
-
-          const agent = [profile.firstname, profile.lastname].filter(Boolean).join(' ').trim();
-          if (agent) this.resolvedAgentName.set(agent);
+      this.propertyIdSub = this.listingsService.resolvePropertyListMatch(candidatePropertyId).subscribe({
+        next: (match) => {
+          const pid = (match.propertyId || candidatePropertyId).trim();
+          this.propertyIdFromPropertiesApi.set(pid || candidatePropertyId);
+          const userId = match.ownerUserId?.trim() || fallbackAgentUserId;
+          runScheduleFetch(userId);
         },
         error: () => {
-          this.scheduleLoading.set(false);
-          this.scheduleError.set('Could not load availability. Using sample slots if present.');
-          this.liveSchedule.set(null);
-          this.weeklyAvailabilityCache.set(null);
+          this.propertyIdFromPropertiesApi.set(candidatePropertyId);
+          runScheduleFetch(fallbackAgentUserId);
         }
       });
     });
@@ -362,7 +383,7 @@ export class AppointmentOverlayComponent {
     }
 
     const formValue = this.form.getRawValue();
-    const userId = this.data().agentUserId?.trim();
+    const userId = this.scheduleUserId()?.trim() || this.data().agentUserId?.trim();
 
     const payload: AppointmentBookingPayload = {
       listingId: this.data().listing.propertyId,

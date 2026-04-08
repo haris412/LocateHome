@@ -7,6 +7,14 @@ export interface ListingsApiImage {
   isThumbnail: boolean;
 }
 
+/** Populated `userId` on GET /api/properties */
+export interface ListingsApiPropertyOwnerRef {
+  _id: string;
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 export interface ListingsApiProperty {
   _id: string;
   purpose: ListingPurpose;
@@ -36,6 +44,8 @@ export interface ListingsApiProperty {
   contactEmail: string;
   contactPhoneNumber: string;
   contactLocation?: string;
+  /** Listing owner; string id or populated subdocument */
+  userId?: string | ListingsApiPropertyOwnerRef;
   status: ListingStatus;
   createdAt: string;
   updatedAt: string;

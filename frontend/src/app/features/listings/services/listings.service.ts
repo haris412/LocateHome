@@ -10,6 +10,12 @@ import {
   ListingsApiProperty,
   ListingsApiResponse
 } from '../../../core/models/listing.models';
+
+export interface PropertyListMatch {
+  propertyId: string;
+  /** From property `userId` when present (string or populated `{ _id }`). */
+  ownerUserId?: string;
+}
 import { environment } from '../../../../environments/environment';
 
 export interface ListingsQueryParams {
@@ -51,10 +57,30 @@ export class ListingsService {
    * listings query: page=1&limit=20&sortBy=createdAt&sortOrder=desc.
    * Falls back to `candidateId` if not in that page or the request fails.
    */
-  resolvePropertyMongoId(candidateId: string): Observable<string> {
+  /**
+   * Same GET /api/properties page as `resolvePropertyMongoId`, plus owner `userId` for the
+   * matching property (for appointments / availability APIs).
+   */
+  resolvePropertyListMatch(candidateId: string): Observable<PropertyListMatch> {
     if (!candidateId?.trim()) {
-      return of('');
+      return of({ propertyId: '' });
     }
+    return this.getDefaultPropertiesPage().pipe(
+      map((response) => {
+        const match = response.data.properties.find((p) => p._id === candidateId);
+        const propertyId = match?._id ?? candidateId;
+        const ownerUserId = match ? this.ownerUserIdFromApiProperty(match) : undefined;
+        return { propertyId, ownerUserId };
+      }),
+      catchError(() => of({ propertyId: candidateId }))
+    );
+  }
+
+  resolvePropertyMongoId(candidateId: string): Observable<string> {
+    return this.resolvePropertyListMatch(candidateId).pipe(map((m) => m.propertyId));
+  }
+
+  private getDefaultPropertiesPage(): Observable<ListingsApiResponse> {
     const headers = new HttpHeaders({
       Authorization: `Bearer ${this.authToken}`
     });
@@ -64,13 +90,18 @@ export class ListingsService {
       .set('sortBy', 'createdAt')
       .set('sortOrder', 'desc');
 
-    return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams, headers }).pipe(
-      map((response) => {
-        const match = response.data.properties.find((p) => p._id === candidateId);
-        return match?._id ?? candidateId;
-      }),
-      catchError(() => of(candidateId))
-    );
+    return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams, headers });
+  }
+
+  private ownerUserIdFromApiProperty(property: ListingsApiProperty): string | undefined {
+    const u = property.userId;
+    if (typeof u === 'string' && u.trim()) {
+      return u.trim();
+    }
+    if (u && typeof u === 'object' && '_id' in u && typeof u._id === 'string') {
+      return u._id.trim();
+    }
+    return undefined;
   }
 
   getListings(params: ListingsQueryParams = {}): Observable<ListingsResult> {
