@@ -41,7 +41,7 @@ export class LocationCityFieldComponent {
 
     if (isPlatformBrowser(this.platformId)) {
       this.catalog
-        .getPopulatedPlaces({ countryCode: this.catalog.listingCountryCode })
+        .loadCitiesForProvince('any')
         .pipe(take(1))
         .subscribe((places) => this.allPlaces.set(places));
     }

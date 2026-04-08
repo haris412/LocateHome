@@ -4,7 +4,7 @@ export const environment = {
   listingCountryCode: 'PK',
   geonames: {
     searchUrl: 'http://api.geonames.org/searchJSON',
-    username: 'demo',
+    username: 'harissaeed',
     userAgent: 'LocateHome/1.0'
   },
   overpass: {

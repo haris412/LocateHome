@@ -1,23 +1,16 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
 
 import { FilterChipItem, FilterSelectConfig, FilterTabItem, SortOption } from '../../../../core/models/filter.models';
 import { ListingItem } from '../../../../core/models/listing.models';
-import {
-  PROPERTY_CATEGORY_SELECT_OPTIONS,
-  apiValueToSubtypeId,
-  categoryForSubtypeId,
-  isKnownSubtypeId,
-  subtypeFilterOptions,
-  subtypeIdToApiValue
-} from '../../../../core/models/property-categories.model';
+import { FiltersCatalogService } from '../../../../core/services/filters-catalog.service';
 import { ListingsResultsHeaderComponent } from '../../components/listings-results-header/listings-results-header.component';
 import { ListingsGridComponent } from '../../components/listings-grid/listings-grid.component';
 import {
   PropertyFilterPayload,
   PropertyFiltersComponent
-} from 'src/app/shared/ui/property-filters/property-filters.component';
+} from '../../../../shared/ui/property-filters/property-filters.component';
 import { ListingsQueryParams, ListingsService } from '../../services/listings.service';
 
 @Component({
@@ -34,39 +27,19 @@ import { ListingsQueryParams, ListingsService } from '../../services/listings.se
 })
 export class ListingsPageComponent {
   private readonly route = inject(ActivatedRoute);
-  readonly searchQuery = signal('Ontario, Canada');
+  private readonly router = inject(Router);
+  private readonly listingsService = inject(ListingsService);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly filtersCatalog = inject(FiltersCatalogService);
 
-  onSearchQueryChange(value: string) {
-    this.searchQuery.set(value);
-    // City input should auto-trigger search without applying other filter fields
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: {
-        page: 1,
-        limit: 20,
-        city: value.trim() || null,
-        area: null,
-        purpose: null,
-        propertyType: null,
-        subType: null,
-        category: null,
-        subtype: null,
-        minPrice: null,
-        maxPrice: null,
-        sortBy: null,
-        sortOrder: null,
-        status: null
-      },
-      queryParamsHandling: 'merge'
-    });
-  }
+  readonly searchQuery = signal('');
+
   readonly tabs: readonly FilterTabItem[] = [
     { id: 'buy', label: 'Buy' },
     { id: 'rent', label: 'Rent' }
   ];
 
   readonly buyFields = signal<FilterSelectConfig[]>(this.buildModeFields('buy', 'any', 'any'));
-
   readonly rentFields = signal<FilterSelectConfig[]>(this.buildModeFields('rent', 'any', 'any'));
 
   readonly buyChips = signal<FilterChipItem[]>([
@@ -86,9 +59,6 @@ export class ListingsPageComponent {
     { id: 'video-tours', label: 'Video tours' },
     { id: 'parking', label: 'Parking' }
   ]);
-  private readonly router = inject(Router);
-  private readonly listingsService = inject(ListingsService);
-  private readonly destroyRef = inject(DestroyRef);
 
   readonly listings = signal<ListingItem[]>([]);
   readonly totalResults = signal(0);
@@ -112,6 +82,30 @@ export class ListingsPageComponent {
     );
   });
 
+  onSearchQueryChange(value: string): void {
+    this.searchQuery.set(value);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        page: 1,
+        limit: 20,
+        city: value.trim() || null,
+        area: null,
+        purpose: null,
+        propertyType: null,
+        subType: null,
+        category: null,
+        subtype: null,
+        minPrice: null,
+        maxPrice: null,
+        sortBy: null,
+        sortOrder: null,
+        status: null
+      },
+      queryParamsHandling: 'merge'
+    });
+  }
+
   updateSort(value: string): void {
     this.selectedSort.set(value);
     const sort = this.toSortParams(value);
@@ -123,7 +117,6 @@ export class ListingsPageComponent {
   }
 
   openListingDetail(id: string): void {
-    console.log('navigating to detail', id);
     this.router.navigate(['/listings', id]);
   }
 
@@ -141,6 +134,21 @@ export class ListingsPageComponent {
   }
 
   constructor() {
+    this.filtersCatalog.loadCatalog();
+
+    // When the catalog arrives, patch the property-type options in both field sets.
+    effect(() => {
+      const typeOpts = this.filtersCatalog.propertyTypeOptions();
+      if (typeOpts.length <= 1) return; // still loading — only [Any] present
+
+      this.buyFields.update((fields) =>
+        fields.map((f) => (f.id === 'primaryType' ? { ...f, options: typeOpts } : f))
+      );
+      this.rentFields.update((fields) =>
+        fields.map((f) => (f.id === 'primaryType' ? { ...f, options: typeOpts } : f))
+      );
+    });
+
     this.route.queryParamMap
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((params) => {
@@ -165,7 +173,7 @@ export class ListingsPageComponent {
               this.listings.set(result.items);
               this.totalResults.set(result.total);
             },
-            error: (error) => console.error('Failed to load listings page data', error)
+            error: (error) => console.error('Failed to load listings', error)
           });
       });
   }
@@ -177,31 +185,26 @@ export class ListingsPageComponent {
     let propertyTypeTop: string | undefined;
     let subTypeApi: string | undefined;
 
-    const isGroup = (v: string | null | undefined) =>
-      v === 'homes' || v === 'plots' || v === 'commercial';
+    const isCategory = (v: string | null | undefined) =>
+      this.filtersCatalog.isKnownCategorySlug(v);
 
-    if (isGroup(rawTop)) {
+    if (isCategory(rawTop)) {
       propertyTypeTop = rawTop!;
     }
 
     if (subKey && subKey !== 'any') {
-      subTypeApi = subtypeIdToApiValue(subKey);
+      subTypeApi = subKey; // slug IS the api value in the new catalog
       if (!propertyTypeTop) {
-        const grp = categoryForSubtypeId(subKey);
+        const grp = this.filtersCatalog.categoryForSubtypeSlug(subKey);
         if (grp) propertyTypeTop = grp;
       }
     }
 
-    if (
-      rawTop &&
-      rawTop !== 'any' &&
-      !isGroup(rawTop) &&
-      (!subKey || subKey === 'any')
-    ) {
-      const id = apiValueToSubtypeId(rawTop) ?? (isKnownSubtypeId(rawTop) ? rawTop : null);
-      if (id) {
-        propertyTypeTop = categoryForSubtypeId(id) ?? undefined;
-        subTypeApi = subtypeIdToApiValue(id);
+    if (rawTop && rawTop !== 'any' && !isCategory(rawTop) && (!subKey || subKey === 'any')) {
+      const resolvedSlug = this.filtersCatalog.resolveSubtypeSlug(rawTop);
+      if (resolvedSlug) {
+        propertyTypeTop = this.filtersCatalog.categoryForSubtypeSlug(resolvedSlug) ?? undefined;
+        subTypeApi = resolvedSlug;
       } else {
         subTypeApi = rawTop;
       }
@@ -229,24 +232,19 @@ export class ListingsPageComponent {
   }
 
   private syncFilterFieldsFromParams(params: import('@angular/router').ParamMap): void {
-    const isGroup = (v: string | null) =>
-      v === 'homes' || v === 'plots' || v === 'commercial';
-
-    let primary =
-      params.get('propertyType') ?? params.get('category') ?? 'any';
+    let primary = params.get('propertyType') ?? params.get('category') ?? 'any';
     let subtype = params.get('subType') ?? params.get('subtype') ?? 'any';
 
-    if (primary !== 'any' && !isGroup(primary)) {
-      const id =
-        apiValueToSubtypeId(primary) ?? (isKnownSubtypeId(primary) ? primary : null);
-      if (id) {
-        if (subtype === 'any') subtype = id;
-        primary = categoryForSubtypeId(id) ?? 'any';
+    if (primary !== 'any' && !this.filtersCatalog.isKnownCategorySlug(primary)) {
+      const resolvedSlug = this.filtersCatalog.resolveSubtypeSlug(primary);
+      if (resolvedSlug) {
+        if (subtype === 'any') subtype = resolvedSlug;
+        primary = this.filtersCatalog.categoryForSubtypeSlug(resolvedSlug) ?? 'any';
       }
     }
 
-    if (!isGroup(primary) && subtype !== 'any') {
-      const cat = categoryForSubtypeId(subtype);
+    if (!this.filtersCatalog.isKnownCategorySlug(primary) && subtype !== 'any') {
+      const cat = this.filtersCatalog.categoryForSubtypeSlug(subtype);
       if (cat) primary = cat;
     }
 
@@ -265,15 +263,14 @@ export class ListingsPageComponent {
     subtype: string,
     areaParam: string
   ): FilterSelectConfig[] {
-    const subtypeOpts = subtypeFilterOptions(category);
+    const typeOpts = this.filtersCatalog.propertyTypeOptions();
+    const catValue = typeOpts.some((o) => o.id === category) ? category : 'any';
+    const subtypeOpts = this.filtersCatalog.getSubtypeOptions(catValue);
     const subtypeValue = subtypeOpts.some((o) => o.id === subtype) ? subtype : 'any';
-    const catValue = PROPERTY_CATEGORY_SELECT_OPTIONS.some((o) => o.id === category)
-      ? category
-      : 'any';
 
     return fields.map((field) => {
       if (field.id === 'primaryType') {
-        return { ...field, value: catValue, options: [...PROPERTY_CATEGORY_SELECT_OPTIONS] };
+        return { ...field, value: catValue, options: typeOpts };
       }
       if (field.id === 'subtype') {
         return { ...field, value: subtypeValue, options: subtypeOpts };
@@ -290,7 +287,8 @@ export class ListingsPageComponent {
     category: string,
     subtype: string
   ): FilterSelectConfig[] {
-    const subtypeOpts = subtypeFilterOptions(category);
+    const typeOpts = this.filtersCatalog.propertyTypeOptions();
+    const subtypeOpts = this.filtersCatalog.getSubtypeOptions(category);
     const subtypeValue = subtypeOpts.some((o) => o.id === subtype) ? subtype : 'any';
 
     const bedsDefault = mode === 'buy' ? '3plus' : '2plus';
@@ -377,8 +375,8 @@ export class ListingsPageComponent {
         label: 'Property type',
         icon: 'domain',
         placeholder: 'Property type',
-        value: PROPERTY_CATEGORY_SELECT_OPTIONS.some((o) => o.id === category) ? category : 'any',
-        options: [...PROPERTY_CATEGORY_SELECT_OPTIONS]
+        value: typeOpts.some((o) => o.id === category) ? category : 'any',
+        options: typeOpts
       },
       {
         id: 'subtype',
