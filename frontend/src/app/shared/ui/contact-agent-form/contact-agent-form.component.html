@@ -98,19 +98,7 @@
 
 <app-appointment-overlay
   [open]="isAppointmentOpen()"
-  [data]="{
-    agentName: agent().name,
-    listing: {
-      id: listingId(),
-      imageUrl: listingImageUrl(),
-      price: listingPrice(),
-      address: listingAddress()
-    },
-    dateSlots: appointmentDateSlots(),
-    initialName: form.controls.name.value,
-    initialEmail: form.controls.email.value,
-    initialPhone: form.controls.phone.value
-  }"
+  [data]="appointmentOverlayData()"
   (closed)="closeBookAppointmentOverlay()"
   (confirmed)="handleAppointmentConfirmed($event)"
 />

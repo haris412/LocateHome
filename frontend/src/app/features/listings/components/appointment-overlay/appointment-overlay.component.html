@@ -32,7 +32,7 @@
             {{ data().listing.address }}
           </p>
           <span class="appointment-overlay__listing-agent">
-            Agent: {{ data().agentName }}
+            Agent: {{ displayAgentName() }}
           </span>
         </div>
       </div>
@@ -47,6 +47,8 @@
             <div class="appointment-overlay__calendar-wrap">
               <mat-calendar [selected]="selectedDate()"
                             [startAt]="selectedDate()"
+                            [minDate]="today()"
+                            [dateFilter]="dateFilter"
                             [dateClass]="dateClass"
                             (selectedChange)="onDateChange($event)" />
             </div>
@@ -63,6 +65,7 @@
                 <span class="status-chip status-chip--confirmed">Confirmed</span>
                 <span class="status-chip status-chip--booked">Booked</span>
                 <span class="status-chip status-chip--blocked">Blocked</span>
+                <span class="status-chip status-chip--not-available">Not Available</span>
               </div>
             </div>
 
@@ -94,7 +97,17 @@
               }
             </div>
 
-            @if (visibleSlots().length > 0) {
+            @if (scheduleLoading()) {
+            <div class="appointment-overlay__empty-slots" aria-live="polite">
+              Loading availability…
+            </div>
+            } @else if (scheduleError()) {
+            <div class="appointment-overlay__schedule-warning" role="alert">
+              {{ scheduleError() }}
+            </div>
+            }
+
+            @if (!scheduleLoading() && visibleSlots().length > 0) {
             <div class="appointment-overlay__slots-grid">
               @for (slot of visibleSlots(); track slot.id) {
               <button type="button"
@@ -104,7 +117,8 @@
                       [class.time-slot--confirmed]="slot.status === 'confirmed'"
                       [class.time-slot--booked]="slot.status === 'booked'"
                       [class.time-slot--blocked]="slot.status === 'blocked'"
-                      [disabled]="slot.status === 'booked' || slot.status === 'blocked'"
+                      [class.time-slot--not-available]="slot.status === 'not_available'"
+                      [disabled]="slot.status === 'confirmed' || slot.status === 'booked' || slot.status === 'blocked' || slot.status === 'not_available'"
                       (click)="selectSlot(slot)">
                 <strong>{{ slot.label }}</strong>
                 <span>
@@ -116,7 +130,7 @@
               </button>
               }
             </div>
-            } @else {
+            } @else if (!scheduleLoading()) {
             <div class="appointment-overlay__empty-slots">
               No slots available for this date.
             </div>
@@ -184,9 +198,15 @@
 
               <div class="appointment-overlay__summary-row">
                 <span>Agent</span>
-                <strong>{{ data().agentName }}</strong>
+                <strong>{{ displayAgentName() }}</strong>
               </div>
             </div>
+
+            @if (confirmError()) {
+            <p class="appointment-overlay__confirm-error" role="alert">
+              {{ confirmError() }}
+            </p>
+            }
 
             <div class="appointment-overlay__footer-actions">
               <button type="button"
@@ -197,8 +217,9 @@
 
               <button type="button"
                       class="appointment-overlay__confirm-btn"
+                      [disabled]="confirmLoading()"
                       (click)="confirm()">
-                Confirm Appointment
+                {{ confirmLoading() ? 'Submitting…' : 'Confirm Appointment' }}
               </button>
             </div>
           </section>

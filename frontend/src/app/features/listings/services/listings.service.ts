@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 import {
   ListingItem,
@@ -45,6 +45,33 @@ export class ListingsService {
   // TODO: Replace hardcoded token with real auth flow
   // ⚠️ Token expires in 3 days — regenerate via POST /api/auth/login when it does
   private readonly authToken = '';
+
+  /**
+   * Resolves Mongo `propertyId` (`_id`) from GET /api/properties with the default
+   * listings query: page=1&limit=20&sortBy=createdAt&sortOrder=desc.
+   * Falls back to `candidateId` if not in that page or the request fails.
+   */
+  resolvePropertyMongoId(candidateId: string): Observable<string> {
+    if (!candidateId?.trim()) {
+      return of('');
+    }
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.authToken}`
+    });
+    const httpParams = new HttpParams()
+      .set('page', '1')
+      .set('limit', '20')
+      .set('sortBy', 'createdAt')
+      .set('sortOrder', 'desc');
+
+    return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams, headers }).pipe(
+      map((response) => {
+        const match = response.data.properties.find((p) => p._id === candidateId);
+        return match?._id ?? candidateId;
+      }),
+      catchError(() => of(candidateId))
+    );
+  }
 
   getListings(params: ListingsQueryParams = {}): Observable<ListingsResult> {
     const httpParams = this.buildHttpParams(params);
