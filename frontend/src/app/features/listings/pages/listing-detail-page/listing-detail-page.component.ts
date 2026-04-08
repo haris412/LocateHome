@@ -19,12 +19,13 @@ export class ListingDetailPageComponent {
    readonly overlayOpen=signal(false);
    readonly overlayData= computed<AppointmentOverlayData>(() => ({
     listing:{
-      id: this.vm().id,
+      propertyId: this.vm().id,
        price: this.vm().price,
        address:this.vm().addressLine,
        imageUrl:this.vm().gallery.primaryImage,
     },
     agentName: this.vm().agent.name,
+    agentUserId: this.vm().agent.userId,
     dateSlots:this.vm().appointmentDateSlots??[],
   }));
 
