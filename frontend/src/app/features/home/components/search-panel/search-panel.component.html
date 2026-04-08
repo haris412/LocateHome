@@ -1,7 +1,7 @@
 <section class="search-panel section-card" aria-label="Property search filters">
   <div class="search-panel__top">
     <div class="search-panel__tabs" role="tablist" aria-label="Search mode">
-      @for (tab of tabs(); track tab.id) {
+      @for (tab of tabs; track tab.id) {
         <button
           type="button"
           class="search-panel__tab"
@@ -81,7 +81,7 @@
           [value]="primaryType()"
           (selectionChange)="onPrimaryTypeSelected($any($event.value))"
         >
-          @for (option of propertyTypeOptions; track option.id) {
+          @for (option of propertyTypeOptions(); track option.id) {
             <mat-option [value]="option.id">{{ option.label }}</mat-option>
           }
         </mat-select>
@@ -128,10 +128,25 @@
   </div>
 
   <div class="search-panel__bottom-grid">
-    <!-- City (GeoNames) -->
+    <!-- Province -->
     <div class="search-panel__mini-field">
       <span class="search-panel__field-label">
         <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
+        <span>Province</span>
+      </span>
+      <mat-form-field appearance="outline" class="search-panel__field-control">
+        <mat-select [value]="province()" (selectionChange)="province.set($any($event.value))">
+          @for (option of provinceOptions; track option) {
+            <mat-option [value]="option.toLowerCase()">{{ option }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <!-- City (GeoNames) -->
+    <div class="search-panel__mini-field">
+      <span class="search-panel__field-label">
+        <mat-icon fontSet="material-symbols-outlined" inline>location_city</mat-icon>
         <span>City</span>
       </span>
       <mat-form-field appearance="outline" class="search-panel__field-control">
@@ -154,36 +169,6 @@
             </mat-option>
           }
         </mat-autocomplete>
-      </mat-form-field>
-    </div>
-
-    <!-- Province -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
-        <span>Province</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="province()" (selectionChange)="province.set($any($event.value))">
-          @for (option of provinceOptions; track option) {
-            <mat-option [value]="option.toLowerCase()">{{ option }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <!-- State -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>map</mat-icon>
-        <span>State</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="state()" (selectionChange)="state.set($any($event.value))">
-          @for (option of stateOptions; track option) {
-            <mat-option [value]="option.toLowerCase().replace(' ', '-')">{{ option }}</mat-option>
-          }
-        </mat-select>
       </mat-form-field>
     </div>
 
@@ -210,26 +195,22 @@
           @for (a of filteredAreas(); track trackAreaItem($index, a)) {
             <mat-option [value]="a">
               <span class="search-panel__area-option">{{ a.name }}</span>
-              <span class="search-panel__area-kind">{{ a.kind }}</span>
             </mat-option>
           }
         </mat-autocomplete>
       </mat-form-field>
     </div>
 
-    <!-- Budget -->
+    <!-- Price Range -->
     <div class="search-panel__mini-field">
       <span class="search-panel__field-label">
         <mat-icon fontSet="material-symbols-outlined" inline>monetization_on</mat-icon>
         <span>Price Range</span>
       </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="budget()" (selectionChange)="budget.set($any($event.value))">
-          @for (option of budgetOptions(); track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+      <app-price-range-field
+        [mode]="activeTab()"
+        (rangeChange)="onPriceRangeChange($event)"
+      />
     </div>
 
     <!-- Bedrooms -->

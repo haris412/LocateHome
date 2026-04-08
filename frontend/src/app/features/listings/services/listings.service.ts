@@ -43,8 +43,8 @@ export class ListingsService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/api/properties`;
   // TODO: Replace hardcoded token with real auth flow
-  private readonly authToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQwMWM1MjgxMGJhZGEyM2ViOTdmZTUiLCJlbWFpbCI6ImJpbGFsQG1haWwuY29tIiwiaWF0IjoxNzc1MjQ2NDIyLCJleHAiOjE3NzU1MDU2MjJ9.wlRGFBanb8vkx6MRJGM1hOU__x7oSX3YQd8FXLQQFAY';
+  // ⚠️ Token expires in 3 days — regenerate via POST /api/auth/login when it does
+  private readonly authToken = '';
 
   getListings(params: ListingsQueryParams = {}): Observable<ListingsResult> {
     const httpParams = this.buildHttpParams(params);
