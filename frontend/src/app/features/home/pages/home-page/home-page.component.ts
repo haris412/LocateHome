@@ -99,27 +99,27 @@ export class HomePageComponent {
       id: '1',
       title: 'Explore',
       links: [
-        { id: 'a', label: 'Homes for sale', href: '#' },
-        { id: 'b', label: 'Homes for rent', href: '#' },
-        { id: 'c', label: 'Luxury homes', href: '#' }
+        { id: 'a', label: 'Homes for sale', href: '/listings' },
+        { id: 'b', label: 'Homes for rent', href: '/listings' },
+        { id: 'c', label: 'Luxury homes', href: '/listings' }
       ]
     },
     {
       id: '2',
       title: 'Company',
       links: [
-        { id: 'a', label: 'About us', href: '#' },
-        { id: 'b', label: 'Careers', href: '#' },
-        { id: 'c', label: 'Press', href: '#' }
+        { id: 'a', label: 'About us', href: '/home' },
+        { id: 'b', label: 'Careers', href: '/home' },
+        { id: 'c', label: 'Press', href: '/home' }
       ]
     },
     {
       id: '3',
       title: 'Support',
       links: [
-        { id: 'a', label: 'Help center', href: '#' },
-        { id: 'b', label: 'Privacy policy', href: '#' },
-        { id: 'c', label: 'Terms', href: '#' }
+        { id: 'a', label: 'Help center', href: '/home' },
+        { id: 'b', label: 'Privacy policy', href: '/home' },
+        { id: 'c', label: 'Terms', href: '/home' }
       ]
     }
   ]);

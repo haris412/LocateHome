@@ -138,7 +138,8 @@
                                      [title]="vm().nearby?.title || 'Featured properties nearby'"
                                      [isFeatured]="true"
                                      [scrollSnap]="false"
-                                     variant="standalone" />
+                                     variant="standalone"
+                                     (cardClicked)="nearbyCardClicked.emit($event)"  />
     </div>
   </div>
 

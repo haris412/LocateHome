@@ -46,6 +46,7 @@ export class ListingDetailShellComponent {
   @Output() readonly playVideo = new EventEmitter<void>();
   @Output() readonly viewAllVideos = new EventEmitter<void>();
   @Output() readonly videoSelected = new EventEmitter<string>();
+  @Output() readonly nearbyCardClicked = new EventEmitter<string>();
   @Output() readonly inquirySubmitted = new EventEmitter<{
     name: string;
     email: string;

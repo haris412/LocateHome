@@ -11,3 +11,9 @@
   (inquirySubmitted)="onInquirySubmitted($event)"
   (nearbyFavoriteToggled)="onNearbyFavoriteToggled($event)"
 />
+ <app-appointment-overlay
+  [open]="overlayOpen()"
+  [data]="overlayData()"
+  (closed)="onOverlayClosed()"
+  (confirmed)="onAppointmentConfirmed($event)"
+/>
