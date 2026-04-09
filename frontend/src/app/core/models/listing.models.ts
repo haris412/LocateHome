@@ -19,8 +19,10 @@ export interface ListingsApiProperty {
   _id: string;
   purpose: ListingPurpose;
   propertyType: string;
+  /** Mongoose `subtype` */
+  subtype?: string;
   listingTitle: string;
-  propertyDescription: string;
+  propertyDescription?: string;
   price: number;
   areaSize: number;
   areaUnit: string;
@@ -34,6 +36,10 @@ export interface ListingsApiProperty {
   hasBalcony?: boolean;
   hasSecurity?: boolean;
   hasGarden?: boolean;
+  hasElevator?: boolean;
+  hasLaundryRoom?: boolean;
+  isFurnished?: boolean;
+  isPetFriendly?: boolean;
   images: ListingsApiImage[];
   videoTourUrl?: string;
   city: string;
@@ -46,6 +52,8 @@ export interface ListingsApiProperty {
   contactLocation?: string;
   /** Listing owner; string id or populated subdocument */
   userId?: string | ListingsApiPropertyOwnerRef;
+  /** Optional stable CRM / frontend key */
+  listingKey?: string;
   status: ListingStatus;
   createdAt: string;
   updatedAt: string;

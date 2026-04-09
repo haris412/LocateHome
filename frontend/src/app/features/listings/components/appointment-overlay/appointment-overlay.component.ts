@@ -16,6 +16,7 @@ import { MatCalendar, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Observable, Subscription, forkJoin, of, throwError } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 
@@ -46,7 +47,8 @@ import {
     MatFormFieldModule,
     MatNativeDateModule,
     MatInputModule,
-    MatCalendar
+    MatCalendar,
+    MatSnackBarModule
   ],
   templateUrl: './appointment-overlay.component.html',
   styleUrl: './appointment-overlay.component.scss',
@@ -57,6 +59,7 @@ export class AppointmentOverlayComponent {
   private readonly fb = inject(FormBuilder);
   private readonly appointmentApi = inject(AppointmentBookingService);
   private readonly listingsService = inject(ListingsService);
+  private readonly snackBar = inject(MatSnackBar);
   private readonly destroyRef = inject(DestroyRef);
   private fetchSub: Subscription | null = null;
   private propertyIdSub: Subscription | null = null;
@@ -397,6 +400,7 @@ export class AppointmentOverlayComponent {
     };
 
     if (!userId) {
+      this.showBookingToast('Your appointment request was submitted.', 5000);
       this.confirmed.emit(payload);
       return;
     }
@@ -454,6 +458,7 @@ export class AppointmentOverlayComponent {
       .subscribe({
         next: () => {
           this.confirmLoading.set(false);
+          this.showBookingToast('Your appointment has been booked.', 6000);
           this.confirmed.emit(payload);
         },
         error: () => {
@@ -461,6 +466,15 @@ export class AppointmentOverlayComponent {
           this.confirmError.set('Could not confirm appointment. Try again.');
         }
       });
+  }
+
+  private showBookingToast(message: string, durationMs: number): void {
+    this.snackBar.open(message, 'Dismiss', {
+      duration: durationMs,
+      horizontalPosition: 'center',
+      verticalPosition: 'top',
+      panelClass: ['locatehome-snackbar']
+    });
   }
 
   /** Rebuilds `liveSchedule` after POST using fresh GET /api/appointments/user/:userId + cached weekly rules. */

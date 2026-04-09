@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, computed, input, Output } from '@angular/core';
 import { MediaGalleryOverlayComponent } from '../media-gallery-overlay/media-gallery-overlay.component';
 import { MatIconModule } from '@angular/material/icon';
 
@@ -12,34 +12,35 @@ import { MatIconModule } from '@angular/material/icon';
 })
 export class MediaGalleryComponent {
   readonly gallery = input.required<any>();
+  /** API listing title — used for image `alt` text */
+  readonly listingTitle = input<string>('');
   @Output() readonly openGallery = new EventEmitter<void>();
   @Output() readonly playVideo = new EventEmitter<void>();
 
-  get topImage(): string {
-    return this.gallery().images?.[1] || this.gallery().primaryImage;
-  }
+  /** Ordered URLs from `gallery.images`, or `[primaryImage]` when the list is empty. */
+  readonly displayImages = computed(() => {
+    const g = this.gallery();
+    const imgs = g.images as string[] | undefined;
+    if (imgs?.length) {
+      return imgs;
+    }
+    return g.primaryImage ? [g.primaryImage] : [];
+  });
 
-  get bottomImage(): string {
-    return this.gallery().images?.[2] || this.gallery().primaryImage;
-  }
+  readonly hasMultipleImages = computed(() => this.displayImages().length > 1);
+
+  /** Photos after the first three thumbnails (primary + two side tiles). */
+  readonly extraPhotoCount = computed(() => Math.max(0, this.displayImages().length - 3));
 
   isOverlayOpen = false;
   selectedIndex = 0;
 
-  get images(): string[] {
-    return this.gallery().images || [
-      this.gallery().primaryImage,
-      this.gallery().topImage,
-      this.gallery().bottomImage
-    ];
-  }
-
-  openOverlay(index: number) {
+  openOverlay(index: number): void {
     this.selectedIndex = index;
     this.isOverlayOpen = true;
   }
 
-  closeOverlay() {
+  closeOverlay(): void {
     this.isOverlayOpen = false;
   }
 }

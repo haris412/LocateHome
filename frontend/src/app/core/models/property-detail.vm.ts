@@ -1,19 +1,21 @@
 import { AppointmentDateSlots } from './appointment.models';
-import { ListingItem } from './listing.models';
+import { ListingItem, ListingPurpose } from './listing.models';
 
-export interface ListingAmenityItem {
+/** Amenity row for property detail (UI). */
+export interface PropertyAmenityItem {
   icon?: string;
   label: string;
 }
 
-export interface ListingVideoItem {
+export interface PropertyVideoItem {
   id: string;
   title: string;
   videoUrl?: string;
   imageUrl?: string;
 }
 
-export interface ListingAgent {
+/** Contact / listing agent shown on property detail (from Property contact fields + owner userId). */
+export interface PropertyAgent {
   name: string;
   role: string;
   imageUrl: string;
@@ -23,12 +25,27 @@ export interface ListingAgent {
   rating?: string;
   listings?: string;
   responseTime?: string;
+  email?: string;
+  phone?: string;
 }
 
-export interface ListingDetailModel {
+/**
+ * View model for property detail page — maps from Mongoose `Property` / GET /api/properties shape.
+ */
+export interface PropertyDetailViewModel {
+  /** Mongo `_id` */
   id: string;
+  /** Optional stable key from CRM (`listingKey`) */
+  listingKey?: string;
+  /** API `listingTitle` */
+  listingTitle: string;
+  /** API `purpose` — For Sale / For Rent */
+  purpose: ListingPurpose;
   breadcrumbLabel?: string;
+  /** API `status` — e.g. Published */
   statusChip?: string;
+  /** API `mapLink` */
+  mapLink?: string;
 
   shareLabel?: string;
   saveLabel?: string;
@@ -60,17 +77,17 @@ export interface ListingDetailModel {
 
   amenities: {
     title?: string;
-    items: ListingAmenityItem[];
+    items: PropertyAmenityItem[];
   };
 
   videos?: {
     title?: string;
     subtitle?: string;
     viewAllLabel?: string;
-    items: ListingVideoItem[];
+    items: PropertyVideoItem[];
   };
 
-  agent: ListingAgent;
+  agent: PropertyAgent;
 
   inquiry: {
     submitLabel?: string;

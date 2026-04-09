@@ -1,4 +1,4 @@
-import { ListingDetailModel } from '../../../core/models/listing-detail.vm';
+import { PropertyDetailViewModel } from '../../../core/models/property-detail.vm';
 import { AppointmentDateSlots } from '../../../core/models/appointment.models';
 
 const MOCK_APPOINTMENT_DATE_SLOTS: AppointmentDateSlots[] = [
@@ -155,11 +155,15 @@ const MOCK_APPOINTMENT_DATE_SLOTS: AppointmentDateSlots[] = [
   }
 ];
 
-export const LISTING_DETAIL_MOCK: ListingDetailModel = {
+/** Sample detail VM for tests / Storybook — prefer live GET /api/properties/:id in the app. */
+export const PROPERTY_DETAIL_MOCK: PropertyDetailViewModel = {
   /** Same as GET /api/properties `._id` for this listing */
   id: '69d41533bebdffe528467380',
-  breadcrumbLabel: 'Back to Search Results',
-  statusChip: 'For Rent',
+  listingTitle: '1200 Skyline Boulevard, Apt 4B',
+  purpose: 'For Rent',
+  breadcrumbLabel: 'Downtown Seattle · Seattle',
+  statusChip: 'Published',
+  mapLink: 'https://maps.google.com/?q=1200+Skyline+Blvd+Seattle',
   shareLabel: 'Share',
   saveLabel: 'Save',
 
@@ -171,7 +175,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
       'assets/images/listings/featured-3.png'
     ],
     moreCount: 15,
-    featuredTag: 'Featured rental',
+    featuredTag: 'For Rent',
     videoTag: 'Video tour available',
     showPlay: true
   },
@@ -189,7 +193,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
   ],
 
   about: {
-    title: 'About this home',
+    title: 'About this property',
     paragraphs: [
       'Experience elevated city living in the heart of Downtown Seattle. This premium 2-bedroom apartment features floor-to-ceiling windows, a bright open-plan living area, a designer kitchen with quartz finishes and a private balcony overlooking the skyline.',
       'Residents enjoy concierge service, a rooftop lounge, fitness studio, co-working spaces and secure resident parking. The building is minutes from Pike Place Market, light rail access, leading dining spots and major technology campuses.'
@@ -235,7 +239,7 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
     name: 'Sarah Jenkins',
     role: 'Listing agent',
     imageUrl: 'assets/images/people/agent-1.png',
-    userId: '69c98f7b76bde59142889031',
+    userId: '69c98f7b76bde59142889030',
     blurb: 'Ask about rent terms, availability, move-in date or request an in-person or video tour.',
     rating: '4.9',
     listings: '42',
@@ -306,3 +310,6 @@ export const LISTING_DETAIL_MOCK: ListingDetailModel = {
   },
   appointmentDateSlots: MOCK_APPOINTMENT_DATE_SLOTS
 };
+
+/** @deprecated Use `PROPERTY_DETAIL_MOCK`. */
+export const LISTING_DETAIL_MOCK = PROPERTY_DETAIL_MOCK;

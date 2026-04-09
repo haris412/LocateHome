@@ -10,13 +10,14 @@ import {
   ListingsApiProperty,
   ListingsApiResponse
 } from '../../../core/models/listing.models';
+import { environment } from '../../../../environments/environment';
+import { resolvePropertyImageUrlForDisplay } from '../utils/property-image-url.util';
 
 export interface PropertyListMatch {
   propertyId: string;
   /** From property `userId` when present (string or populated `{ _id }`). */
   ownerUserId?: string;
 }
-import { environment } from '../../../../environments/environment';
 
 export interface ListingsQueryParams {
   page?: number;
@@ -52,11 +53,6 @@ export class ListingsService {
   // ⚠️ Token expires in 3 days — regenerate via POST /api/auth/login when it does
   private readonly authToken = '';
 
-  /**
-   * Resolves Mongo `propertyId` (`_id`) from GET /api/properties with the default
-   * listings query: page=1&limit=20&sortBy=createdAt&sortOrder=desc.
-   * Falls back to `candidateId` if not in that page or the request fails.
-   */
   /**
    * Same GET /api/properties page as `resolvePropertyMongoId`, plus owner `userId` for the
    * matching property (for appointments / availability APIs).
@@ -102,6 +98,50 @@ export class ListingsService {
       return u._id.trim();
     }
     return undefined;
+  }
+
+  /**
+   * GET /api/properties/:id — tolerates `{ data: property }`, `{ data: { property } }`, or property at root.
+   */
+  getPropertyById(id: string): Observable<ListingsApiProperty | null> {
+    const trimmed = id?.trim();
+    if (!trimmed) {
+      return of(null);
+    }
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.authToken}`
+    });
+    const url = `${this.baseUrl}/${encodeURIComponent(trimmed)}`;
+    return this.http.get<unknown>(url, { headers }).pipe(
+      map((body) => this.parseSinglePropertyResponse(body)),
+      catchError(() => of(null))
+    );
+  }
+
+  private parseSinglePropertyResponse(body: unknown): ListingsApiProperty | null {
+    if (!body || typeof body !== 'object') {
+      return null;
+    }
+    const root = body as Record<string, unknown>;
+    const data = root['data'];
+    if (data && typeof data === 'object') {
+      const d = data as Record<string, unknown>;
+      const nested = d['property'];
+      if (nested && typeof nested === 'object' && this.looksLikeApiProperty(nested)) {
+        return nested as ListingsApiProperty;
+      }
+      if (this.looksLikeApiProperty(d)) {
+        return d as unknown as ListingsApiProperty;
+      }
+    }
+    if (this.looksLikeApiProperty(root)) {
+      return root as unknown as ListingsApiProperty;
+    }
+    return null;
+  }
+
+  private looksLikeApiProperty(value: object): boolean {
+    return '_id' in value && 'listingTitle' in value;
   }
 
   getListings(params: ListingsQueryParams = {}): Observable<ListingsResult> {
@@ -160,7 +200,7 @@ export class ListingsService {
       price: this.formatPrice(property.price, property.purpose),
       badge: property.purpose,
       badgeVariant: property.purpose === 'For Rent' ? 'rent' : 'sale',
-      imageUrl: thumbnail?.url ?? '',
+      imageUrl: resolvePropertyImageUrlForDisplay(thumbnail?.url ?? ''),
       beds: property.numBedrooms,
       baths: property.numBathrooms,
       area: `${property.areaSize} ${property.areaUnit}`,

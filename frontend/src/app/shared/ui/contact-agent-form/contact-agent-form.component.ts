@@ -13,7 +13,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { InfoCardComponent } from '../info-card/info-card.component';
-import { ListingAgent } from '../../../core/models/listing-detail.vm';
+import { PropertyAgent } from '../../../core/models/property-detail.vm';
 import {
   AppointmentBookingPayload,
   AppointmentDateSlots,
@@ -38,7 +38,7 @@ import { AppointmentOverlayComponent } from '../../../features/listings/componen
 export class ContactAgentFormComponent {
   private readonly fb = inject(FormBuilder);
 
-  readonly agent = input.required<ListingAgent>();
+  readonly agent = input.required<PropertyAgent>();
   readonly submitLabel = input('Request a tour');
   readonly secondary1 = input('Book appointment');
   readonly secondary2 = input('Ask a question');

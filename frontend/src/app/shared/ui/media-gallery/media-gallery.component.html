@@ -1,5 +1,6 @@
 <div class="media-gallery row g-3">
-  <div class="col-12 col-lg-8">
+  <div class="col-12"
+       [class.col-lg-8]="hasMultipleImages()">
     <div
       class="media-gallery__tile media-gallery__tile--primary"
       (click)="openOverlay(0)"
@@ -22,8 +23,8 @@
 
       <img
         class="media-gallery__img"
-        [src]="gallery().primaryImage"
-        alt="Listing image"
+        [src]="displayImages()[0]"
+        [attr.alt]="listingTitle() ? listingTitle() + ' — main photo' : 'Property main photo'"
       />
 
       @if (gallery().showPlay) {
@@ -38,49 +39,53 @@
     </div>
   </div>
 
-  <div class="col-12 col-lg-4">
-    <div class="media-gallery__stack">
-      
-      <!-- Top image -->
+  @if (hasMultipleImages()) {
+    <div class="col-12 col-lg-4">
       <div
-        class="media-gallery__tile media-gallery__tile--secondary"
-        (click)="openOverlay(1)"
+        class="media-gallery__stack"
+        [class.media-gallery__stack--single-secondary]="displayImages().length === 2"
       >
-        <img
-          class="media-gallery__img"
-          [src]="topImage"
-          alt="Listing image 2"
-        />
-      </div>
-
-      <!-- Bottom image + more -->
-      <button
-        type="button"
-        class="media-gallery__tile media-gallery__tile--secondary media-gallery__tile--action"
-        (click)="openOverlay(2)"
-      >
-        <img
-          class="media-gallery__img"
-          [src]="bottomImage"
-          alt="Listing image 3"
-        />
-
-        @if ((gallery().moreCount || 0) > 0) {
-          <span class="media-gallery__more">
-            + {{ gallery().moreCount }} more photos
-          </span>
+        @if (displayImages()[1]; as secondUrl) {
+          <div
+            class="media-gallery__tile media-gallery__tile--secondary"
+            (click)="openOverlay(1)"
+          >
+            <img
+              class="media-gallery__img"
+              [src]="secondUrl"
+              [attr.alt]="listingTitle() ? listingTitle() + ' — photo 2' : 'Property photo 2'"
+            />
+          </div>
         }
-      </button>
 
+        @if (displayImages()[2]; as thirdUrl) {
+          <button
+            type="button"
+            class="media-gallery__tile media-gallery__tile--secondary media-gallery__tile--action"
+            (click)="openOverlay(2)"
+          >
+            <img
+              class="media-gallery__img"
+              [src]="thirdUrl"
+              [attr.alt]="listingTitle() ? listingTitle() + ' — photo 3' : 'Property photo 3'"
+            />
+
+            @if (extraPhotoCount() > 0) {
+              <span class="media-gallery__more">
+                + {{ extraPhotoCount() }} more photos
+              </span>
+            }
+          </button>
+        }
+      </div>
     </div>
-  </div>
+  }
 </div>
 
-<!-- 🔥 Overlay -->
- @if (isOverlayOpen) {
-   <app-media-gallery-overlay
-     [images]="gallery().images"
-     [startIndex]="selectedIndex"
-     (close)="closeOverlay()"
-   />
- }
+@if (isOverlayOpen) {
+  <app-media-gallery-overlay
+    [images]="displayImages()"
+    [startIndex]="selectedIndex"
+    (close)="closeOverlay()"
+  />
+}
