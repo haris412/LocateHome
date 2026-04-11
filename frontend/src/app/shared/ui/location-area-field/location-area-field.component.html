@@ -1,0 +1,29 @@
+<div class="location-area-field">
+  @if (label()) {
+    <label class="location-area-field__label">
+      <mat-icon fontSet="material-symbols-outlined">pin_drop</mat-icon>
+      <span>{{ label() }}</span>
+    </label>
+  }
+
+  <mat-form-field appearance="outline" class="location-area-field__field" subscriptSizing="dynamic">
+    <input
+      type="text"
+      matInput
+      [placeholder]="placeholder()"
+      [matAutocomplete]="areaAuto"
+      [value]="draft()"
+      [disabled]="!hasCity()"
+      (input)="onInput($event)"
+    />
+    <mat-autocomplete
+      #areaAuto="matAutocomplete"
+      [displayWith]="displayItem"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      @for (item of filteredItems(); track item.name + item.kind + item.lat + item.lon) {
+        <mat-option [value]="item">{{ optionLabel(item) }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

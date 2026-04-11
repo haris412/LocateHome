@@ -9,15 +9,7 @@
 
   <section class="home-page__band">
     <div class="home-page__container">
-      <div class="home-page__filter">
-        <app-property-filters variant="hero"
-                              [buyFields]="buyFields()"
-                              [rentFields]="rentFields()"
-                              [buyChips]="buyChips()"
-                              [rentChips]="rentChips()"
-                              [searchQueryInput]="searchQuery()"
-                              (searchQueryChange)="onSearchQueryChange($event)" />
-      </div>
+      <app-search-panel (search)="onSearchRequested($event)" />
       <div class="home-page__section">
         <app-listings-carousel-section title="Featured Listings"
                                        subtitle="Explore curated properties with exclusive video walkthroughs."
@@ -57,7 +49,10 @@
   <div class="home-page__band home-page__band--surface">
     <div class="home-page__container">
       <div class="home-page__section">
-        <app-categories-section [items]="categories()" />
+        <app-categories-section
+          [items]="categories()"
+          (categoryCtaClicked)="onCategoryCtaClicked($event)"
+        />
       </div>
       <div class="home-page__section">
         <app-testimonials-section [items]="testimonials()" />

@@ -9,7 +9,7 @@
 
   <div class="listing-card__media">
     <img class="listing-card__image"
-         [src]="item().imageUrl"
+         [src]="displayImageUrl()"
          [alt]="item().title" />
 
     @if (item().badge) {
@@ -42,7 +42,7 @@
     @if (item().rent) {
       <div class="listing-card__rent">
         {{ item().price }}
-        <span class="listing-card__rent-subtext">/ mo</span>
+        <span class="listing-card__rent-subtext"></span>
       </div>
     }
 

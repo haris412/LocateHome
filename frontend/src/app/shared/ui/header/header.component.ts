@@ -1,29 +1,32 @@
 import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink, Params } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { CdkAutofill } from "@angular/cdk/text-field";
 
 interface HeaderNavItem {
   id: string;
   label: string;
   route: string;
+  queryParams?: Params;
 }
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, MatIconModule],
+  imports: [RouterLink, MatIconModule, CdkAutofill],
   templateUrl: './header.component.html',
-  styleUrl: './header.component.scss',
+  styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HeaderComponent {
   readonly mobileMenuOpen = signal(false);
+  constructor(private router: Router) {}
 
   readonly navItems: readonly HeaderNavItem[] = [
-    { id: 'buy', label: 'Buy', route: '/buy' },
-    { id: 'sell', label: 'Sell', route: '/sell' },
-    { id: 'rent', label: 'Rent', route: '/rent' },
-    { id: 'agents', label: 'Find Agents', route: '/agents' },
-    { id: 'about', label: 'About', route: '/about' }
+    { id: 'buy', label: 'Buy', route: '/listings'},
+    { id: 'sell', label: 'Sell', route: '/listings/sell'},
+    { id: 'rent', label: 'Rent', route: '/listings'},
+    { id: 'agents', label: 'Find Agents', route: '/home' },
+    { id: 'about', label: 'About', route: '/home' }
   ];
 
   toggleMobileMenu(): void {
@@ -33,4 +36,7 @@ export class HeaderComponent {
   closeMobileMenu(): void {
     this.mobileMenuOpen.set(false);
   }
+  onNavClick(item: HeaderNavItem): void {
+  this.router.navigate([item.route], { queryParams: item. queryParams });
+}
 }

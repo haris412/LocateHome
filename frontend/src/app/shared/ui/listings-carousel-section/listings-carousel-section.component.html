@@ -12,16 +12,17 @@
     </div>
 
     @if (linkLabel()) {
-    <a href="#"
+    <a routerLink="/listings"
        class="listings-carousel-section__link">
       <span>{{ linkLabel() }}</span>
       <mat-icon fontIcon="arrow_forward"></mat-icon>
     </a>
     }
     @if(isFeatured()) {
-    <div class="listings-carousel-section__primary-btn">
+    <a routerLink="/listings"
+     class="listings-carousel-section__primary-btn">
       Browse all featured
-    </div>
+    </a>
     }
     @if (smallContent()) {
     <div class="listings-carousel-section__actions"
@@ -103,7 +104,8 @@
     <div class="listings-carousel-section__slide">
       <app-listing-card [item]="item"
                         [variant]="variant()"
-                        (favoriteToggled)="onFavoriteToggled($event)" />
+                        (favoriteToggled)="onFavoriteToggled($event)" 
+                        (cardClicked)="onCardClicked($event)"/>
     </div>
     }
   </div>

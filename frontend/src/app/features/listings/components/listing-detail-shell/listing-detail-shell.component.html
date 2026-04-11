@@ -10,9 +10,14 @@
         <span>{{ vm().breadcrumbLabel || 'Back to Search Results' }}</span>
       </button>
 
-      @if (vm().statusChip) {
-      <span class="listing-detail-shell__status-chip">{{ vm().statusChip }}</span>
-      }
+      <div class="listing-detail-shell__chips d-flex flex-wrap align-items-center gap-2">
+        <span class="listing-detail-shell__purpose-chip"
+              [class.listing-detail-shell__purpose-chip--rent]="vm().purpose === 'For Rent'"
+              [class.listing-detail-shell__purpose-chip--sale]="vm().purpose === 'For Sale'">{{ vm().purpose }}</span>
+        @if (vm().statusChip) {
+          <span class="listing-detail-shell__status-chip">{{ vm().statusChip }}</span>
+        }
+      </div>
     </div>
 
     <div class="d-flex align-items-center gap-2">
@@ -36,6 +41,7 @@
 
   <!-- Gallery -->
   <app-media-gallery [gallery]="vm().gallery"
+                     [listingTitle]="vm().listingTitle"
                      (openGallery)="openGallery.emit()"
                      (playVideo)="playVideo.emit()" />
 
@@ -43,19 +49,31 @@
   <div class="row g-4 g-xl-5 mt-2 mt-lg-3">
     <div class="col-12 col-xl-8">
       <div class="listing-detail-shell__main-stack">
-        <!-- Price / CTA -->
+        <!-- Title, price, address -->
         <section>
+          <h1 class="listing-detail-shell__listing-title mb-3">{{ vm().listingTitle }}</h1>
+
           <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-4">
             <div>
               <div class="listing-detail-shell__price-row">
-                <h1 class="listing-detail-shell__price mb-0">{{ vm().price }}</h1>
+                <p class="listing-detail-shell__price mb-0">{{ vm().price }}</p>
 
                 @if (vm().priceSuffix) {
                 <span class="listing-detail-shell__price-suffix">{{ vm().priceSuffix }}</span>
                 }
               </div>
 
-              <p class="listing-detail-shell__address mb-0">{{ vm().addressLine }}</p>
+              <p class="listing-detail-shell__address mb-2">{{ vm().addressLine }}</p>
+
+              @if (vm().mapLink) {
+                <a [href]="vm().mapLink"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="listing-detail-shell__map-link d-inline-flex align-items-center gap-1">
+                  <mat-icon fontSet="material-symbols-outlined" inline>map</mat-icon>
+                  <span>View on map</span>
+                </a>
+              }
             </div>
 
             <button type="button"
@@ -63,7 +81,7 @@
                     (click)="scheduleVisit.emit()">
               <mat-icon fontSet="material-symbols-outlined"
                         inline>calendar_month</mat-icon>
-              <span>{{ vm().ctaLabel || 'Schedule a Visit' }}</span>
+              <span>{{ vm().ctaLabel || 'Schedule a visit' }}</span>
             </button>
           </div>
 
@@ -81,7 +99,7 @@
         <!-- About -->
         <section>
           <app-info-card>
-            <app-section-heading [title]="vm().about.title || 'About this home'" />
+            <app-section-heading [title]="vm().about.title || 'About this property'" />
 
             <div class="listing-detail-shell__rich-text">
               @for (paragraph of vm().about.paragraphs; track $index) {
@@ -138,7 +156,8 @@
                                      [title]="vm().nearby?.title || 'Featured properties nearby'"
                                      [isFeatured]="true"
                                      [scrollSnap]="false"
-                                     variant="standalone" />
+                                     variant="standalone"
+                                     (cardClicked)="nearbyCardClicked.emit($event)"  />
     </div>
   </div>
 

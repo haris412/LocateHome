@@ -19,11 +19,13 @@ import {
   FilterSelectConfig,
   FilterTabItem
 } from '../../../core/models/filter.models';
+import { FiltersCatalogService } from '../../../core/services/filters-catalog.service';
 
 import { FilterShellComponent } from '../filter-shell/filter-shell.component';
 import { FilterSegmentTabsComponent } from '../filter-segment-tabs/filter-segment-tabs.component';
 import { FilterSelectComponent } from '../filter-select-card/filter-select-card.component';
 import { FilterChipGroupComponent } from '../filter-chip-group/filter-chip-group.component';
+import { LocationCityFieldComponent } from '../location-city-field/location-city-field.component';
 
 export interface PropertyFilterPayload {
   mode: FilterMode;
@@ -74,7 +76,8 @@ interface SpeechRecognitionEventLike {
     FilterShellComponent,
     FilterSegmentTabsComponent,
     FilterSelectComponent,
-    FilterChipGroupComponent
+    FilterChipGroupComponent,
+    LocationCityFieldComponent
   ],
   templateUrl: './property-filters.component.html',
   styleUrl: './property-filters.component.scss',
@@ -97,6 +100,7 @@ export class PropertyFiltersComponent {
     return selectedOption?.label || field.placeholder || 'Select';
   }
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly filtersCatalog = inject(FiltersCatalogService);
 
   readonly variant = input<'hero' | 'toolbar'>('hero');
   readonly initialMode = input<FilterMode>('buy');
@@ -202,13 +206,47 @@ export class PropertyFiltersComponent {
   updateField(payload: { id: string; value: string | null }): void {
     const store = this.mode() === 'buy' ? this.localBuyFields : this.localRentFields;
 
-    store.update((fields) =>
-      fields.map((field) =>
+    store.update((fields) => {
+      let next = fields.map((field) =>
         field.id === payload.id
           ? { ...field, value: payload.value }
           : field
-      )
-    );
+      );
+
+      if (payload.id === 'primaryType') {
+        const cat = payload.value || 'any';
+        const opts = this.filtersCatalog.getSubtypeOptions(cat);
+        next = next.map((field) => {
+          if (field.id !== 'subtype') return field;
+          const stillValid = opts.some((o) => o.id === field.value);
+          return {
+            ...field,
+            options: opts,
+            value: stillValid ? field.value : 'any'
+          };
+        });
+      }
+
+      if (payload.id === 'subtype') {
+        const sid = payload.value || 'any';
+        if (sid !== 'any') {
+          const catSlug = this.filtersCatalog.categoryForSubtypeSlug(sid);
+          if (catSlug) {
+            next = next.map((field) =>
+              field.id === 'primaryType' ? { ...field, value: catSlug } : field
+            );
+            const opts = this.filtersCatalog.getSubtypeOptions(catSlug);
+            next = next.map((field) =>
+              field.id === 'subtype'
+                ? { ...field, options: opts, value: sid }
+                : field
+            );
+          }
+        }
+      }
+
+      return next;
+    });
 
     this.emitFiltersChanged();
   }
@@ -234,9 +272,7 @@ export class PropertyFiltersComponent {
   }
 
   runSearch(): void {
-    const payload = this.buildPayload();
-    console.log('FILTER SEARCH', payload);
-    this.searchSubmitted.emit(payload);
+    this.searchSubmitted.emit(this.buildPayload());
   }
 
   startVoiceSearch(): void {

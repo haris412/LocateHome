@@ -9,7 +9,7 @@ import {
   signal
 } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ListingVideoItem } from '../../../core/models/listing-detail.vm';
+import { PropertyVideoItem } from '../../../core/models/property-detail.vm';
 
 @Component({
   selector: 'app-video-gallery-overlay',
@@ -20,7 +20,7 @@ import { ListingVideoItem } from '../../../core/models/listing-detail.vm';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class VideoGalleryOverlayComponent {
-  readonly videos = input.required<ListingVideoItem[]>();
+  readonly videos = input.required<PropertyVideoItem[]>();
   readonly startIndex = input(0);
 
   @Output() readonly close = new EventEmitter<void>();
@@ -41,7 +41,7 @@ export class VideoGalleryOverlayComponent {
     document.body.style.overflow = '';
   }
 
-  get currentVideo(): ListingVideoItem | null {
+  get currentVideo(): PropertyVideoItem | null {
     return this.videos()[this.currentIndex()] ?? null;
   }
 

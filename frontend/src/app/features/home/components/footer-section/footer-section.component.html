@@ -18,7 +18,7 @@
           <ul>
             @for (link of group.links; track link.id) {
               <li>
-                <a [href]="link.href">{{ link.label }}</a>
+                <a [routerLink]="link.href">{{ link.label }}</a>
               </li>
             }
           </ul>

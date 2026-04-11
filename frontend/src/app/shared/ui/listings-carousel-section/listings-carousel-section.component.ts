@@ -3,8 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
+  Output,
   computed,
+  inject,
   input,
   signal,
   viewChild
@@ -12,11 +15,12 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { ListingItem } from '../../../core/models/listing.models';
 import { ListingCardComponent } from '../listing-card/listing-card.component';
+import { Router, RouterLink } from '@angular/router';
 import { SectionHeadingComponent } from '../section-heading/section-heading.component';
 
 @Component({
   selector: 'app-listings-carousel-section',
-  imports: [MatIconModule, ListingCardComponent],
+  imports: [MatIconModule, ListingCardComponent, RouterLink],
   templateUrl: './listings-carousel-section.component.html',
   styleUrl: './listings-carousel-section.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -32,8 +36,10 @@ export class ListingsCarouselSectionComponent {
   readonly smallContent = input<boolean>(false);
   readonly isFeatured = input<boolean>(false);
   readonly scrollSnap = input<boolean>(true);
+@Output() readonly cardClicked = new EventEmitter<string>();
 
   readonly trackRef = viewChild<ElementRef<HTMLDivElement>>('track');
+  private readonly router = inject(Router);
 
   readonly scrollLeft = signal(0);
   readonly clientWidth = signal(0);
@@ -91,5 +97,9 @@ export class ListingsCarouselSectionComponent {
     this.scrollLeft.set(element.scrollLeft);
     this.clientWidth.set(element.clientWidth);
     this.scrollWidth.set(element.scrollWidth);
+  }
+  onCardClicked(id: string):void{
+    this.router.navigate(['/listings', id]);
+     this.cardClicked.emit(id);
   }
 }

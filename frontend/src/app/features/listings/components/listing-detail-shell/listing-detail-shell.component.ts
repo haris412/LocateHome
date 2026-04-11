@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Output, input } from 
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
-import { ListingDetailModel } from '../../../../core/models/listing-detail.vm';
+import { PropertyDetailViewModel } from '../../../../core/models/property-detail.vm';
 import { InfoCardComponent } from '../../../../shared/ui/info-card/info-card.component';
 import { MediaGalleryComponent } from '../../../../shared/ui/media-gallery/media-gallery.component';
 import { AmenitiesGridComponent } from '../../../../shared/ui/amenities-grid/amenities-grid.component';
@@ -36,7 +36,7 @@ import { AppointmentBookingPayload } from 'src/app/core/models/appointment.model
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListingDetailShellComponent {
-  readonly vm = input.required<ListingDetailModel>();
+  readonly vm = input.required<PropertyDetailViewModel>();
 
   @Output() readonly back = new EventEmitter<void>();
   @Output() readonly share = new EventEmitter<void>();
@@ -46,6 +46,7 @@ export class ListingDetailShellComponent {
   @Output() readonly playVideo = new EventEmitter<void>();
   @Output() readonly viewAllVideos = new EventEmitter<void>();
   @Output() readonly videoSelected = new EventEmitter<string>();
+  @Output() readonly nearbyCardClicked = new EventEmitter<string>();
   @Output() readonly inquirySubmitted = new EventEmitter<{
     name: string;
     email: string;

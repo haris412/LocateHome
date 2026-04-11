@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ListingAmenityItem } from '../../../core/models/listing-detail.vm';
+import { PropertyAmenityItem } from '../../../core/models/property-detail.vm';
 import { InfoCardComponent } from '../info-card/info-card.component';
 import { SectionHeadingComponent } from '../section-heading/section-heading.component';
 
@@ -14,5 +14,5 @@ import { SectionHeadingComponent } from '../section-heading/section-heading.comp
 })
 export class AmenitiesGridComponent {
   readonly title = input('Highlights & amenities');
-  readonly items = input<ListingAmenityItem[]>([]);
+  readonly items = input<PropertyAmenityItem[]>([]);
 }

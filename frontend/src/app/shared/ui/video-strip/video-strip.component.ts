@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, Output, input, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
-import { ListingVideoItem } from '../../../core/models/listing-detail.vm';
+import { PropertyVideoItem } from '../../../core/models/property-detail.vm';
 import { SectionHeadingComponent } from '../section-heading/section-heading.component';
 import { VideoGalleryOverlayComponent } from '../video-gallery-overlay/video-gallery-overlay.component';
 
@@ -16,7 +16,7 @@ export class VideoStripComponent {
   readonly title = input('Property videos');
   readonly subtitle = input('');
   readonly actionLabel = input('View all videos');
-  readonly videos = input<ListingVideoItem[]>([]);
+  readonly videos = input<PropertyVideoItem[]>([]);
 
   @Output() readonly viewAll = new EventEmitter<void>();
   @Output() readonly videoSelected = new EventEmitter<string>();

@@ -1,13 +1,23 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, Output, inject, input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  Output,
+  computed,
+  inject,
+  input,
+  signal
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 
 import { InfoCardComponent } from '../info-card/info-card.component';
-import { ListingAgent } from '../../../core/models/listing-detail.vm';
+import { PropertyAgent } from '../../../core/models/property-detail.vm';
 import {
   AppointmentBookingPayload,
-  AppointmentDateSlots
+  AppointmentDateSlots,
+  AppointmentOverlayData
 } from '../../../core/models/appointment.models';
 import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
 
@@ -28,7 +38,7 @@ import { AppointmentOverlayComponent } from '../../../features/listings/componen
 export class ContactAgentFormComponent {
   private readonly fb = inject(FormBuilder);
 
-  readonly agent = input.required<ListingAgent>();
+  readonly agent = input.required<PropertyAgent>();
   readonly submitLabel = input('Request a tour');
   readonly secondary1 = input('Book appointment');
   readonly secondary2 = input('Ask a question');
@@ -41,6 +51,24 @@ export class ContactAgentFormComponent {
   readonly appointmentDateSlots = input<AppointmentDateSlots[]>([]);
 
   readonly isAppointmentOpen = signal(false);
+
+  /** Captured when opening overlay so initial details match the form at click time */
+  private readonly overlayInitials = signal({ name: '', email: '', phone: '' });
+
+  readonly appointmentOverlayData = computed<AppointmentOverlayData>(() => ({
+    agentName: this.agent().name,
+    agentUserId: this.agent().userId,
+    listing: {
+      propertyId: this.listingId(),
+      imageUrl: this.listingImageUrl(),
+      price: this.listingPrice(),
+      address: this.listingAddress()
+    },
+    dateSlots: this.appointmentDateSlots(),
+    initialName: this.overlayInitials().name,
+    initialEmail: this.overlayInitials().email,
+    initialPhone: this.overlayInitials().phone
+  }));
 
   @Output() readonly submitted = new EventEmitter<{
     name: string;
@@ -75,6 +103,12 @@ export class ContactAgentFormComponent {
 
   openBookAppointmentOverlay(): void {
     if (!this.listingId()) return;
+    const v = this.form.getRawValue();
+    this.overlayInitials.set({
+      name: v.name,
+      email: v.email,
+      phone: v.phone
+    });
     this.isAppointmentOpen.set(true);
   }
 

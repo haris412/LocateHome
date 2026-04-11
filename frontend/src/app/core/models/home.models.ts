@@ -7,6 +7,8 @@ export interface TrendItem {
   summary: string;
 }
 
+export type CategoryPurpose = 'For Sale' | 'For Rent';
+
 export interface CategoryItem {
   id: string;
   imgSrc: string;
@@ -14,6 +16,7 @@ export interface CategoryItem {
   description: string;
   meta: string[];
   ctaLabel: string;
+  purpose?: CategoryPurpose;
 }
 
 export interface TestimonialItem {

@@ -15,7 +15,7 @@
     }
   </div>
 
-  <a href="#" class="category-card__cta">
+  <a href="#" class="category-card__cta" (click)="onCtaClick($event)">
     <span>{{ item().ctaLabel }}</span>
     <mat-icon fontSet="material-symbols-outlined" inline>
       arrow_forward

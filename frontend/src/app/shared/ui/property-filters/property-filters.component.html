@@ -131,11 +131,11 @@
         <mat-icon fontSet="material-symbols-outlined"
                   inline>search</mat-icon>
 
-        <input class="property-filters__toolbar-search-input"
-               type="text"
-               [value]="searchQuery()"
-               (input)="updateSearch(($any($event.target).value))"
-               placeholder="Search location, area, project" />
+        <app-location-city-field class="property-filters__toolbar-location-city"
+                                 [label]="''"
+                                 placeholder="Search location, area, project"
+                                 [value]="searchQuery()"
+                                 (valueChanged)="updateSearch($event)" />
 
         @if (voiceEnabled()) {
         <button type="button"

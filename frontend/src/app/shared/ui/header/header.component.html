@@ -15,6 +15,7 @@
            aria-label="Primary navigation">
         @for (item of navItems; track item.id) {
         <a [routerLink]="item.route"
+           [queryParams]="item.queryParams"
            class="home-header__nav-link">
           {{ item.label }}
         </a>
@@ -22,9 +23,9 @@
       </nav>
 
       <div class="home-header__actions">
-        <a href="#"
+        <a routerLink="/auth"
            class="home-header__btn home-header__btn--secondary">Log in</a>
-        <a href="#"
+        <a routerLink="/auth"
            class="home-header__btn home-header__btn--primary">Sign up</a>
       </div>
 
@@ -67,12 +68,14 @@
       </nav>
 
       <div class="home-header__mobile-actions">
-        <a href="#"
+        <a routerLink="/auth"
+           (click)="closeMobileMenu()"
            class="home-header__btn home-header__btn--secondary home-header__btn--mobile">
           Log in
         </a>
 
-        <a href="#"
+        <a routerLink="/auth"
+            (click)="closeMobileMenu()"
            class="home-header__btn home-header__btn--primary home-header__btn--mobile">
           Sign up
         </a>

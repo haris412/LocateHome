@@ -17,6 +17,8 @@ export interface FilterSelectConfig {
   placeholder: string;
   value: string | null;
   options: FilterOption[];
+  /** When set, filter-select renders GeoNames / Overpass widgets instead of mat-select. */
+  locationRole?: 'city' | 'area';
 }
 
 export interface FilterChipItem {

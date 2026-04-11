@@ -31,6 +31,13 @@
       grid-template-rows: 1fr 1fr;
       min-height: 560px;
     }
+
+    /* Exactly two images total: one tall secondary tile beside the hero */
+    &--single-secondary {
+      @media (min-width: 992px) {
+        grid-template-rows: 1fr;
+      }
+    }
   }
 
   &__tile--secondary {

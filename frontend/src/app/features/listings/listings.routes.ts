@@ -8,6 +8,10 @@ export const LISTINGS_ROUTES: Routes = [
     component: ListingsPageComponent
   },
   {
+    path: 'sell',
+    component: ListingsPageComponent
+  },
+  {
     path: ':id',
     component: ListingDetailPageComponent
   }

@@ -1,13 +1,33 @@
-<app-listing-detail-shell
-  [vm]="vm()"
-  (back)="onBack()"
-  (share)="onShare()"
-  (save)="onSave()"
-  (scheduleVisit)="onScheduleVisit()"
-  (openGallery)="onOpenGallery()"
-  (playVideo)="onPlayVideo()"
-  (viewAllVideos)="onViewAllVideos()"
-  (videoSelected)="onVideoSelected($event)"
-  (inquirySubmitted)="onInquirySubmitted($event)"
-  (nearbyFavoriteToggled)="onNearbyFavoriteToggled($event)"
-/>
+@if (detailLoading()) {
+  <div class="listing-detail-page__state container py-5 text-center text-secondary">
+    Loading property…
+  </div>
+} @else if (detailError(); as err) {
+  <div class="listing-detail-page__state container py-5 text-center">
+    <p class="text-danger mb-0">{{ err }}</p>
+    <button type="button" class="btn btn-link mt-2" (click)="onBack()">Go back</button>
+  </div>
+} @else if (detail(); as vm) {
+  <app-listing-detail-shell
+    [vm]="vm"
+    (back)="onBack()"
+    (share)="onShare()"
+    (save)="onSave()"
+    (scheduleVisit)="onScheduleVisit()"
+    (openGallery)="onOpenGallery()"
+    (playVideo)="onPlayVideo()"
+    (viewAllVideos)="onViewAllVideos()"
+    (videoSelected)="onVideoSelected($event)"
+    (inquirySubmitted)="onInquirySubmitted($event)"
+    (nearbyFavoriteToggled)="onNearbyFavoriteToggled($event)"
+  />
+}
+
+@if (overlayData(); as od) {
+  <app-appointment-overlay
+    [open]="overlayOpen()"
+    [data]="od"
+    (closed)="onOverlayClosed()"
+    (confirmed)="onAppointmentConfirmed($event)"
+  />
+}
