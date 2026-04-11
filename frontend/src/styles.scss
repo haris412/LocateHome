@@ -9,11 +9,14 @@ html {
       primary: theme.$primary-palette,
       tertiary: theme.$tertiary-palette
     ),
-    typography: Inter,
+    typography: "Plus Jakarta Sans",
     density: 0
   ));
 }
+
 :root {
+  --font-family: "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+
   --primary: rgb(255, 107, 87);
   --secondary: #ffeadf;
   --tertiary: #FFF8F3;
@@ -26,7 +29,12 @@ html {
   --surface-muted: #f8eeea;
   --border-soft: #ead9d0;
 
-  --success: #27ae60;
+  --success: #16A34A;
+  --error: #DC2626;
+  --warning: #FFB020;
+  --info: #3b82f6;
+  --standby: #F97316;
+
   --shadow-soft: 0 18px 50px rgba(31, 22, 48, 0.08);
   --radius-xl: 18px;
   --radius-lg: 14px;
@@ -42,7 +50,7 @@ html {
   --mat-form-field-outlined-focus-outline-color: var(--primary);
   --mat-option-selected-state-label-text-color: var(--primary);
   --mat-form-field-outlined-container-shape: 12px;
-  --mat-button-filled-label-text-font: Inter;
+  --mat-button-filled-label-text-font: "Plus Jakarta Sans";
   --mat-button-outlined-container-shape: 12px;
 }
 
@@ -53,9 +61,30 @@ body {
 
 body {
   margin: 0;
-  font-family: Inter, "Segoe UI", Roboto, sans-serif !important;
+  font-family: var(--font-family) !important;
   color: var(--font-main);
   background: #f6f0ec;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea,
+.mat-mdc-button,
+.mat-mdc-raised-button,
+.mat-mdc-outlined-button,
+.mat-mdc-unelevated-button,
+.mat-mdc-form-field,
+.mat-mdc-input-element,
+.mat-mdc-option,
+.mat-mdc-menu-item {
+  font-family: var(--font-family) !important;
 }
 
 .mat-icon {
@@ -64,10 +93,10 @@ body {
   justify-content: center;
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+.mat-icon {
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
 }
 
 ::-webkit-scrollbar-button {
