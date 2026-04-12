@@ -1,282 +1,301 @@
-<section class="search-panel section-card" aria-label="Property search filters">
-  <div class="search-panel__top">
-    <div class="search-panel__tabs" role="tablist" aria-label="Search mode">
-      @for (tab of tabs; track tab.id) {
-        <button
-          type="button"
-          class="search-panel__tab"
-          [class.search-panel__tab--active]="activeTab() === tab.id"
-          [attr.aria-selected]="activeTab() === tab.id"
-          (click)="setActiveTab(tab.id)"
-        >
+<section class="search-panel section-card"
+         aria-label="Property search filters">
+  <div class="search-panel__shell">
+    <div class="search-panel__top">
+      <div class="search-panel__tabs"
+           role="tablist"
+           aria-label="Search mode">
+        @for (tab of tabs; track tab.id) {
+        <button type="button"
+                class="search-panel__tab"
+                [class.search-panel__tab--active]="activeTab() === tab.id"
+                [attr.aria-selected]="activeTab() === tab.id"
+                (click)="setActiveTab(tab.id)">
           {{ tab.label }}
         </button>
-      }
-    </div>
-
-    <div class="search-panel__tools">
-      <button
-        type="button"
-        class="search-panel__tool-btn"
-        [disabled]="!micSupported()"
-        (click)="startVoiceSearch()"
-      >
-        <mat-icon fontSet="material-symbols-outlined" inline>mic_none</mat-icon>
-        <span>Voice search</span>
-      </button>
-
-      <button
-        type="button"
-        class="search-panel__tool-btn"
-        [class.search-panel__tool-btn--active]="showMoreFilters()"
-        (click)="toggleMoreFilters()"
-        [attr.aria-expanded]="showMoreFilters()"
-        aria-controls="search-panel-filters"
-      >
-        <mat-icon fontSet="material-symbols-outlined" inline>tune</mat-icon>
-        <span>More filters</span>
-      </button>
-    </div>
-  </div>
-
-  <div class="search-panel__top-grid">
-    <div class="search-panel__hero-field">
-      <div class="search-panel__hero-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>search</mat-icon>
-        <span>Search by keyword or voice</span>
+        }
       </div>
 
-      <div class="search-panel__hero-query">{{ keyword() }}</div>
-
-      <div class="search-panel__voice-row">
-        <span class="search-panel__voice-hint">{{ voiceHint() }}</span>
-
-        <button
-          type="button"
-          class="search-panel__mic-btn"
-          [class.search-panel__mic-btn--active]="isListening()"
-          [disabled]="!micSupported()"
-          (click)="startVoiceSearch()"
-          [attr.aria-label]="isListening() ? 'Stop voice search' : 'Start voice search'"
-        >
-          <mat-icon fontSet="material-symbols-outlined" inline>
-            {{ isListening() ? 'graphic_eq' : 'mic' }}
-          </mat-icon>
+      <div class="search-panel__tools">
+        <button type="button"
+                class="search-panel__tool-btn"
+                [disabled]="!micSupported()"
+                (click)="startVoiceSearch()">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>mic_none</mat-icon>
+          <span>Voice search</span>
         </button>
+
+        <div class="search-panel__filters-anchor">
+          <button type="button"
+                  class="search-panel__tool-btn"
+                  [class.search-panel__tool-btn--active]="showMoreFilters()"
+                  (click)="toggleMoreFilters()"
+                  [attr.aria-expanded]="showMoreFilters()"
+                  aria-controls="search-panel-filters">
+            <mat-icon fontSet="material-symbols-outlined"
+                      inline
+                      class="search-panel__tool-btn-icon">
+              tune
+            </mat-icon>
+            <span>More filters</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="search-panel__primary-row">
+      <div class="search-panel__mini-field">
+        <span class="search-panel__field-label">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>location_on</mat-icon>
+          <span>Province</span>
+        </span>
+
+        <mat-form-field appearance="outline"
+                        class="search-panel__field-control">
+          <mat-select [value]="province()"
+                      (selectionChange)="province.set($any($event.value))">
+            @for (option of provinceOptions; track option) {
+            <mat-option [value]="option.toLowerCase()">{{ option }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
       </div>
 
-      @if (micError()) {
-        <p class="search-panel__mic-error">{{ micError() }}</p>
-      }
-    </div>
+      <div class="search-panel__mini-field">
+        <span class="search-panel__field-label">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>location_city</mat-icon>
+          <span>City</span>
+        </span>
 
-    <div class="search-panel__type-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>domain</mat-icon>
-        <span>Property type</span>
-      </span>
-
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select
-          [value]="primaryType()"
-          (selectionChange)="onPrimaryTypeSelected($any($event.value))"
-        >
-          @for (option of propertyTypeOptions(); track option.id) {
-            <mat-option [value]="option.id">{{ option.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <div class="search-panel__type-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>format_list_bulleted</mat-icon>
-        <span>Subtype</span>
-      </span>
-
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select
-          [value]="subtype()"
-          (selectionChange)="onSubtypeSelected($any($event.value))"
-        >
-          @for (option of subtypeOptions(); track option.id) {
-            <mat-option [value]="option.id">{{ option.label }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <button
-      type="button"
-      class="search-panel__search-cta"
-      (click)="runSearch()"
-      aria-label="Search properties"
-    >
-      <span class="search-panel__search-cta-icon">
-        <mat-icon fontSet="material-symbols-outlined" inline>search</mat-icon>
-      </span>
-
-      <span class="search-panel__search-cta-copy">
-        <strong>Search properties</strong>
-        <small>Find homes fast</small>
-      </span>
-
-      <span class="search-panel__search-cta-arrow">
-        <mat-icon fontSet="material-symbols-outlined" inline>arrow_forward</mat-icon>
-      </span>
-    </button>
-  </div>
-
-  <div class="search-panel__bottom-grid">
-    <!-- Province -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
-        <span>Province</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="province()" (selectionChange)="province.set($any($event.value))">
-          @for (option of provinceOptions; track option) {
-            <mat-option [value]="option.toLowerCase()">{{ option }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
-
-    <!-- City (GeoNames) -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>location_city</mat-icon>
-        <span>City</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <input
-          matInput
-          [formControl]="cityControl"
-          [matAutocomplete]="cityAuto"
-          placeholder="Search city"
-          autocomplete="off"
-        />
-        <mat-autocomplete
-          #cityAuto="matAutocomplete"
-          [displayWith]="displayCity"
-          [autoActiveFirstOption]="true"
-          (optionSelected)="onCityOptionSelected($event)"
-        >
-          @for (p of filteredCities(); track trackGeoPlace($index, p)) {
+        <mat-form-field appearance="outline"
+                        class="search-panel__field-control">
+          <input matInput
+                 [formControl]="cityControl"
+                 [matAutocomplete]="cityAuto"
+                 placeholder="Search city"
+                 autocomplete="off" />
+          <mat-autocomplete #cityAuto="matAutocomplete"
+                            [displayWith]="displayCity"
+                            [autoActiveFirstOption]="true"
+                            (optionSelected)="onCityOptionSelected($event)">
+            @for (p of filteredCities(); track trackGeoPlace($index, p)) {
             <mat-option [value]="p">
               {{ p.name }}{{ p.adminName1 ? ', ' + p.adminName1 : '' }}
             </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-    </div>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
 
-    <!-- Area (Overpass: suburbs, roads, restaurants) -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>pin_drop</mat-icon>
-        <span>Area</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <input
-          matInput
-          [formControl]="areaControl"
-          [matAutocomplete]="areaAuto"
-          placeholder="Neighbourhood, road, restaurant"
-          autocomplete="off"
-        />
-        <mat-autocomplete
-          #areaAuto="matAutocomplete"
-          [displayWith]="displayArea"
-          [autoActiveFirstOption]="true"
-          (optionSelected)="onAreaOptionSelected($event)"
-        >
-          @for (a of filteredAreas(); track trackAreaItem($index, a)) {
+      <div class="search-panel__mini-field">
+        <span class="search-panel__field-label">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>pin_drop</mat-icon>
+          <span>Area</span>
+        </span>
+
+        <mat-form-field appearance="outline"
+                        class="search-panel__field-control">
+          <input matInput
+                 [formControl]="areaControl"
+                 [matAutocomplete]="areaAuto"
+                 placeholder="Neighbourhood or road"
+                 autocomplete="off" />
+          <mat-autocomplete #areaAuto="matAutocomplete"
+                            [displayWith]="displayArea"
+                            [autoActiveFirstOption]="true"
+                            (optionSelected)="onAreaOptionSelected($event)">
+            @for (a of filteredAreas(); track trackAreaItem($index, a)) {
             <mat-option [value]="a">
               <span class="search-panel__area-option">{{ a.name }}</span>
             </mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+
+      <button type="button"
+              class="search-panel__search-cta"
+              (click)="runSearch()"
+              aria-label="Search properties">
+        <span class="search-panel__search-cta-icon">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>search</mat-icon>
+        </span>
+
+        <span class="search-panel__search-cta-copy">
+          <strong>Search</strong>
+        </span>
+      </button>
     </div>
 
-    <!-- Price Range -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>monetization_on</mat-icon>
-        <span>Price Range</span>
-      </span>
-      <app-price-range-field
-        [mode]="activeTab()"
-        (rangeChange)="onPriceRangeChange($event)"
-      />
+    <div class="search-panel__secondary-row">
+      <div class="search-panel__hero-field">
+        <div class="search-panel__hero-label">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>search</mat-icon>
+          <span>Search by keyword or voice</span>
+        </div>
+
+        <div class="search-panel__hero-query">{{ keyword() }}</div>
+
+        <div class="search-panel__voice-row">
+          <span class="search-panel__voice-hint">{{ voiceHint() }}</span>
+
+          <button type="button"
+                  class="search-panel__mic-btn"
+                  [class.search-panel__mic-btn--active]="isListening()"
+                  [disabled]="!micSupported()"
+                  (click)="startVoiceSearch()"
+                  [attr.aria-label]="isListening() ? 'Stop voice search' : 'Start voice search'">
+            <mat-icon fontSet="material-symbols-outlined"
+                      inline>
+              {{ isListening() ? 'graphic_eq' : 'mic' }}
+            </mat-icon>
+          </button>
+        </div>
+
+        @if (micError()) {
+        <p class="search-panel__mic-error">{{ micError() }}</p>
+        }
+      </div>
     </div>
 
-    <!-- Bedrooms -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>bed</mat-icon>
-        <span>Bedrooms</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="bedrooms()" (selectionChange)="bedrooms.set($any($event.value))">
-          @for (option of bedroomOptions; track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
+    <div id="search-panel-filters"
+         class="search-panel__overlay-panel"
+         [class.search-panel__overlay-panel--open]="showMoreFilters()">
+      <div class="search-panel__overlay-panel-inner">
+        <div class="search-panel__overlay">
+          <div class="search-panel__overlay-head">
+            <div>
+              <h3 class="search-panel__overlay-title">More filters</h3>
+              <p class="search-panel__overlay-subtitle">
+                Refine your property search with more details.
+              </p>
+            </div>
+          </div>
 
-    <!-- Bathrooms -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>bathtub</mat-icon>
-        <span>Bathrooms</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="bathrooms()" (selectionChange)="bathrooms.set($any($event.value))">
-          @for (option of bathroomOptions; track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-    </div>
+          <div class="search-panel__overlay-grid">
+            <div class="search-panel__type-field">
+              <span class="search-panel__field-label">
+                <mat-icon fontSet="material-symbols-outlined"
+                          inline>domain</mat-icon>
+                <span>Property type</span>
+              </span>
 
-    <!-- Size -->
-    <div class="search-panel__mini-field">
-      <span class="search-panel__field-label">
-        <mat-icon fontSet="material-symbols-outlined" inline>straighten</mat-icon>
-        <span>Size</span>
-      </span>
-      <mat-form-field appearance="outline" class="search-panel__field-control">
-        <mat-select [value]="size()" (selectionChange)="size.set($any($event.value))">
-          @for (option of sizeOptions; track option) {
-            <mat-option [value]="option">{{ option }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+              <mat-form-field appearance="outline"
+                              class="search-panel__field-control">
+                <mat-select [value]="primaryType()"
+                            (selectionChange)="onPrimaryTypeSelected($any($event.value))">
+                  @for (option of propertyTypeOptions(); track option.id) {
+                  <mat-option [value]="option.id">{{ option.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="search-panel__type-field">
+              <span class="search-panel__field-label">
+                <mat-icon fontSet="material-symbols-outlined"
+                          inline>format_list_bulleted</mat-icon>
+                <span>Subtype</span>
+              </span>
+
+              <mat-form-field appearance="outline"
+                              class="search-panel__field-control">
+                <mat-select [value]="subtype()"
+                            (selectionChange)="onSubtypeSelected($any($event.value))">
+                  @for (option of subtypeOptions(); track option.id) {
+                  <mat-option [value]="option.id">{{ option.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="search-panel__mini-field">
+              <span class="search-panel__field-label">
+                <mat-icon fontSet="material-symbols-outlined"
+                          inline>monetization_on</mat-icon>
+                <span>Price Range</span>
+              </span>
+              <app-price-range-field [mode]="activeTab()"
+                                     (rangeChange)="onPriceRangeChange($event)" />
+            </div>
+
+            <div class="search-panel__mini-field">
+              <span class="search-panel__field-label">
+                <mat-icon fontSet="material-symbols-outlined"
+                          inline>bed</mat-icon>
+                <span>Bedrooms</span>
+              </span>
+              <mat-form-field appearance="outline"
+                              class="search-panel__field-control">
+                <mat-select [value]="bedrooms()"
+                            (selectionChange)="bedrooms.set($any($event.value))">
+                  @for (option of bedroomOptions; track option) {
+                  <mat-option [value]="option">{{ option }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="search-panel__mini-field">
+              <span class="search-panel__field-label">
+                <mat-icon fontSet="material-symbols-outlined"
+                          inline>bathtub</mat-icon>
+                <span>Bathrooms</span>
+              </span>
+              <mat-form-field appearance="outline"
+                              class="search-panel__field-control">
+                <mat-select [value]="bathrooms()"
+                            (selectionChange)="bathrooms.set($any($event.value))">
+                  @for (option of bathroomOptions; track option) {
+                  <mat-option [value]="option">{{ option }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+
+            <div class="search-panel__mini-field">
+              <span class="search-panel__field-label">
+                <mat-icon fontSet="material-symbols-outlined"
+                          inline>straighten</mat-icon>
+                <span>Size</span>
+              </span>
+              <mat-form-field appearance="outline"
+                              class="search-panel__field-control">
+                <mat-select [value]="size()"
+                            (selectionChange)="size.set($any($event.value))">
+                  @for (option of sizeOptions; track option) {
+                  <mat-option [value]="option">{{ option }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <div class="search-panel__chips">
+            @for (chip of quickChips(); track chip.id) {
+            <button type="button"
+                    class="search-panel__chip"
+                    [class.search-panel__chip--active]="chip.active"
+                    (click)="toggleChip(chip.id)">
+              @if (chip.icon) {
+              <mat-icon fontSet="material-symbols-outlined"
+                        inline>
+                {{ chip.icon }}
+              </mat-icon>
+              }
+              <span>{{ chip.label }}</span>
+            </button>
+            }
+          </div>
+          
+        </div>
+      </div>
     </div>
   </div>
-
-  @if (showMoreFilters()) {
-    <div id="search-panel-filters" class="search-panel__chips">
-      @for (chip of quickChips(); track chip.id) {
-        <button
-          type="button"
-          class="search-panel__chip"
-          [class.search-panel__chip--active]="chip.active"
-          (click)="toggleChip(chip.id)"
-        >
-          @if (chip.icon) {
-            <mat-icon fontSet="material-symbols-outlined" inline>
-              {{ chip.icon }}
-            </mat-icon>
-          }
-
-          <span>{{ chip.label }}</span>
-        </button>
-      }
-    </div>
-  }
 </section>
