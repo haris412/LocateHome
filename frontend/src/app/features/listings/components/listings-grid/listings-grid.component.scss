@@ -1,14 +1,19 @@
 .listings-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
   gap: 1.25rem;
-  align-items: start;
+  justify-content: start;
 
-  > * {
-    min-width: 0;
-  }
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
 }
 
-.listings-grid--list {
-  grid-template-columns: 1fr;
+/* Prevent single card stretch */
+@media (min-width: 768px) {
+  .listings-grid > * {
+    max-width: 22rem;
+  }
+}
+@media (max-width: 767.98px) {
+  .listings-grid {
+    justify-content: center;
+  }
 }
