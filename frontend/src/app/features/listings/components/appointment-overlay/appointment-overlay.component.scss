@@ -2,7 +2,7 @@
   position: fixed;
   inset: 0;
   z-index: 1300;
-  background: rgba(18, 22, 34, 0.6);
+  background: var(--overlay-backdrop);
   backdrop-filter: blur(8px);
   padding: 1rem;
   display: flex;
@@ -46,7 +46,7 @@
     width: 2.75rem;
     height: 2.75rem;
     border: 0;
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
     background: var(--surface-muted);
     color: var(--font-main);
     font-size: 1.5rem;
@@ -81,7 +81,7 @@
   &__listing-image {
     width: 100%;
     height: 170px;
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
     object-fit: cover;
 
     @media (min-width: 768px) {
@@ -131,7 +131,7 @@
   }
 
   &__calendar-wrap {
-    border-radius: 18px;
+    border-radius: var(--radius-xl);
     overflow: hidden;
     background: var(--surface);
   }
@@ -155,7 +155,7 @@
     align-items: center;
     min-height: 2rem;
     padding: 0.35rem 0.7rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--surface-muted);
     color: var(--font-main);
     font-size: 0.82rem;
@@ -230,7 +230,7 @@
 
   &__confirm-btn {
     background: var(--primary);
-    color: #fff;
+    color: var(--surface);
     box-shadow: 0 14px 28px rgba(255, 107, 87, 0.22);
   }
 
@@ -250,7 +250,7 @@
   &__schedule-warning {
     margin-bottom: 0.75rem;
     padding: 0.65rem 0.9rem;
-    border-radius: 12px;
+    border-radius: var(--radius-field);
     background: rgba(255, 193, 7, 0.12);
     color: var(--font-main);
     font-size: 0.9rem;
@@ -258,7 +258,7 @@
 
   &__confirm-error {
     margin: 0.75rem 0 0;
-    color: #c62828;
+    color: var(--error-strong);
     font-size: 0.9rem;
   }
 }
@@ -267,7 +267,7 @@
   min-height: 2.5rem;
   padding: 0.55rem 1rem;
   border: 1px solid var(--border-soft);
-  border-radius: 14px;
+  border-radius: var(--radius-lg);
   background: var(--surface-muted);
   color: var(--font-main);
   font-weight: 700;
@@ -276,7 +276,7 @@
   &--active {
     background: var(--primary);
     border-color: var(--primary);
-    color: #fff;
+    color: var(--surface);
   }
 }
 
@@ -285,13 +285,13 @@
   align-items: center;
   min-height: 1.85rem;
   padding: 0.3rem 0.65rem;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.76rem;
   font-weight: 700;
 
   &--available {
     background: rgba(39, 174, 96, 0.1);
-    color: #1d8f50;
+    color: var(--status-success-text);
   }
 
   &--selected {
@@ -301,22 +301,22 @@
 
   &--confirmed {
     background: rgba(18, 179, 182, 0.12);
-    color: #12989b;
+    color: var(--status-confirmed-text);
   }
 
   &--booked {
     background: rgba(245, 130, 32, 0.12);
-    color: #ef7c17;
+    color: var(--status-booked-text);
   }
 
   &--blocked {
     background: rgba(122, 102, 118, 0.12);
-    color: #7a6676;
+    color: var(--status-blocked-text);
   }
 
   &--not-available {
     background: rgba(90, 90, 90, 0.1);
-    color: #666;
+    color: var(--status-unavailable-text);
   }
 }
 
@@ -365,8 +365,9 @@
   &--available {
     background: rgba(39, 174, 96, 0.04);
     border-color: rgba(39, 174, 96, 0.2);
+
     span {
-      color: rgba(39, 174, 96, 0.2);
+      color: var(--status-success-text);
     }
   }
 
@@ -374,6 +375,7 @@
     background: rgba(255, 107, 87, 0.08);
     border-color: var(--primary);
     box-shadow: 0 12px 24px rgba(255, 107, 87, 0.12);
+
     span {
       color: var(--primary);
     }
@@ -382,32 +384,36 @@
   &--confirmed {
     background: rgba(18, 179, 182, 0.08);
     border-color: rgba(18, 179, 182, 0.22);
+
     span {
-      color: rgba(18, 179, 182, 0.22);
+      color: var(--status-confirmed-text);
     }
   }
 
   &--booked {
     background: rgba(245, 130, 32, 0.1);
     border-color: rgba(245, 130, 32, 0.22);
+
     span {
-      color: rgba(245, 130, 32, 0.22);
+      color: var(--status-booked-text);
     }
   }
 
   &--blocked {
     background: rgba(122, 102, 118, 0.1);
     border-color: rgba(122, 102, 118, 0.18);
+
     span {
-      color: rgba(122, 102, 118, 0.18);
+      color: var(--status-blocked-text);
     }
   }
 
   &--not-available {
     background: rgba(90, 90, 90, 0.08);
     border-color: rgba(90, 90, 90, 0.22);
+
     span {
-      color: #6b6b6b;
+      color: var(--status-unavailable-text);
     }
   }
 }
@@ -419,7 +425,7 @@
 
   .mat-calendar-body-selected {
     background-color: var(--primary) !important;
-    color: #fff !important;
+    color: var(--surface) !important;
   }
 
   .mat-calendar-body-today:not(.mat-calendar-body-selected) {

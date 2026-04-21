@@ -16,7 +16,7 @@
     border: 1px solid var(--border-soft);
     background: var(--surface);
     color: var(--font-main);
-    border-radius: 12px;
+    border-radius: var(--radius-field);
     min-height: 44px;
     padding: 0.75rem 1rem;
     font-weight: 700;
@@ -32,7 +32,7 @@
     display: inline-flex;
     align-items: center;
     min-height: 2rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding: 0.35rem 0.8rem;
     font-size: 0.8rem;
     font-weight: 800;
@@ -41,15 +41,15 @@
     color: var(--font-main);
 
     &--rent {
-      border-color: #0d6efd33;
-      background: #0d6efd14;
-      color: #0a58ca;
+      border-color: var(--purpose-rent-border);
+      background: var(--purpose-rent-bg);
+      color: var(--purpose-rent-text);
     }
 
     &--sale {
-      border-color: #19875433;
-      background: #19875414;
-      color: #146c43;
+      border-color: var(--purpose-sale-border);
+      background: var(--purpose-sale-bg);
+      color: var(--purpose-sale-text);
     }
   }
 
@@ -57,9 +57,9 @@
     display: inline-flex;
     align-items: center;
     min-height: 2rem;
-    border-radius: 999px;
-    background: #f4b326;
-    color: #2b1a00;
+    border-radius: var(--radius-pill);
+    background: var(--status-highlight-bg);
+    color: var(--status-highlight-text);
     padding: 0.35rem 0.8rem;
     font-size: 0.8rem;
     font-weight: 800;

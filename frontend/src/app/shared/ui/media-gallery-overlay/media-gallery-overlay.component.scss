@@ -12,7 +12,7 @@
     top: 20px;
     right: 0px;
     font-size: 2rem;
-    color: #fff;
+    color: var(--surface);
     background: none;
     border: none;
     cursor: pointer;
@@ -37,7 +37,7 @@
     top: 50%;
     transform: translateY(-50%);
     font-size: 3rem;
-    color: #fff;
+    color: var(--surface);
     background: none;
     border: none;
     cursor: pointer;

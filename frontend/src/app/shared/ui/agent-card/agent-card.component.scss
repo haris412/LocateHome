@@ -3,8 +3,8 @@
   gap: 1rem;
   height: 100%;
   padding: 1.35rem;
-  border-radius: 0.9rem;
-  border: 1px solid #ead9d0;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-soft);
   background: var(--surface);
 
   &__top {
@@ -141,7 +141,7 @@
     &--primary {
       background: var(--primary);
       border-color: var(--primary);
-      color: #fff;
+      color: var(--surface);
     }
   }
 }

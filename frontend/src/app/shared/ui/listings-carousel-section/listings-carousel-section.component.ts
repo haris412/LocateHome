@@ -36,7 +36,9 @@ export class ListingsCarouselSectionComponent {
   readonly smallContent = input<boolean>(false);
   readonly isFeatured = input<boolean>(false);
   readonly scrollSnap = input<boolean>(true);
-@Output() readonly cardClicked = new EventEmitter<string>();
+
+  @Output() readonly cardClicked = new EventEmitter<string>();
+  @Output() readonly favoriteToggled = new EventEmitter<string>();
 
   readonly trackRef = viewChild<ElementRef<HTMLDivElement>>('track');
   private readonly router = inject(Router);
@@ -87,7 +89,7 @@ export class ListingsCarouselSectionComponent {
   }
 
   onFavoriteToggled(id: string): void {
-    console.log('favorite toggled', id);
+    this.favoriteToggled.emit(id);
   }
 
   private updateTrackMetrics(): void {
@@ -98,8 +100,9 @@ export class ListingsCarouselSectionComponent {
     this.clientWidth.set(element.clientWidth);
     this.scrollWidth.set(element.scrollWidth);
   }
-  onCardClicked(id: string):void{
+
+  onCardClicked(id: string): void {
     this.router.navigate(['/listings', id]);
-     this.cardClicked.emit(id);
+    this.cardClicked.emit(id);
   }
 }

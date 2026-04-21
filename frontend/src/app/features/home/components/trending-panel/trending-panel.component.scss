@@ -1,6 +1,6 @@
 .trending-panel {
   padding: 1.5rem;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 82%, var(--secondary) 18%);
   display: grid;
   gap: 1rem;
 
@@ -15,14 +15,14 @@
   &__label {
     min-height: 2rem;
     padding: 0.375rem 0.75rem;
-    border-radius: 999px;
-    background: var(--surface-soft);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--secondary) 72%, var(--surface) 28%);
     color: var(--font-secondary);
     font-size: 0.75rem;
     display: flex;
     align-items: center;
     gap: 0.35rem;
-
+    border: 1px solid var(--border-soft);
   }
 
   &__controls {
@@ -35,12 +35,22 @@
     height: 2.5rem;
     border: 1px solid var(--border-soft);
     border-radius: 50%;
-    background: var(--surface);
+    background: color-mix(in srgb, var(--surface) 88%, var(--secondary) 12%);
     color: var(--font-main);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      transform 0.2s ease;
+
+    &:hover:not(:disabled) {
+      border-color: var(--border-field-hover);
+      background: color-mix(in srgb, var(--surface) 68%, var(--secondary) 32%);
+      transform: translateY(-1px);
+    }
 
     &:disabled {
       opacity: 0.4;
@@ -65,24 +75,25 @@
     padding-bottom: 0.5rem;
 
     scrollbar-width: thin;
-    scrollbar-color: rgba(122, 102, 118, 0.45) rgba(234, 217, 208, 0.45);
+    scrollbar-color: color-mix(in srgb, var(--font-secondary) 48%, transparent)
+      color-mix(in srgb, var(--secondary) 56%, transparent);
 
     &::-webkit-scrollbar {
       height: 10px;
     }
 
     &::-webkit-scrollbar-track {
-      background: rgba(234, 217, 208, 0.45);
-      border-radius: 999px;
+      background: color-mix(in srgb, var(--secondary) 56%, transparent);
+      border-radius: var(--radius-pill);
     }
 
     &::-webkit-scrollbar-thumb {
-      background: rgba(122, 102, 118, 0.45);
-      border-radius: 999px;
+      background: color-mix(in srgb, var(--font-secondary) 48%, transparent);
+      border-radius: var(--radius-pill);
     }
 
     &::-webkit-scrollbar-thumb:hover {
-      background: rgba(122, 102, 118, 0.7);
+      background: color-mix(in srgb, var(--font-secondary) 72%, transparent);
     }
   }
 
@@ -98,8 +109,8 @@
   &__item {
     padding: 1rem;
     border: 1px solid var(--border-soft);
-    border-radius: 0.8rem;
-    background: var(--surface);
+    border-radius: var(--radius-field);
+    background: color-mix(in srgb, var(--surface) 90%, var(--secondary) 10%);
     min-height: 100%;
   }
 

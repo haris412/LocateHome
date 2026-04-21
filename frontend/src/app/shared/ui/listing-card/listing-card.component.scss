@@ -6,8 +6,8 @@
   max-width: none;
   height: 100%;
   overflow: hidden;
-  border: 1px solid rgba(234, 217, 208, 0.82);
-  border-radius: 0.9rem;
+  border: 1px solid rgba(197, 232, 223, 0.82);
+  border-radius: var(--radius-xl);
   background: var(--surface);
   cursor: pointer;
   transition:
@@ -17,8 +17,8 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 34px rgba(31, 22, 48, 0.1);
-    border-color: rgba(234, 217, 208, 1);
+    box-shadow: 0 16px 34px rgba(16, 32, 28, 0.1);
+    border-color: rgba(197, 232, 223, 1);
   }
 
   &:focus-visible {
@@ -49,32 +49,86 @@
     position: absolute;
     top: 1rem;
     left: 1rem;
-    z-index: 1;
+    z-index: 2;
     min-height: 2rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: 0.45rem;
-    color: #fff;
-    font-size: 0.75rem;
+    padding: 0.3rem 0.85rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.72rem;
+    line-height: 1;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.03em;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
+    font-weight: 800;
+    border: 1px solid transparent;
 
-    &--sale,
-    &--featured,
-    &--new {
-      background: var(--primary);
+    &--featured {
+      background: var(--status-highlight-bg);
+      color: var(--status-highlight-text);
     }
 
-    &--rent,
+    &--new {
+      background: color-mix(
+        in srgb,
+        var(--primary-soft) 82%,
+        var(--surface) 18%
+      );
+      color: var(--primary);
+      border-color: color-mix(in srgb, var(--primary) 18%, transparent);
+    }
+
     &--viewed {
-      background: #7c3aed;
+      background: color-mix(in srgb, var(--surface-dark) 90%, transparent);
+      color: var(--surface);
     }
 
     &--verified {
-      background: #12b3b6;
+      background: color-mix(in srgb, var(--secondary) 86%, var(--surface) 14%);
+      color: var(--badge-accent-teal);
+      border-color: color-mix(
+        in srgb,
+        var(--badge-accent-teal) 16%,
+        transparent
+      );
+    }
+
+    &--sale,
+    &--rent {
+      background: color-mix(in srgb, var(--secondary) 84%, var(--surface) 16%);
+      color: var(--purpose-sale-text);
+      border-color: color-mix(
+        in srgb,
+        var(--purpose-sale-text) 18%,
+        transparent
+      );
+    }
+  }
+
+  &__purpose-pill {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 2;
+    min-height: 2.1rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 8px 18px rgba(16, 32, 28, 0.1);
+
+    &--sale {
+      background: var(--primary);
+      color: var(--surface);
+    }
+
+    &--rent {
+      background: var(--badge-accent-teal);
+      color: var(--surface);
     }
   }
 
@@ -82,12 +136,12 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
-    z-index: 1;
-    width: 2.5rem;
-    height: 2.5rem;
+    z-index: 2;
+    width: 2.4rem;
+    height: 2.4rem;
     border: 0;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.95);
+    background: var(--surface-frost);
     color: var(--font-secondary);
     display: inline-flex;
     align-items: center;
@@ -98,25 +152,41 @@
       transform 0.2s ease;
 
     &:hover {
-      background: #fff;
+      background: var(--surface);
       color: var(--primary);
       transform: scale(1.04);
+    }
+
+    &--active {
+      background: color-mix(
+        in srgb,
+        var(--primary-soft) 72%,
+        var(--surface) 28%
+      );
+      color: var(--primary);
     }
   }
 
   &__body {
     display: grid;
-    gap: 0.8rem;
-    padding: 1.3rem 1.4rem 1.2rem;
+    gap: 0.65rem;
+    padding: 1.15rem 1.15rem 1.1rem;
     min-width: 0;
+  }
+
+  &__eyebrow {
+    color: var(--primary);
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.2;
   }
 
   &__price,
   &__rent {
-    color: var(--primary);
+    color: var(--font-main);
     font-size: 1.5rem;
     line-height: 1;
-    font-weight: 700;
+    font-weight: 800;
 
     .listing-card__rent-subtext {
       font-size: 0.9rem;
@@ -128,19 +198,19 @@
   &__title {
     margin: 0;
     color: var(--font-main);
-    font-size: 1.15rem;
-    line-height: 1.15;
-    font-weight: 600;
+    font-size: 1.125rem;
+    line-height: 1.1;
+    font-weight: 800;
     letter-spacing: -0.03em;
   }
 
   &__address {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.45rem;
     margin: 0;
     color: var(--font-secondary);
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     line-height: 1.45;
     min-width: 0;
 
@@ -162,16 +232,16 @@
 
   &__divider {
     height: 1px;
-    background: var(--border-soft);
+    background: color-mix(in srgb, var(--border-soft) 88%, transparent);
   }
 
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem 1.25rem;
+    gap: 1rem 1.1rem;
     color: var(--font-main);
-    font-size: 0.98rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 500;
 
     span {
       display: inline-flex;
@@ -184,12 +254,16 @@
       width: 1rem;
       height: 1rem;
       font-size: 1rem;
-      color: var(--font-secondary);
+      color: var(--success);
       flex-shrink: 0;
     }
   }
 
   &--compact {
+    .listing-card__eyebrow {
+      font-size: 0.85rem;
+    }
+
     .listing-card__price,
     .listing-card__rent {
       font-size: 1.35rem;
@@ -225,29 +299,29 @@
 
 @media (max-width: 991.98px) {
   .listing-card {
-    border-radius: 0.75rem;
+    border-radius: var(--radius-field);
 
     &__media {
       aspect-ratio: 1.6 / 1;
     }
 
     &__body {
-      padding: 0.85rem 0.9rem;
-      gap: 0.55rem;
+      padding: 0.95rem 0.95rem 0.9rem;
+      gap: 0.5rem;
+    }
+
+    &__eyebrow {
+      font-size: 0.8rem;
     }
 
     &__price,
     &__rent {
-      font-size: 1.15rem;
-    }
-
-    &__rent-subtext {
-      font-size: 0.75rem;
+      font-size: 1.2rem;
     }
 
     &__title {
-      font-size: 0.95rem;
-      line-height: 1.2;
+      font-size: 1rem;
+      line-height: 1.15;
     }
 
     &__address {
@@ -270,9 +344,17 @@
     &__badge {
       top: 0.75rem;
       left: 0.75rem;
-      font-size: 0.65rem;
-      padding: 0.2rem 0.5rem;
-      min-height: 1.7rem;
+      font-size: 0.62rem;
+      padding: 0.2rem 0.55rem;
+      min-height: 1.6rem;
+    }
+
+    &__purpose-pill {
+      right: 0.75rem;
+      bottom: 0.75rem;
+      font-size: 0.7rem;
+      padding: 0.25rem 0.7rem;
+      min-height: 1.8rem;
     }
 
     &__favorite {
@@ -313,4 +395,20 @@
       max-width: 100%;
     }
   }
+}
+.listing-card__favorite-icon {
+  font-variation-settings:
+    "FILL" 0,
+    "wght" 400,
+    "GRAD" 0,
+    "opsz" 24;
+  transition: 0.2s ease;
+}
+
+.listing-card__favorite--active .material-symbols-outlined {
+  font-variation-settings:
+    "FILL" 1,
+    "wght" 500,
+    "GRAD" 0,
+    "opsz" 24;
 }

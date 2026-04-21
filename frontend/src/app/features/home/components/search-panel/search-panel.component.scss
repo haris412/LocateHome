@@ -20,8 +20,8 @@
     margin: 0 auto;
     padding: 1rem;
     border-radius: 22px;
-    background: rgba(255, 248, 243, 0.94);
-    border: 1px solid var(--border-soft);
+    background: color-mix(in srgb, var(--surface) 82%, var(--secondary) 18%);
+    border: 1px solid var(--border-soft-strong);
     box-shadow: var(--shadow-soft);
     backdrop-filter: blur(10px);
   }
@@ -39,15 +39,15 @@
     display: inline-flex;
     gap: 0.3rem;
     padding: 0.3rem;
-    border-radius: 14px;
-    background: var(--secondary);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--secondary) 72%, var(--surface) 28%);
   }
 
   &__tab {
     min-width: 80px;
     padding: 0.6rem 0.9rem;
     border: 0;
-    border-radius: 10px;
+    border-radius: var(--radius-md);
     background: transparent;
     color: var(--font-secondary);
     font-family: var(--font-family);
@@ -59,7 +59,7 @@
 
     &--active {
       background: var(--primary);
-      color: #fff;
+      color: var(--surface);
     }
   }
 
@@ -77,8 +77,8 @@
     min-height: 40px;
     padding: 0.6rem 0.9rem;
     border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    background: #fff;
+    border-radius: var(--radius-field);
+    background: color-mix(in srgb, var(--surface) 88%, var(--secondary) 12%);
     color: var(--font-main);
     font-family: var(--font-family);
     font-size: 0.82rem;
@@ -89,11 +89,13 @@
     transition:
       transform 0.2s ease,
       border-color 0.2s ease,
-      background-color 0.2s ease;
+      background-color 0.2s ease,
+      color 0.2s ease;
 
     &:hover:not(:disabled) {
       transform: translateY(-1px);
-      border-color: rgba(255, 107, 87, 0.35);
+      border-color: var(--border-field-hover);
+      background: color-mix(in srgb, var(--surface) 72%, var(--secondary) 28%);
     }
 
     &:disabled {
@@ -102,9 +104,11 @@
     }
 
     &--active {
-      background: #ffe7de;
-      border-color: rgba(255, 107, 87, 0.35);
+      background: color-mix(in srgb, var(--secondary) 82%, var(--surface) 18%);
+      border-color: var(--standby);
+      color: var(--font-main);
       transition: transform 0.24s ease;
+
       .mat-icon {
         transform: rotate(90deg);
       }
@@ -114,7 +118,7 @@
       font-size: 1rem;
       width: 1rem;
       height: 1rem;
-      color: var(--primary);
+      color: var(--standby);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -137,9 +141,9 @@
   &__type-field {
     min-height: 88px;
     padding: 0.8rem 0.9rem;
-    border: 1px solid rgba(234, 217, 208, 0.95);
-    border-radius: 14px;
-    background: #fff;
+    border: 1px solid color-mix(in srgb, var(--border-soft) 84%, var(--secondary) 16%);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--surface) 92%, var(--secondary) 8%);
     display: grid;
     align-content: center;
     gap: 0.3rem;
@@ -157,7 +161,7 @@
       font-size: 0.95rem;
       width: 0.95rem;
       height: 0.95rem;
-      color: var(--primary);
+      color: var(--standby);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -171,9 +175,9 @@
   &__hero-field {
     min-height: 104px;
     padding: 0.95rem 1rem;
-    border: 1px solid rgba(234, 217, 208, 0.95);
+    border: 1px solid color-mix(in srgb, var(--border-soft) 84%, var(--secondary) 16%);
     border-radius: 16px;
-    background: #fff;
+    background: color-mix(in srgb, var(--surface) 92%, var(--secondary) 8%);
     display: grid;
     align-content: center;
     gap: 0.4rem;
@@ -191,7 +195,7 @@
       font-size: 1rem;
       width: 1rem;
       height: 1rem;
-      color: var(--primary);
+      color: var(--standby);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -225,9 +229,9 @@
     width: 40px;
     height: 40px;
     border: 1px solid var(--border-soft);
-    border-radius: 12px;
-    background: var(--secondary);
-    color: var(--primary);
+    border-radius: var(--radius-field);
+    background: color-mix(in srgb, var(--secondary) 78%, var(--surface) 22%);
+    color: var(--standby);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -236,11 +240,13 @@
       transform 0.2s ease,
       background-color 0.2s ease,
       border-color 0.2s ease,
-      box-shadow 0.2s ease;
+      box-shadow 0.2s ease,
+      color 0.2s ease;
 
     &:hover:not(:disabled) {
-      background: #ffe1d6;
-      border-color: rgba(255, 107, 87, 0.4);
+      background: color-mix(in srgb, var(--secondary) 90%, var(--surface) 10%);
+      border-color: var(--standby);
+      color: var(--success);
       transform: translateY(-1px);
     }
 
@@ -251,9 +257,9 @@
 
     &--active {
       background: var(--primary);
-      color: #fff;
+      color: var(--surface);
       border-color: var(--primary);
-      box-shadow: 0 0 0 6px rgba(255, 107, 87, 0.15);
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--primary) 18%, transparent);
     }
 
     .mat-icon {
@@ -270,15 +276,15 @@
     min-height: 88px;
     padding: 0.85rem 1rem;
     border: 0;
-    border-radius: 14px;
+    border-radius: var(--radius-lg);
     background: var(--primary);
-    color: #fff;
+    color: var(--surface);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.55rem;
     font-family: var(--font-family);
-    box-shadow: 0 12px 24px rgba(255, 107, 87, 0.2);
+    box-shadow: 0 12px 24px color-mix(in srgb, var(--primary) 22%, transparent);
     transition:
       transform 0.2s ease,
       background-color 0.2s ease,
@@ -286,8 +292,8 @@
 
     &:hover {
       transform: translateY(-1px);
-      background: #ff5a45;
-      box-shadow: 0 16px 28px rgba(255, 107, 87, 0.24);
+      background: var(--primary-cta-hover);
+      box-shadow: 0 16px 28px color-mix(in srgb, var(--primary) 28%, transparent);
     }
   }
 
@@ -325,6 +331,7 @@
       display: none;
     }
   }
+
   &__tool-btn-icon {
     transition: transform 0.28s ease;
     transform-origin: center;
@@ -360,24 +367,15 @@
   &__overlay {
     margin-top: 0.85rem;
     padding: 1rem;
-    border: 1px solid rgba(234, 217, 208, 0.95);
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 18px 40px rgba(31, 22, 48, 0.08);
+    border: 1px solid color-mix(in srgb, var(--border-soft) 84%, var(--secondary) 16%);
+    border-radius: var(--radius-xl);
+    background: color-mix(in srgb, var(--surface) 94%, var(--secondary) 6%);
+    box-shadow: 0 18px 40px rgba(16, 32, 28, 0.08);
     transition: transform 0.24s ease;
   }
 
   &__overlay-panel--open &__overlay {
     transition-delay: 0.05s;
-  }
-
-  &__overlay {
-    margin-top: 0.85rem;
-    padding: 1rem;
-    border: 1px solid rgba(234, 217, 208, 0.95);
-    border-radius: 18px;
-    background: #fff;
-    box-shadow: 0 18px 40px rgba(31, 22, 48, 0.08);
   }
 
   &__overlay-head {
@@ -415,8 +413,8 @@
   &__chip {
     padding: 0.6rem 1rem;
     border: 1px solid var(--border-soft);
-    border-radius: 999px;
-    background: var(--surface-soft);
+    border-radius: var(--radius-pill);
+    background: color-mix(in srgb, var(--surface-soft) 72%, var(--secondary) 28%);
     color: var(--font-main);
     font-family: var(--font-family);
     font-size: 0.82rem;
@@ -430,7 +428,7 @@
       font-size: 0.95rem;
       width: 0.95rem;
       height: 0.95rem;
-      color: var(--font-secondary);
+      color: var(--standby);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -439,17 +437,18 @@
 
     &:hover {
       transform: translateY(-1px);
-      border-color: rgba(255, 107, 87, 0.35);
+      border-color: var(--border-field-hover);
+      background: color-mix(in srgb, var(--surface-soft) 50%, var(--secondary) 50%);
     }
 
     &--active {
-      background: var(--primary);
-      color: #fff;
-      border-color: var(--primary);
-      box-shadow: 0 10px 20px rgba(255, 107, 87, 0.25);
+      background: color-mix(in srgb, var(--secondary) 86%, var(--primary-soft) 14%);
+      color: var(--font-main);
+      border-color: var(--standby);
+      box-shadow: 0 10px 20px color-mix(in srgb, var(--secondary) 50%, transparent);
 
       .mat-icon {
-        color: #fff;
+        color: var(--success);
       }
     }
 
@@ -505,12 +504,6 @@
   }
 }
 
-.mat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 @media (max-width: 1199.98px) {
   .search-panel {
     &__primary-row {
@@ -538,7 +531,7 @@
 
     &__shell {
       padding: 0.85rem;
-      border-radius: 18px;
+      border-radius: var(--radius-xl);
     }
 
     &__top {

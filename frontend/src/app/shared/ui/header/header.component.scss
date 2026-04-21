@@ -6,7 +6,7 @@
 .home-header {
   z-index: 20;
   width: 100%;
-  background-color: #fff;
+  background-color: var(--surface);
   &__container {
     width: min(100%, 1440px);
     margin-inline: auto;
@@ -105,7 +105,7 @@
     &--primary {
       background: var(--primary);
       border: 1px solid var(--primary);
-      color: #fff;
+      color: var(--surface);
     }
 
     &--secondary {
@@ -231,7 +231,7 @@
       min-height: 2.9rem;
       padding: 0.75rem 0.9rem;
       border-radius: 0.75rem;
-      color: #fff;
+      color: var(--surface);
       text-decoration: none;
       font-size: 1rem;
       font-weight: 600;
@@ -248,7 +248,7 @@
     }
     &__btn {
       &--secondary {
-        color: #fff ;
+        color: var(--surface) ;
       }
     }
   }

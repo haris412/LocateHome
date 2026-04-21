@@ -15,13 +15,9 @@
                                        subtitle="Explore curated properties with exclusive video walkthroughs."
                                        linkLabel="View all properties"
                                        [items]="featuredListings()"
-                                       [showEyebrow]="true" />
+                                       [showEyebrow]="true"
+                                       (favoriteToggled)="onFavoriteToggled($event)" />
       </div>
-    </div>
-  </section>
-
-  <section class="home-page__band home-page__band--soft">
-    <div class="home-page__container">
       <div class="home-page__section">
         <div class="home-page__section-heading">
           <app-section-heading title="Trending & Hot Properties"
@@ -39,15 +35,11 @@
                                            [titleSmall]="true"
                                            subtitle="Based on saved videos and active interest."
                                            [items]="hotListings()"
-                                           [smallContent]="true" />
+                                           [smallContent]="true"
+                                           (favoriteToggled)="onFavoriteToggled($event)" />
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <div class="home-page__band home-page__band--surface">
-    <div class="home-page__container">
       <div class="home-page__section">
         <app-categories-section
           [items]="categories()"
@@ -61,13 +53,9 @@
         <app-listings-carousel-section title="Recently viewed properties"
                                        subtitle="Pick up where you left off and revisit homes, apartments and rentals you explored."
                                        linkLabel="View history"
-                                       [items]="recentListings()" />
+                                       [items]="recentListings()"
+                                       (favoriteToggled)="onFavoriteToggled($event)" />
       </div>
-    </div>
-  </div>
-
-  <section class="home-page__band home-page__band--muted">
-    <div class="home-page__container">
       <div class="home-page__section">
         <app-agents-section [items]="agents()" />
       </div>
@@ -80,7 +68,6 @@
       </div>
     </div>
   </section>
-
   <section class="home-page__band home-page__band--footer">
     <div class="home-page__container">
       <div class="home-page__section">

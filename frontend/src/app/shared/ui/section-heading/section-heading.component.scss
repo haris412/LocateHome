@@ -19,17 +19,24 @@
   }
 
   &__link {
-    color: var(--primary);
+    color: var(--standby);
     font-weight: 600;
     text-decoration: none;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--success);
+    }
   }
+
   &__subtext {
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    color: var(--primary);
+    color: var(--standby);
     font-size: 0.95rem;
   }
+
   &__action {
     display: inline-flex;
     align-items: center;
@@ -38,19 +45,31 @@
     color: var(--primary);
     font-size: 0.95rem;
     font-weight: 600;
-    background: none;
+    background: transparent;
     border: 2px solid var(--primary);
     border-radius: 8px;
     cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease;
+
     &:not(.no-border):hover {
       background: var(--primary);
-      color: #fff;
+      color: var(--surface);
+      transform: translateY(-1px);
     }
 
     &.no-border {
       color: var(--font-main);
       border-color: transparent;
       padding: 0.5rem;
+
+      &:hover {
+        color: var(--standby);
+        background: transparent;
+      }
     }
   }
 }

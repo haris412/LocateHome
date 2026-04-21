@@ -3,7 +3,7 @@
   height: 24px;
   border-radius: 6px;
   background: var(--primary);
-  color: #ffffff;
+  color: var(--surface);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -18,5 +18,5 @@
 .brand-logo-text {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #ffffff;
+  color: var(--surface);
 }

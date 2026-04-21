@@ -181,5 +181,14 @@ export class HomePageComponent {
       sortOrder: 'desc'
     };
   }
+  onFavoriteToggled(id: string): void {
+    this.featuredListings.update(items =>
+      items.map(item =>
+        item.id === id
+          ? { ...item, favorite: !item.favorite }
+          : item
+      )
+    );
+  }
 
 }

@@ -12,12 +12,12 @@
     --mdc-chip-label-text-color: var(--font-main);
     --mdc-chip-with-icon-icon-color: var(--font-secondary);
     --mat-chip-elevated-selected-container-color: var(--primary);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     font-weight: 600;
   }
 
   .mat-mdc-chip-option.mdc-evolution-chip--selected {
-    --mdc-chip-elevated-container-color: #ffe1d6;
+    --mdc-chip-elevated-container-color: var(--primary-soft-hover);
     --mdc-chip-label-text-color: var(--font-main);
   }
 }

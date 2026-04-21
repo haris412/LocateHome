@@ -32,7 +32,6 @@
       min-height: 560px;
     }
 
-    /* Exactly two images total: one tall secondary tile beside the hero */
     &--single-secondary {
       @media (min-width: 992px) {
         grid-template-rows: 1fr;
@@ -71,19 +70,19 @@
     display: inline-flex;
     align-items: center;
     min-height: 2rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding: 0.35rem 0.8rem;
     font-size: 0.8rem;
     font-weight: 800;
 
     &--featured {
-      background: #f4b326;
-      color: #2b1a00;
+      background: var(--status-highlight-bg);
+      color: var(--status-highlight-text);
     }
 
     &--dark {
-      background: rgba(31, 22, 48, 0.92);
-      color: #fff;
+      background: color-mix(in srgb, var(--surface-dark) 92%, transparent);
+      color: var(--surface);
     }
   }
 
@@ -94,11 +93,11 @@
     transform: translate(-50%, -50%);
     width: 5rem;
     height: 5rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     border: 0;
     background: rgba(255, 255, 255, 0.2);
     backdrop-filter: blur(10px);
-    color: #fff;
+    color: var(--surface);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -114,10 +113,10 @@
     position: absolute;
     right: 1rem;
     bottom: 1rem;
-    background: rgba(31, 22, 48, 0.55);
-    color: #fff;
+    background: color-mix(in srgb, var(--surface-dark) 55%, transparent);
+    color: var(--surface);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     padding: 0.45rem 0.8rem;
     font-size: 0.85rem;
     font-weight: 800;

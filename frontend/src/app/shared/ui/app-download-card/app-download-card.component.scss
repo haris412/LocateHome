@@ -4,8 +4,8 @@
   border-radius: 1rem;
   background: linear-gradient(
     45deg,
-    #ffffff 0%,
-    #ffeadf 100%
+    var(--surface) 0%,
+    var(--secondary) 100%
   );
 
   &__content {
@@ -25,7 +25,7 @@
     gap: 0.45rem;
     min-height: 2rem;
     padding: 0.35rem 0.8rem;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: rgba(255, 234, 223, 0.95);
     color: var(--font-secondary);
     font-size: 0.9rem;
@@ -101,7 +101,7 @@
   &__btn {
     min-height: 3rem;
     padding: 0.8rem 1.2rem;
-    border-radius: 0.65rem;
+    border-radius: var(--radius-field);
     text-decoration: none;
     font-size: 0.95rem;
     font-weight: 800;
@@ -120,7 +120,7 @@
     &--primary {
       background: var(--primary);
       border-color: var(--primary);
-      color: #fff;
+      color: var(--surface);
     }
 
     &--secondary {

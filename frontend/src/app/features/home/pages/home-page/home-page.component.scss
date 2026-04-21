@@ -3,6 +3,7 @@
     width: min(100%, 1440px);
     margin-inline: auto;
     padding-inline: 1rem;
+
     @media (min-width: 768px) {
       padding-inline: 1.5rem;
     }
@@ -15,6 +16,7 @@
   &__hero-band {
     position: relative;
     width: 100%;
+    background: var(--surface);
   }
 
   &__section {
@@ -23,6 +25,7 @@
     &:first-child {
       margin-top: 0;
     }
+
     &-heading {
       margin-bottom: 3rem;
     }
@@ -37,19 +40,31 @@
   &__band {
     width: 100%;
     padding-block: 6.5rem;
-    background-color: var(--tertiary);
+    background:
+      radial-gradient(
+        circle at 30% 0%,
+        rgba(15, 159, 122, 0.12) 0%,
+        rgba(15, 159, 122, 0) 26%
+      ),
+      radial-gradient(
+        circle at 70% 0%,
+        rgba(124, 58, 237, 0.14) 0%,
+        rgba(124, 58, 237, 0) 28%
+      ),
+      #f8fafc;
 
     &--soft {
-      background: var(--secondary);
+      background: color-mix(in srgb, var(--secondary) 58%, var(--surface) 42%);
     }
 
     &--muted {
-      background: #FFF8F3;
+      background: var(--tertiary);
     }
 
     &--footer {
-      background: #f7efea;
+      background: var(--surface-footer);
     }
+
     &--surface {
       background: var(--surface);
     }

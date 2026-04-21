@@ -4,9 +4,9 @@
   grid-template-columns: 1fr 1fr;
   align-items: center;
   padding: 4px;
-  border: 1px solid #ead7ce;
-  border-radius: 16px;
-  background: rgba(255, 248, 243, 0.72);
+  border: 1px solid var(--border-soft-strong);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--secondary) 38%, var(--surface) 62%);
   overflow: hidden;
 
   &__pill {
@@ -15,9 +15,9 @@
     left: 4px;
     width: calc(50% - 4px);
     height: calc(100% - 8px);
-    border-radius: 12px;
-    background: #ffffff;
-    box-shadow: 0 8px 24px rgba(31, 22, 48, 0.08);
+    border-radius: var(--radius-field);
+    background: var(--surface);
+    box-shadow: 0 8px 24px rgba(16, 32, 28, 0.08);
     transition:
       transform 220ms ease,
       opacity 220ms ease;
@@ -33,19 +33,19 @@
     min-height: 48px;
     border: 0;
     background: transparent;
-    color: #7a6676;
+    color: var(--font-secondary);
     font-size: 0.95rem;
     font-weight: 600;
     transition: color 180ms ease, opacity 180ms ease;
 
     &--active {
-      color: #1f1630;
+      color: var(--font-main);
     }
 
     &:focus-visible {
-      outline: 2px solid #ff6b57;
+      outline: 2px solid var(--primary);
       outline-offset: -2px;
-      border-radius: 12px;
+      border-radius: var(--radius-field);
     }
   }
 }

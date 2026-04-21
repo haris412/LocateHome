@@ -6,7 +6,7 @@
   padding: 0.5rem 0.85rem;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.14);
-  color: #fff;
+  color: var(--surface);
   backdrop-filter: blur(8px);
 
   &__value {

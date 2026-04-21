@@ -4,7 +4,7 @@
   height: 100%;
   padding: 1rem 1.1rem;
   border: 1px solid rgba(234, 217, 208, 0.8);
-  border-radius: 0.8rem;
+  border-radius: var(--radius-field);
   background: var(--surface);
 
   &__top {
@@ -35,7 +35,7 @@
   }
 
   &__rating {
-    color: #8b5cf6;
+    color: var(--brand-accent-purple);
     font-size: 0.9rem;
     font-weight: 800;
     display: flex;
