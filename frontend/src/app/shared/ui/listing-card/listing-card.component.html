@@ -42,8 +42,15 @@
   </div>
 
   <div class="listing-card__body">
-    @if (item().price) {
-    <div class="listing-card__eyebrow">{{ item().price }}</div>
+    @if (!item().rent) {
+      <div class="listing-card__eyebrow">{{ item().price }}</div>
+    }
+
+    @if (item().rent) {
+      <div class="listing-card__rent">
+        {{ item().price }}
+        <span class="listing-card__rent-subtext">/mo</span>
+      </div>
     }
 
     <h3 class="listing-card__title">{{ item().title }}</h3>

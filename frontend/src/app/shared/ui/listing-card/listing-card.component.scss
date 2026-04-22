@@ -174,20 +174,11 @@
     min-width: 0;
   }
 
-  &__eyebrow {
+  &__eyebrow, &__rent {
     color: var(--primary);
     font-size: 1.5rem;
     font-weight: 800;
     line-height: 1.2;
-  }
-
-  &__price,
-  &__rent {
-    color: var(--font-main);
-    font-size: 1.5rem;
-    line-height: 1;
-    font-weight: 800;
-
     .listing-card__rent-subtext {
       font-size: 0.9rem;
       color: var(--font-secondary);

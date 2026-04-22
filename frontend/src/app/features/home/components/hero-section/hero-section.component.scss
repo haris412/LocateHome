@@ -15,15 +15,7 @@
     object-fit: cover;
   }
 
-  &__overlay {
-    background:
-      linear-gradient(
-        180deg,
-        rgba(13, 20, 39, 0.38) 0%,
-        rgba(17, 17, 17, 0.34) 34%,
-        rgba(18, 18, 18, 0.56) 100%
-      );
-  }
+  
 
   &__content {
     position: relative;
