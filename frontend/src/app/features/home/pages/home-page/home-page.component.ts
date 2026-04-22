@@ -20,6 +20,7 @@ import { AgentsSectionComponent } from '../../components/agents-section/agents-s
 import { AppPromoSectionComponent } from '../../components/app-promo-section/app-promo-section.component';
 import { FooterSectionComponent } from '../../components/footer-section/footer-section.component';
 import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/section-heading.component';
+import { ValuationSectionComponent } from "../../components/valuation-section/valuation-section.component";
 
 @Component({
   selector: 'app-home-page',
@@ -33,8 +34,9 @@ import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/s
     AgentsSectionComponent,
     AppPromoSectionComponent,
     FooterSectionComponent,
-    SectionHeadingComponent
-  ],
+    SectionHeadingComponent,
+    ValuationSectionComponent
+],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

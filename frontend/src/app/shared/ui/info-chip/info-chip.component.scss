@@ -1,0 +1,23 @@
+.info-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 2rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--surface) 82%, var(--secondary) 18%);
+  color: var(--font-secondary);
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  .mat-icon {
+    font-size: 0.95rem;
+    width: 0.95rem;
+    height: 0.95rem;
+  }
+
+  &--dark {
+    background: rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.82);
+  }
+}

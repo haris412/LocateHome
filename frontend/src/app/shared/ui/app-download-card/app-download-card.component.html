@@ -7,14 +7,7 @@
             <mat-icon fontSet="material-symbols-outlined" inline>
               smartphone
             </mat-icon>
-            <span>Download our app</span>
-          </span>
-
-          <span class="app-download-card__pill">
-            <mat-icon fontSet="material-symbols-outlined" inline>
-              verified
-            </mat-icon>
-            <span>Available on iOS & Android</span>
+            <span>Property app</span>
           </span>
         </div>
 
@@ -40,30 +33,28 @@
         <div class="app-download-card__actions">
           <a
             href="https://apps.apple.com"
-            target="blank"
+            target="_blank"
+            rel="noopener noreferrer"
             class="app-download-card__btn app-download-card__btn--primary"
           >
             <mat-icon fontSet="material-symbols-outlined" inline>
-              apple
+              download
             </mat-icon>
-            <span>Download on App Store</span>
+            <span>Download on the App Store</span>
           </a>
 
           <a
             href="https://play.google.com"
-            target="blank"
+            target="_blank"
+            rel="noopener noreferrer"
             class="app-download-card__btn app-download-card__btn--secondary"
           >
             <mat-icon fontSet="material-symbols-outlined" inline>
-              smartphone
+              play_arrow
             </mat-icon>
             <span>Get it on Google Play</span>
           </a>
         </div>
-
-        <p class="app-download-card__note">
-          Scan QR or sign in on mobile to continue your saved search instantly.
-        </p>
       </div>
     </div>
 
@@ -74,6 +65,11 @@
           [src]="phoneImageUrl()"
           [alt]="title()"
         />
+
+        <div class="app-download-card__phone-note">
+          <small>Valuation update</small>
+          <strong>New estimate ready</strong>
+        </div>
       </div>
     </div>
   </div>

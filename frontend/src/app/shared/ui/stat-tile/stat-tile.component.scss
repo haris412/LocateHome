@@ -1,0 +1,33 @@
+.stat-tile {
+  padding: 1rem 1rem 0.95rem;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--surface) 88%, var(--secondary) 12%);
+  border: 1px solid color-mix(in srgb, var(--border-soft) 80%, transparent);
+  height: 100%;
+
+  &__label {
+    font-size: 0.82rem;
+    color: var(--font-secondary);
+    margin-bottom: 0.25rem;
+  }
+
+  &__value {
+    font-size: 1.25rem;
+    line-height: 1.1;
+    font-weight: 800;
+    color: var(--font-main);
+  }
+
+  &--dark {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.14);
+
+    .stat-tile__label {
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    .stat-tile__value {
+      color: var(--surface);
+    }
+  }
+}

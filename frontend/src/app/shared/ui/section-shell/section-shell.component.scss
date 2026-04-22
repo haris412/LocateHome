@@ -1,0 +1,32 @@
+.section-shell {
+  padding: 2rem;
+  border-radius: 2rem;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  height: 100%;
+
+  &--soft {
+    background: color-mix(in srgb, var(--surface) 82%, var(--secondary) 18%);
+  }
+
+  &--dark-gradient {
+    background: linear-gradient(
+      to bottom right,
+      #0f1f1b 0%,
+      #2e839a 100%
+    );
+    border: 0;
+    color: var(--surface);
+  }
+
+  &--no-padding {
+    padding: 0;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .section-shell {
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+  }
+}

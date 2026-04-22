@@ -1,0 +1,6 @@
+<div class="info-chip" [class.info-chip--dark]="dark()">
+  @if (icon()) {
+    <mat-icon fontSet="material-symbols-outlined" inline>{{ icon() }}</mat-icon>
+  }
+  <span>{{ label() }}</span>
+</div>

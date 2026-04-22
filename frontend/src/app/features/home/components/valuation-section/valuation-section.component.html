@@ -1,0 +1,135 @@
+<div class="valuation-section">
+  <div class="row g-4 align-items-stretch">
+    <div class="col-12 col-xl-6">
+      <app-section-shell variant="dark-gradient"
+                         class="d-block h-100">
+        <div class="valuation-section__left h-100">
+          <app-info-chip [dark]="true"
+                         icon="finance_mode"
+                         label="Property valuations" />
+
+          <h2 class="valuation-section__title">
+            Get a fast estimated value for any property in your market
+          </h2>
+
+          <p class="valuation-section__description">
+            Give owners and buyers a clearer starting point with guided valuation
+            inputs, recent market signals, and agent-backed pricing insights.
+          </p>
+
+          <div class="valuation-section__cta-group">
+            <button type="button"
+                    class="valuation-section__btn valuation-section__btn--primary">
+              Start Valuation
+            </button>
+
+            <button type="button"
+                    class="valuation-section__btn valuation-section__btn--ghost">
+              How it works
+            </button>
+          </div>
+
+          <div class="row g-3 valuation-section__stats">
+            @for (stat of stats; track stat.label) {
+            <div class="col-12 col-sm-4">
+              <app-stat-tile [dark]="true"
+                             [label]="stat.label"
+                             [value]="stat.value" />
+            </div>
+            }
+          </div>
+        </div>
+      </app-section-shell>
+    </div>
+
+    <div class="col-12 col-xl-6">
+      <div class="valuation-section__right d-grid gap-4 h-100">
+        <app-section-shell
+                           class="d-block">
+          <div class="valuation-section__form-card">
+            <h3 class="valuation-section__form-title">Quick valuation form</h3>
+            <p class="valuation-section__form-subtitle">
+              Enter core details to estimate current market value or rental potential.
+            </p>
+
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <mat-form-field appearance="outline"
+                                class="valuation-section__field">
+                  <mat-label>Property type</mat-label>
+                  <mat-select>
+                    <mat-option value="house">House</mat-option>
+                    <mat-option value="apartment">Apartment</mat-option>
+                    <mat-option value="villa">Villa</mat-option>
+                    <mat-option value="commercial">Commercial</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <mat-form-field appearance="outline"
+                                class="valuation-section__field">
+                  <mat-label>Purpose</mat-label>
+                  <mat-select>
+                    <mat-option value="sale">Sale</mat-option>
+                    <mat-option value="rent">Rent</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <mat-form-field appearance="outline"
+                                class="valuation-section__field">
+                  <mat-label>Province / State</mat-label>
+                  <mat-select>
+                    <mat-option value="punjab">Punjab</mat-option>
+                    <mat-option value="sindh">Sindh</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div>
+
+              <div class="col-12 col-md-6">
+                <mat-form-field appearance="outline"
+                                class="valuation-section__field">
+                  <mat-label>City</mat-label>
+                  <input matInput
+                         placeholder="Enter city" />
+                </mat-form-field>
+              </div>
+
+              <div class="col-12">
+                <mat-form-field appearance="outline"
+                                class="valuation-section__field valuation-section__field--with-icon">
+                  <mat-label>Location / Community</mat-label>
+                  <input matInput
+                         placeholder="Enter area or community" />
+                  <mat-icon matSuffix
+                            fontSet="material-symbols-outlined">location_on</mat-icon>
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </app-section-shell>
+
+        <app-section-shell
+                           class="d-block h-100">
+          <div class="valuation-section__summary-card h-100">
+            <div class="row g-3 mb-3">
+              @for (tile of summaryTiles; track tile.label) {
+              <div class="col-12 col-md-4">
+                <app-stat-tile [label]="tile.label"
+                               [value]="tile.value" />
+              </div>
+              }
+            </div>
+
+            <div class="valuation-section__note">
+              Built for different regions and currencies so you can present value ranges
+              without locking the experience to one market.
+            </div>
+          </div>
+        </app-section-shell>
+      </div>
+    </div>
+  </div>
+</div>

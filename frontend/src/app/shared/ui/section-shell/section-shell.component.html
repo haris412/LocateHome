@@ -1,0 +1,7 @@
+<section
+  class="section-shell"
+  [class.section-shell--soft]="variant() === 'soft'"
+  [class.section-shell--dark-gradient]="variant() === 'dark-gradient'"
+  [class.section-shell--no-padding]="!padded()">
+  <ng-content />
+</section>
