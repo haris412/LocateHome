@@ -1,59 +1,88 @@
-<article class="agent-card">
-
+<article class="agent-card" [attr.aria-labelledby]="'agent-name-' + item().id">
   <div class="agent-card__top">
     <img
       class="agent-card__avatar"
       [src]="item().avatarUrl"
-      [alt]="item().name"
+      width="56"
+      height="56"
+      [alt]="'Portrait of ' + item().name"
     />
 
     <div class="agent-card__header">
-      <h3 class="agent-card__name">{{ item().name }}</h3>
-      <p class="agent-card__agency">{{ item().role }}</p>
+      <h3 class="agent-card__name" [id]="'agent-name-' + item().id">
+        {{ item().name }}
+      </h3>
 
-      <div class="agent-card__location">
-        <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
-        {{ item().location }}
+      <p class="agent-card__agency">
+        {{ item().role }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Rating pill -->
+  <div class="agent-card__rating">
+    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">star</mat-icon>
+    <span>{{ item().stats.rating }} rating</span>
+  </div>
+
+  <!-- Info rows -->
+  <div class="agent-card__info">
+    @if (item().contact?.phone) {
+      <div class="agent-card__info-row">
+        <span class="agent-card__info-icon" aria-hidden="true">
+          <mat-icon fontSet="material-symbols-outlined">call</mat-icon>
+        </span>
+
+        <div class="agent-card__info-text">
+          <span class="agent-card__info-label">Phone</span>
+          <a
+            class="agent-card__info-value"
+            [href]="'tel:' + item().contact?.phone"
+            [attr.aria-label]="'Call ' + item().name"
+          >
+            {{ item().contact?.phone }}
+          </a>
+        </div>
       </div>
-    </div>
+    }
+
+    @if (item().contact?.location) {
+      <div class="agent-card__info-row">
+        <span class="agent-card__info-icon" aria-hidden="true">
+          <mat-icon fontSet="material-symbols-outlined">location_on</mat-icon>
+        </span>
+
+        <div class="agent-card__info-text">
+          <span class="agent-card__info-label">Location</span>
+          <span class="agent-card__info-value">{{ item().contact?.location }}</span>
+        </div>
+      </div>
+    }
+
+    @if (item().stats?.properties) {
+      <div class="agent-card__info-row">
+        <span class="agent-card__info-icon" aria-hidden="true">
+          <mat-icon fontSet="material-symbols-outlined">home</mat-icon>
+        </span>
+
+        <div class="agent-card__info-text">
+          <span class="agent-card__info-label">Listings</span>
+          <span class="agent-card__info-value">{{ item().stats?.properties }} properties</span>
+        </div>
+      </div>
+    }
   </div>
 
-  <div class="agent-card__stats">
-    <div class="agent-card__stat">
-      <span class="agent-card__stat-label">Phone</span>
-      <span class="agent-card__stat-value">{{ item().phone }}</span>
-    </div>
-
-    <div class="agent-card__stat">
-      <span class="agent-card__stat-label">Properties</span>
-      <span class="agent-card__stat-value">{{ item().properties }} active</span>
-    </div>
-
-    <div class="agent-card__stat">
-      <span class="agent-card__stat-label">Rating</span>
-      <span class="agent-card__stat-value">{{ item().rating }}</span>
-    </div>
-  </div>
-
-  <p class="agent-card__description">
-    {{ item().description }}
-  </p>
-
-  <div class="agent-card__contact">
-    <div class="agent-card__phone">
-      <span class="material-icons">call</span>
-      {{ item().phone }}
-    </div>
-
-    <div class="agent-card__rating">
-      <span class="material-icons">star</span>
-      {{ item().rating }} rating
-    </div>
-  </div>
-
+  <!-- Actions -->
   <div class="agent-card__actions">
-    <a class="agent-card__btn agent-card__btn--primary">Contact agent</a>
-    <a class="agent-card__btn">View profile</a>
-  </div>
+    <button type="button" class="agent-card__btn agent-card__btn--primary">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">person</mat-icon>
+      <span>View Profile</span>
+    </button>
 
+    <button type="button" class="agent-card__btn">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">calendar_month</mat-icon>
+      <span>Book</span>
+    </button>
+  </div>
 </article>

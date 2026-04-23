@@ -1,7 +1,9 @@
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
-import { Router, RouterLink, Params } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { Router, RouterLink, Params, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { CdkAutofill } from "@angular/cdk/text-field";
+import { CdkAutofill } from '@angular/cdk/text-field';
+import { filter } from 'rxjs/operators';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 interface HeaderNavItem {
   id: string;
@@ -19,24 +21,62 @@ interface HeaderNavItem {
 })
 export class HeaderComponent {
   readonly mobileMenuOpen = signal(false);
-  constructor(private router: Router) {}
+  private readonly router = inject(Router);
 
   readonly navItems: readonly HeaderNavItem[] = [
-    { id: 'buy', label: 'Buy', route: '/listings'},
-    { id: 'sell', label: 'Sell', route: '/listings/sell'},
-    { id: 'rent', label: 'Rent', route: '/listings'},
-    { id: 'agents', label: 'Find Agents', route: '/home' },
-    { id: 'about', label: 'About', route: '/home' }
+    { id: 'home', label: 'Home', route: '/home' },
+    { id: 'buy', label: 'Buy', route: '/listings' },
+    { id: 'rent', label: 'Rent', route: '/listings' },
+    { id: 'agents', label: 'Find Agents', route: '/agents' }
   ];
 
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ),
+    { initialValue: null }
+  );
+
+  readonly activeUrl = computed(() => {
+    this.currentUrl();
+    return this.router.url;
+  });
+
   toggleMobileMenu(): void {
-    this.mobileMenuOpen.update((value) => !value);
+    this.mobileMenuOpen.update(value => !value);
   }
 
   closeMobileMenu(): void {
     this.mobileMenuOpen.set(false);
   }
+
   onNavClick(item: HeaderNavItem): void {
-  this.router.navigate([item.route], { queryParams: item. queryParams });
-}
+    this.router.navigate([item.route], { queryParams: item.queryParams });
+  }
+
+  isActive(item: HeaderNavItem): boolean {
+    const url = this.activeUrl();
+
+    if (item.id === 'home') {
+      return url === '/home' || url === '/';
+    }
+
+    if (item.id === 'buy') {
+      return url.startsWith('/listings') && !this.isRentUrl(url);
+    }
+
+    if (item.id === 'rent') {
+      return url.startsWith('/listings') && this.isRentUrl(url);
+    }
+
+    if (item.id === 'agents') {
+      return url.startsWith('/agents');
+    }
+
+    return url.startsWith(item.route);
+  }
+
+  private isRentUrl(url: string): boolean {
+    return url.includes('purpose=rent') || url.includes('/rent');
+  }
 }

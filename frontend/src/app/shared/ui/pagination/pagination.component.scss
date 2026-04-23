@@ -1,0 +1,18 @@
+.pagination-container {
+  display: flex;
+  gap: 6px;
+}
+
+.page-btn {
+  border: 1px solid var(--border-soft);
+  background: var(--surface);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.page-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}

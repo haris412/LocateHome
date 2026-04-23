@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { AgentItem } from '../../../../core/models/home.models';
+import { AgentItem } from '@/core/models/agent.model';
 import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/section-heading.component';
 import { AgentCardComponent } from '../../../../shared/ui/agent-card/agent-card.component';
 

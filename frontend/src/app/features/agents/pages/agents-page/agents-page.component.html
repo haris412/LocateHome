@@ -1,0 +1,41 @@
+<div class="agents-page">
+
+  <!-- HERO -->
+  <app-agents-hero />
+
+  <!-- FILTER BAR -->
+  <div class="container filters-wrapper">
+    <app-agents-filters (filtersChange)="onFiltersChange($event)" />
+  </div>
+
+  <!-- LIST -->
+  <div class="container agents-section">
+
+    <div class="section-header d-flex flex-wrap align-items-center justify-content-between">
+      <div>
+        <h2>All Agents</h2>
+        <p>Browse premium agents and search by location.</p>
+      </div>
+    </div>
+
+    <!-- GRID -->
+    <div class="row g-4 mt-2">
+
+      @for (agent of agents(); track agent.id) {
+      <div class="col-12 col-md-6 col-lg-4">
+        <app-agent-card [item]="agent" />
+      </div>
+      }
+
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="mt-5 d-flex justify-content-center">
+      <app-pagination [currentPage]="currentPage()"
+                      [totalPages]="totalPages()"
+                      (pageChange)="onPageChange($event)" />
+    </div>
+
+  </div>
+
+</div>

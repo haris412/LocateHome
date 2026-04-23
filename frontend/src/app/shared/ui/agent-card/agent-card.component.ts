@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { AgentItem } from '../../../core/models/home.models';
+import { AgentItem } from '../../../core/models/agent.model';
 import { MatIcon } from "@angular/material/icon";
 
 @Component({

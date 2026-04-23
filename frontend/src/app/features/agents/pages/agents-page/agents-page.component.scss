@@ -1,0 +1,26 @@
+.agents-page {
+  background: var(--surface-page);
+}
+
+.filters-wrapper {
+  margin-top: -40px;
+  position: relative;
+  z-index: 2;
+}
+
+.agents-section {
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+}
+
+.section-header {
+  h2 {
+    font-weight: 600;
+    color: var(--font-main);
+  }
+
+  p {
+    color: var(--font-secondary);
+    margin-bottom: 0;
+  }
+}

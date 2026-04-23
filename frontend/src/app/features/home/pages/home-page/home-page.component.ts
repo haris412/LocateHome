@@ -1,25 +1,24 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import {
-  AgentItem,
   CategoryItem,
-  FooterLinkGroup,
   StatPillItem,
   TestimonialItem,
   TrendItem
-} from '../../../../core/models/home.models';
-import { ListingItem } from '../../../../core/models/listing.models';
+} from '@/core/models/home.models';
+import { AgentItem } from '@/core/models/agent.model';
+import { ListingItem } from '@/core/models/listing.models';
 import { SearchPanelSearchPayload } from '../../components/search-panel/search-panel.component';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { SearchPanelComponent } from '../../components/search-panel/search-panel.component';
-import { ListingsCarouselSectionComponent } from '../../../../shared/ui/listings-carousel-section/listings-carousel-section.component';
+import { ListingsCarouselSectionComponent } from '@/shared/ui/listings-carousel-section/listings-carousel-section.component';
 import { TrendingPanelComponent } from '../../components/trending-panel/trending-panel.component';
 import { CategoriesSectionComponent } from '../../components/categories-section/categories-section.component';
 import { TestimonialsSectionComponent } from '../../components/testimonials-section/testimonials-section.component';
 import { AgentsSectionComponent } from '../../components/agents-section/agents-section.component';
 import { AppPromoSectionComponent } from '../../components/app-promo-section/app-promo-section.component';
-import { FooterSectionComponent } from '../../components/footer-section/footer-section.component';
-import { SectionHeadingComponent } from '../../../../shared/ui/section-heading/section-heading.component';
+import { FooterSectionComponent } from '@/shared/ui/footer-section/footer-section.component';
+import { SectionHeadingComponent } from '@/shared/ui/section-heading/section-heading.component';
 import { ValuationSectionComponent } from "../../components/valuation-section/valuation-section.component";
 
 @Component({
@@ -33,10 +32,9 @@ import { ValuationSectionComponent } from "../../components/valuation-section/va
     TestimonialsSectionComponent,
     AgentsSectionComponent,
     AppPromoSectionComponent,
-    FooterSectionComponent,
     SectionHeadingComponent,
     ValuationSectionComponent
-],
+  ],
   templateUrl: './home-page.component.html',
   styleUrl: './home-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -90,40 +88,80 @@ export class HomePageComponent {
   ]);
 
   readonly agents = signal<AgentItem[]>([
-    { id: '1', name: 'Sophia Bennett', role: 'Luxury specialist', avatarUrl: 'assets/images/people/agent-1.png', priceRange: '$2M+', rating: '4.9 / 5', salesLabel: '49 listings', description: 'Known for premium city homes and guided buying journeys.', tags: ['Luxury', 'Video tours', 'Negotiation'] },
-    { id: '2', name: 'Arman Sheikh', role: 'Residential advisor', avatarUrl: 'assets/images/people/agent-2.png', priceRange: '$400k - $1.8M', rating: '4.8 / 5', salesLabel: '32 listings', description: 'Strong fit for family homes and suburban buyers.', tags: ['Family homes', 'Investors', 'Neighborhood expert'] },
-    { id: '3', name: 'Daniel Rivera', role: 'Rental market lead', avatarUrl: 'assets/images/people/agent-3.png', priceRange: '$1.2k - $8k / mo', rating: '5.0 / 5', salesLabel: '65 listings', description: 'Helps renters move faster with curated shortlists and tour support.', tags: ['Rentals', 'Fast response', 'Local market'] }
-  ]);
-
-  readonly footerGroups = signal<FooterLinkGroup[]>([
     {
       id: '1',
-      title: 'Explore',
-      links: [
-        { id: 'a', label: 'Homes for sale', href: '/listings' },
-        { id: 'b', label: 'Homes for rent', href: '/listings' },
-        { id: 'c', label: 'Luxury homes', href: '/listings' }
-      ]
+      name: 'Sophia Bennett',
+      role: 'Luxury specialist',
+      avatarUrl: 'assets/images/people/agent-1.png',
+
+      stats: {
+        rating: 4.9,
+        properties: 49,
+        salesLabel: '49 listings'
+      },
+
+      contact: {
+        location: 'Beverly Hills, CA'
+      },
+
+      meta: {
+        priceRange: '$2M+',
+        description:
+          'Known for premium city homes and guided buying journeys.',
+        tags: ['Luxury', 'Video tours', 'Negotiation']
+      }
     },
+
     {
       id: '2',
-      title: 'Company',
-      links: [
-        { id: 'a', label: 'About us', href: '/home' },
-        { id: 'b', label: 'Careers', href: '/home' },
-        { id: 'c', label: 'Press', href: '/home' }
-      ]
+      name: 'Arman Sheikh',
+      role: 'Residential advisor',
+      avatarUrl: 'assets/images/people/agent-2.png',
+
+      stats: {
+        rating: 4.8,
+        properties: 32,
+        salesLabel: '32 listings'
+      },
+
+      contact: {
+        location: 'Austin, TX'
+      },
+
+      meta: {
+        priceRange: '$400k - $1.8M',
+        description:
+          'Strong fit for family homes and suburban buyers.',
+        tags: ['Family homes', 'Investors', 'Neighborhood expert']
+      }
     },
+
     {
       id: '3',
-      title: 'Support',
-      links: [
-        { id: 'a', label: 'Help center', href: '/home' },
-        { id: 'b', label: 'Privacy policy', href: '/home' },
-        { id: 'c', label: 'Terms', href: '/home' }
-      ]
+      name: 'Daniel Rivera',
+      role: 'Rental market lead',
+      avatarUrl: 'assets/images/people/agent-3.png',
+
+      stats: {
+        rating: 5.0,
+        properties: 65,
+        salesLabel: '65 listings'
+      },
+
+      contact: {
+        location: 'New York, NY'
+      },
+
+      meta: {
+        priceRange: '$1.2k - $8k / mo',
+        description:
+          'Helps renters move faster with curated shortlists and tour support.',
+        tags: ['Rentals', 'Fast response', 'Local market']
+      }
     }
   ]);
+
+
 
   readonly appPromoBullets = signal<string[]>([
     'Voice-enabled property search',

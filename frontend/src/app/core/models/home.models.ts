@@ -49,8 +49,3 @@ export interface StatPillItem {
   value: string;
 }
 
-export interface FooterLinkGroup {
-  id: string;
-  title: string;
-  links: { id: string; label: string; href: string }[];
-}

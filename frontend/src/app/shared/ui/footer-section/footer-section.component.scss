@@ -1,7 +1,20 @@
 .footer-section {
   padding: 2rem 0;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--surface-footer);
+  &__container {
+    width: min(100%, 1440px);
+    margin-inline: auto;
+    padding-inline: 1rem;
 
+    @media (min-width: 768px) {
+      padding-inline: 1.5rem;
+    }
+
+    @media (min-width: 1200px) {
+      padding-inline: 2rem;
+    }
+  }
   &__brand,
   &__group {
     display: grid;

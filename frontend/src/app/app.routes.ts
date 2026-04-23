@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomePageComponent } from './features/home/pages/home-page/home-page.component';
+import { AgentsPageComponent } from './features/agents/pages/agents-page/agents-page.component';
 
 export const appRoutes: Routes = [
   { path: 'home', component: HomePageComponent },
@@ -18,5 +19,9 @@ export const appRoutes: Routes = [
     loadChildren: () =>
       import('./features/listings/listings.routes')
         .then(m => m.LISTINGS_ROUTES)
+  },
+  {
+    path: 'agents',
+    component: AgentsPageComponent
   }
 ];

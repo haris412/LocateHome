@@ -16,7 +16,7 @@
         @for (item of navItems; track item.id) {
         <a [routerLink]="item.route"
            [queryParams]="item.queryParams"
-           class="home-header__nav-link">
+           class="home-header__nav-link" [class.home-header__nav-link--active]="isActive(item)">
           {{ item.label }}
         </a>
         }

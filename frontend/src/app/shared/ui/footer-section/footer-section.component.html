@@ -1,0 +1,29 @@
+<footer class="footer-section">
+  <div class="footer-section__container">
+    <div class="row g-4">
+      <div class="col-12 col-lg-4">
+        <div class="footer-section__brand">
+          <div class="d-flex align-items-center gap-2">
+            <img src="/assets/icons/logo-green.svg" alt="EstatePortal Logo" class="footer-section__logo" />
+            <h3>EstatePortal</h3>
+          </div>
+          <p>A modern real estate experience with immersive video tours, verified agents and strong search tools.</p>
+        </div>
+      </div>
+      @for (group of footerGroups(); track group.id) {
+        <div class="col-6 col-md-4 col-lg-2">
+          <div class="footer-section__group">
+            <h4>{{ group.title }}</h4>
+            <ul>
+              @for (link of group.links; track link.id) {
+                <li>
+                  <a [routerLink]="link.href">{{ link.label }}</a>
+                </li>
+              }
+            </ul>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</footer>

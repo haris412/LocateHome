@@ -407,3 +407,51 @@ textarea,
 ::-webkit-scrollbar-thumb:hover {
   background: var(--primary-strong);
 }
+
+/* FILTER FIELD SYSTEM */
+.agents-filter__field-control {
+  .mat-mdc-text-field-wrapper {
+    background: var(--surface-muted);
+    border-radius: var(--radius-lg);
+    padding-left: 6px;
+  }
+
+  .mdc-notched-outline {
+    display: none;
+  }
+
+  .mat-mdc-form-field-infix {
+    padding: 14px 8px;
+  }
+
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-width: 0px !important;
+  }
+
+  /* PREFIX ICON BOX */
+  .prefix-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    background: var(--surface);
+    border-radius: 10px;
+    border: 1px solid var(--border-soft);
+
+    margin-right: 8px;
+
+    img {
+      width: 16px;
+      height: 16px;
+      opacity: 0.8;
+    }
+  }
+}

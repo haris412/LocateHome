@@ -1,0 +1,103 @@
+<section class="agents-filter section-card">
+
+  <div class="agents-filter__row">
+
+    <!-- LOCATION -->
+    <div class="agents-filter__mini-field">
+
+      <span class="agents-filter__field-label">
+        <span class="agents-filter__icon-box">
+          <img src="assets/icons/location.svg" />
+        </span>
+        <span>Location</span>
+      </span>
+
+      <mat-form-field appearance="outline"
+                      class="agents-filter__field-control">
+
+        <mat-select (selectionChange)="updateFilter('location', $event.value)">
+
+          <mat-option [value]="null">All locations</mat-option>
+
+          <ng-container *ngFor="let loc of locations">
+            <mat-option [value]="loc">{{ loc }}</mat-option>
+          </ng-container>
+
+        </mat-select>
+
+      </mat-form-field>
+
+    </div>
+
+    <!-- AGENCY -->
+    <div class="agents-filter__mini-field">
+
+      <span class="agents-filter__field-label">
+        <span class="agents-filter__icon-box">
+          <img src="assets/icons/agency.svg" />
+        </span>
+        <span>Agency</span>
+      </span>
+
+      <mat-form-field appearance="outline"
+                      class="agents-filter__field-control">
+
+        <mat-select (selectionChange)="updateFilter('agency', $event.value)">
+
+          <mat-option [value]="null">All agencies</mat-option>
+
+          <ng-container *ngFor="let agency of agencies">
+            <mat-option [value]="agency">{{ agency }}</mat-option>
+          </ng-container>
+
+        </mat-select>
+
+      </mat-form-field>
+
+    </div>
+
+    <!-- RATING -->
+    <div class="agents-filter__mini-field">
+
+      <span class="agents-filter__field-label">
+        <span class="agents-filter__icon-box">
+          <img src="assets/icons/rating.svg" />
+        </span>
+        <span>Minimum rating</span>
+      </span>
+
+      <mat-form-field appearance="outline"
+                      class="agents-filter__field-control">
+
+        <mat-select (selectionChange)="updateFilter('rating', $event.value)">
+
+          <mat-option [value]="null">Any rating</mat-option>
+
+          <ng-container *ngFor="let r of ratings">
+            <mat-option [value]="r">{{ r }}+</mat-option>
+          </ng-container>
+
+        </mat-select>
+
+      </mat-form-field>
+
+    </div>
+
+    <!-- BUTTON -->
+    <button type="button"
+            class="agents-filter__search-cta"
+            (click)="applyFilters()"
+            aria-label="Search properties">
+      <span class="agents-filter__search-cta-icon">
+        <mat-icon fontSet="material-symbols-outlined"
+                  inline>search</mat-icon>
+      </span>
+
+      <span class="agents-filter__search-cta-copy">
+        <strong>Search</strong>
+      </span>
+    </button>
+
+  </div>
+
+</section>

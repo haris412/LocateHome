@@ -1,0 +1,12 @@
+<div class="pagination-container">
+
+  <button
+    class="page-btn"
+    *ngFor="let page of pages()"
+    [class.active]="page === currentPage"
+    (click)="selectPage(page)"
+  >
+    {{ page }}
+  </button>
+
+</div>
