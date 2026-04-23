@@ -4,7 +4,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 
-export interface AgentFilter {
+export interface AgentFilters {
   location: string | null;
   agency: string | null;
   rating: number | null;
@@ -24,9 +24,9 @@ export interface AgentFilter {
 })
 export class AgentsFiltersComponent {
 
-  @Output() filtersChange = new EventEmitter<AgentFilter>();
+  @Output() filtersChange = new EventEmitter<AgentFilters>();
 
-  readonly filters = signal<AgentFilter>({
+  readonly filters = signal<AgentFilters>({
     location: null,
     agency: null,
     rating: null
@@ -36,7 +36,7 @@ export class AgentsFiltersComponent {
   agencies = ['All agencies', 'Urban Key', 'Prime Nest'];
   ratings = [4.5, 4.7, 4.8];
 
-  updateFilter(key: keyof AgentFilter, value: any) {
+  updateFilter(key: keyof AgentFilters, value: any) {
     this.filters.update(f => ({ ...f, [key]: value }));
   }
 

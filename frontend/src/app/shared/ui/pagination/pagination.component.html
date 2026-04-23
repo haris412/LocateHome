@@ -1,12 +1,37 @@
-<div class="pagination-container">
-
+<nav class="pagination" [attr.aria-label]="ariaLabel()">
   <button
-    class="page-btn"
-    *ngFor="let page of pages()"
-    [class.active]="page === currentPage"
-    (click)="selectPage(page)"
-  >
-    {{ page }}
+    type="button"
+    class="pagination__btn"
+    [disabled]="!canPrev()"
+    (click)="prev()"
+    aria-label="Previous page">
+    ‹
   </button>
 
-</div>
+  <div class="pagination__pages" role="list">
+    @for (t of tokens(); track $index) {
+      @if (t === '…') {
+        <span class="pagination__ellipsis" aria-hidden="true">…</span>
+      } @else {
+        <button
+          type="button"
+          class="pagination__page"
+          [class.pagination__page--active]="isActive(t)"
+          (click)="goTo(t)"
+          [attr.aria-current]="isActive(t) ? 'page' : null"
+          [attr.aria-label]="'Go to page ' + t">
+          {{ t }}
+        </button>
+      }
+    }
+  </div>
+
+  <button
+    type="button"
+    class="pagination__btn"
+    [disabled]="!canNext()"
+    (click)="next()"
+    aria-label="Next page">
+    ›
+  </button>
+</nav>

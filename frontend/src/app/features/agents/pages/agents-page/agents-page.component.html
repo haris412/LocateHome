@@ -21,7 +21,7 @@
     <!-- GRID -->
     <div class="row g-4 mt-2">
 
-      @for (agent of agents(); track agent.id) {
+      @for (agent of allAgents(); track agent.id) {
       <div class="col-12 col-md-6 col-lg-4">
         <app-agent-card [item]="agent" />
       </div>
@@ -31,9 +31,10 @@
 
     <!-- PAGINATION -->
     <div class="mt-5 d-flex justify-content-center">
-      <app-pagination [currentPage]="currentPage()"
-                      [totalPages]="totalPages()"
-                      (pageChange)="onPageChange($event)" />
+      <app-pagination [page]="page()"
+                      [pageCount]="pageCount()"
+                      (pageChange)="onPageChange($event)"
+                      ariaLabel="Agents pagination" />
     </div>
 
   </div>
