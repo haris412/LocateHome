@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, Params, NavigationEnd } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { CdkAutofill } from '@angular/cdk/text-field';
 import { filter } from 'rxjs/operators';
 import { toSignal } from '@angular/core/rxjs-interop';
 
@@ -14,7 +13,7 @@ interface HeaderNavItem {
 
 @Component({
   selector: 'app-header',
-  imports: [RouterLink, MatIconModule, CdkAutofill],
+  imports: [RouterLink, MatIconModule],
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

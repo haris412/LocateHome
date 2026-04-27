@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Subject, of } from 'rxjs';
+import { catchError, debounceTime, switchMap } from 'rxjs/operators';
 
 import { FilterChipItem, FilterSelectConfig, FilterTabItem, SortOption } from '../../../../core/models/filter.models';
 import { ListingItem } from '../../../../core/models/listing.models';
@@ -26,11 +28,13 @@ import { ListingsQueryParams, ListingsService } from '../../services/listings.se
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListingsPageComponent {
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
+  private readonly route          = inject(ActivatedRoute);
+  private readonly router         = inject(Router);
   private readonly listingsService = inject(ListingsService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly destroyRef     = inject(DestroyRef);
   private readonly filtersCatalog = inject(FiltersCatalogService);
+
+  private readonly filtersChanged$ = new Subject<PropertyFilterPayload>();
 
   readonly searchQuery = signal('');
 
@@ -136,10 +140,9 @@ export class ListingsPageComponent {
   constructor() {
     this.filtersCatalog.loadCatalog();
 
-    // When the catalog arrives, patch the property-type options in both field sets.
     effect(() => {
       const typeOpts = this.filtersCatalog.propertyTypeOptions();
-      if (typeOpts.length <= 1) return; // still loading — only [Any] present
+      if (typeOpts.length <= 1) return;
 
       this.buyFields.update((fields) =>
         fields.map((f) => (f.id === 'primaryType' ? { ...f, options: typeOpts } : f))
@@ -149,32 +152,37 @@ export class ListingsPageComponent {
       );
     });
 
+    // Any filter change → debounce 350ms → navigate.
+    // Rapid filter changes collapse into one navigation, keeping the URL clean.
+    this.filtersChanged$
+      .pipe(debounceTime(350), takeUntilDestroyed(this.destroyRef))
+      .subscribe((payload) => this.applyFiltersToQuery(payload));
+
+    // URL params → switchMap cancels the previous in-flight API call automatically.
     this.route.queryParamMap
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((params) => {
-        this.syncFilterFieldsFromParams(params);
-        const query = this.mapQueryParamsToRequest(params);
-        this.selectedSort.set(this.fromSortParams(query.sortBy, query.sortOrder));
-        this.selectedMode.set(query.purpose === 'For Rent' ? 'rent' : 'buy');
+      .pipe(
+        takeUntilDestroyed(this.destroyRef),
+        switchMap((params) => {
+          this.syncFilterFieldsFromParams(params);
+          const query = this.mapQueryParamsToRequest(params);
+          this.selectedSort.set(this.fromSortParams(query.sortBy, query.sortOrder));
+          this.selectedMode.set(query.purpose === 'For Rent' ? 'rent' : 'buy');
 
-        const city = params.get('city');
-        if (city) {
-          this.searchQuery.set(city);
-          this.selectedCityLabel.set(city);
-        } else {
-          this.selectedCityLabel.set('All locations');
-        }
+          const city = params.get('city');
+          this.searchQuery.set(city ?? '');
+          this.selectedCityLabel.set(city || 'All locations');
 
-        this.listingsService
-          .getListings(query)
-          .pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe({
-            next: (result) => {
-              this.listings.set(result.items);
-              this.totalResults.set(result.total);
-            },
-            error: (error) => console.error('Failed to load listings', error)
-          });
+          return this.listingsService.getListings(query).pipe(
+            catchError((err) => {
+              console.error('Failed to load listings', err);
+              return of({ items: [] as ListingItem[], page: 1, totalPages: 0, total: 0 });
+            })
+          );
+        })
+      )
+      .subscribe((result) => {
+        this.listings.set(result.items);
+        this.totalResults.set(result.total);
       });
   }
 
@@ -249,11 +257,12 @@ export class ListingsPageComponent {
     }
 
     const areaParam = params.get('area') ?? '';
+    const cityParam = params.get('city') ?? '';
     this.buyFields.update((fields) =>
-      this.patchCategoryTypeFields(fields, primary, subtype, areaParam)
+      this.patchCategoryTypeFields(fields, primary, subtype, areaParam, cityParam)
     );
     this.rentFields.update((fields) =>
-      this.patchCategoryTypeFields(fields, primary, subtype, areaParam)
+      this.patchCategoryTypeFields(fields, primary, subtype, areaParam, cityParam)
     );
   }
 
@@ -261,7 +270,8 @@ export class ListingsPageComponent {
     fields: FilterSelectConfig[],
     category: string,
     subtype: string,
-    areaParam: string
+    areaParam: string,
+    cityParam: string = ''
   ): FilterSelectConfig[] {
     const typeOpts = this.filtersCatalog.propertyTypeOptions();
     const catValue = typeOpts.some((o) => o.id === category) ? category : 'any';
@@ -277,6 +287,9 @@ export class ListingsPageComponent {
       }
       if (field.id === 'area' && field.locationRole === 'area') {
         return { ...field, value: areaParam || '' };
+      }
+      if (field.id === 'city' && field.locationRole === 'city') {
+        return { ...field, value: cityParam };
       }
       return field;
     });
@@ -343,23 +356,22 @@ export class ListingsPageComponent {
         placeholder: 'Province',
         value: 'any',
         options: [
-          { id: 'any', label: 'Any' },
-          { id: 'ontario', label: 'Ontario' },
-          { id: 'alberta', label: 'Alberta' },
-          { id: 'bc', label: 'British Columbia' }
+          { id: 'any',                  label: 'Any' },
+          { id: 'punjab',               label: 'Punjab' },
+          { id: 'sindh',                label: 'Sindh' },
+          { id: 'khyber pakhtunkhwa',   label: 'Khyber Pakhtunkhwa' },
+          { id: 'balochistan',          label: 'Balochistan' },
+          { id: 'gilgit-baltistan',     label: 'Gilgit-Baltistan' }
         ]
       },
       {
-        id: 'state',
-        label: 'State',
-        icon: 'map',
-        placeholder: 'State',
-        value: 'any',
-        options: [
-          { id: 'any', label: 'Any' },
-          { id: 'toronto', label: 'Toronto' },
-          { id: 'ottawa', label: 'Ottawa' }
-        ]
+        id: 'city',
+        label: 'City',
+        icon: 'location_city',
+        placeholder: 'Search city',
+        value: '',
+        options: [],
+        locationRole: 'city'
       },
       {
         id: 'area',
@@ -418,8 +430,12 @@ export class ListingsPageComponent {
     return { sortBy: 'createdAt', sortOrder: 'desc' };
   }
 
+  onFiltersChanged(payload: PropertyFilterPayload): void {
+    this.filtersChanged$.next(payload);
+  }
+
   onSearchSubmitted(payload: PropertyFilterPayload): void {
-    this.applyFiltersToQuery(payload);
+    this.filtersChanged$.next(payload);
   }
 
   private applyFiltersToQuery(payload: PropertyFilterPayload): void {
@@ -434,6 +450,7 @@ export class ListingsPageComponent {
     const areaRaw = fieldValue('area');
     const area =
       areaRaw && typeof areaRaw === 'string' && areaRaw.trim() !== '' ? areaRaw.trim() : null;
+    const city = fieldValue('city')?.trim() || null;
 
     const { minPrice, maxPrice } = this.mapPriceRange(price, payload.mode);
 
@@ -441,7 +458,7 @@ export class ListingsPageComponent {
       page: 1,
       limit: 20,
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
-      city: payload.query?.trim() || null,
+      city,
       area,
       propertyType: !primaryType || primaryType === 'any' ? null : primaryType,
       subType: !subtype || subtype === 'any' ? null : subtype,

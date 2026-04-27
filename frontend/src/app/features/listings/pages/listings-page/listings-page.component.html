@@ -16,6 +16,7 @@
                         [rentChips]="rentChips()"
                         [searchQueryInput]="searchQuery()"
                         (searchQueryChange)="onSearchQueryChange($event)"
+                        (filtersChanged)="onFiltersChanged($event)"
                         (searchSubmitted)="onSearchSubmitted($event)" />
 
   <app-listings-results-header [resultsCount]="totalResults()"

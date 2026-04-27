@@ -12,6 +12,7 @@ import {
 } from '@angular/core';
 import { isPlatformBrowser, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { LocationCatalogService } from '../../../core/services/location-catalog.service';
 
 import {
   FilterChipItem,
@@ -25,8 +26,6 @@ import { FilterShellComponent } from '../filter-shell/filter-shell.component';
 import { FilterSegmentTabsComponent } from '../filter-segment-tabs/filter-segment-tabs.component';
 import { FilterSelectComponent } from '../filter-select-card/filter-select-card.component';
 import { FilterChipGroupComponent } from '../filter-chip-group/filter-chip-group.component';
-import { LocationCityFieldComponent } from '../location-city-field/location-city-field.component';
-
 export interface PropertyFilterPayload {
   mode: FilterMode;
   query: string;
@@ -76,8 +75,7 @@ interface SpeechRecognitionEventLike {
     FilterShellComponent,
     FilterSegmentTabsComponent,
     FilterSelectComponent,
-    FilterChipGroupComponent,
-    LocationCityFieldComponent
+    FilterChipGroupComponent
   ],
   templateUrl: './property-filters.component.html',
   styleUrl: './property-filters.component.scss',
@@ -99,8 +97,9 @@ export class PropertyFiltersComponent {
 
     return selectedOption?.label || field.placeholder || 'Select';
   }
-  private readonly platformId = inject(PLATFORM_ID);
-  private readonly filtersCatalog = inject(FiltersCatalogService);
+  private readonly platformId      = inject(PLATFORM_ID);
+  private readonly filtersCatalog  = inject(FiltersCatalogService);
+  private readonly locationCatalog = inject(LocationCatalogService);
 
   readonly variant = input<'hero' | 'toolbar'>('hero');
   readonly initialMode = input<FilterMode>('buy');
@@ -247,6 +246,13 @@ export class PropertyFiltersComponent {
 
       return next;
     });
+
+    if (payload.id === 'province') {
+      this.locationCatalog.setSelectedProvince(payload.value ?? 'any');
+      store.update((fields) =>
+        fields.map((f) => (f.id === 'city' ? { ...f, value: '' } : f))
+      );
+    }
 
     this.emitFiltersChanged();
   }

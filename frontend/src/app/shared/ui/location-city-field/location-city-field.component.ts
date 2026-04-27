@@ -40,10 +40,13 @@ export class LocationCityFieldComponent {
     });
 
     if (isPlatformBrowser(this.platformId)) {
-      this.catalog
-        .loadCitiesForProvince('any')
-        .pipe(take(1))
-        .subscribe((places) => this.allPlaces.set(places));
+      effect(() => {
+        const province = this.catalog.selectedProvince();
+        this.catalog
+          .loadCitiesForProvince(province)
+          .pipe(take(1))
+          .subscribe((places) => this.allPlaces.set(places));
+      });
     }
   }
 
