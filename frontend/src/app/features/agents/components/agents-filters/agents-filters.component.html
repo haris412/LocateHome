@@ -19,9 +19,9 @@
 
           <mat-option [value]="null">All locations</mat-option>
 
-          <ng-container *ngFor="let loc of locations">
+          @for (loc of locations; track loc) {
             <mat-option [value]="loc">{{ loc }}</mat-option>
-          </ng-container>
+          }
 
         </mat-select>
 
@@ -46,9 +46,9 @@
 
           <mat-option [value]="null">All agencies</mat-option>
 
-          <ng-container *ngFor="let agency of agencies">
+          @for (agency of agencies; track agency) {
             <mat-option [value]="agency">{{ agency }}</mat-option>
-          </ng-container>
+          }
 
         </mat-select>
 
@@ -73,9 +73,9 @@
 
           <mat-option [value]="null">Any rating</mat-option>
 
-          <ng-container *ngFor="let r of ratings">
+          @for (r of ratings; track r) {
             <mat-option [value]="r">{{ r }}+</mat-option>
-          </ng-container>
+          }
 
         </mat-select>
 

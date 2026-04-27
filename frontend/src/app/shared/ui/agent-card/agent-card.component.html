@@ -59,7 +59,7 @@
       </div>
     }
 
-    @if (item().stats?.properties) {
+    @if (item().stats.properties) {
       <div class="agent-card__info-row">
         <span class="agent-card__info-icon" aria-hidden="true">
           <mat-icon fontSet="material-symbols-outlined">home</mat-icon>
@@ -67,7 +67,7 @@
 
         <div class="agent-card__info-text">
           <span class="agent-card__info-label">Listings</span>
-          <span class="agent-card__info-value">{{ item().stats?.properties }} properties</span>
+          <span class="agent-card__info-value">{{ item().stats.properties }} properties</span>
         </div>
       </div>
     }
