@@ -46,18 +46,18 @@ export class AppointmentBookingService {
     return this.http.get<unknown>(url, { headers: authHeaders() });
   }
 
-  getUserProfile(userId: string): Observable<{ firstname?: string; lastname?: string }> {
-    const url = `${this.api}/api/users/${userId}`;
+  /**
+   * GET /api/users/:mongoUserId/name
+   * Response: { success: true, data: { firstName: string, lastName: string } }
+   */
+  getUserProfile(userId: string): Observable<{ firstName?: string; lastName?: string }> {
+    const url = `${this.api}/api/users/${userId}/name`;
     return this.http.get<unknown>(url, { headers: authHeaders() }).pipe(
       map((raw) => {
         const row = unwrapRecord(raw);
-        const first =
-          pickStr(row, 'firstname', 'firstName', 'first_name') ??
-          pickStr(unwrapRecord(row?.['user']), 'firstname', 'firstName', 'first_name');
-        const last =
-          pickStr(row, 'lastname', 'lastName', 'last_name') ??
-          pickStr(unwrapRecord(row?.['user']), 'lastname', 'lastName', 'last_name');
-        return { firstname: first, lastname: last };
+        const first = pickStr(row, 'firstName');
+        const last = pickStr(row, 'lastName');
+        return { firstName: first, lastName: last };
       })
     );
   }

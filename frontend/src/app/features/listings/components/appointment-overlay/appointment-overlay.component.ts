@@ -242,7 +242,7 @@ export class AppointmentOverlayComponent {
               })
             );
 
-            const agent = [profile.firstname, profile.lastname].filter(Boolean).join(' ').trim();
+          const agent = [profile.firstName, profile.lastName].filter(Boolean).join(' ').trim();
             if (agent) this.resolvedAgentName.set(agent);
           },
           error: () => {
