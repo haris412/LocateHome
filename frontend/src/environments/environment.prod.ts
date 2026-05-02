@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
-  apiUrl: '', // set your production API URL
+  /** Backend is under /property.api (not site root). */
+  apiUrl: 'https://soletechs.net/property.api',
   /** Region for `s3://…` URLs (match your S3 bucket region). */
   awsS3Region: 'eu-north-1',
   listingCountryCode: 'PK',
