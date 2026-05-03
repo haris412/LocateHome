@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: '', // set your production API URL
+  apiUrl: 'http://localhost:3000', // local SSR test — change to real URL before deploying
   /** Region for `s3://…` URLs (match your S3 bucket region). */
   awsS3Region: 'eu-north-1',
   listingCountryCode: 'PK',
