@@ -77,11 +77,12 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "8kb",
-                  "maximumError": "12kb"
+                  "maximumWarning": "10kb",
+                  "maximumError": "20kb"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "prerender": false
             },
             "development": {
               "optimization": false,
