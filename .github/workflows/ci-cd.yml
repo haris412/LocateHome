@@ -13,7 +13,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GH_TOKEN_CP }}
+          token: ${{ secrets.GH_TOKEN_PROP_FRONT }}
           fetch-depth: 1
 
       - name: Setup Node.js
