@@ -1,16 +1,15 @@
-import { ApplicationConfig } from '@angular/core';
+import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
 import { provideServerRendering } from '@angular/platform-server';
-import { provideRouter } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
-import { provideNativeDateAdapter } from '@angular/material/core';
 
-import { appRoutes } from './app.routes';
+import { appConfig } from './app.config';
 
-export const config: ApplicationConfig = {
+// Server-only additions — everything else comes from shared appConfig
+const serverConfig: ApplicationConfig = {
   providers: [
-    provideServerRendering(),
-    provideRouter(appRoutes),
-    provideHttpClient(),
-    provideNativeDateAdapter()
+    provideServerRendering()
   ]
 };
+
+// mergeApplicationConfig correctly handles duplicate tokens:
+// if browser and server both register the same provider, server config wins.
+export const config = mergeApplicationConfig(appConfig, serverConfig);
