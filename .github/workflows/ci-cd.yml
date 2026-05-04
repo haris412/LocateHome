@@ -10,20 +10,16 @@ jobs:
     runs-on: [self-hosted, windows, property-frontend-self-hosted]
 
     steps:
-      - name: Clean workspace
+      - name: Clone repository
         shell: powershell
         run: |
-          if (Test-Path $env:GITHUB_WORKSPACE) {
-            Remove-Item "$env:GITHUB_WORKSPACE\*" -Recurse -Force -ErrorAction SilentlyContinue
+          $repoPath = "$env:GITHUB_WORKSPACE"
+          if (Test-Path $repoPath) {
+            Remove-Item "$repoPath\*" -Recurse -Force -ErrorAction SilentlyContinue
           }
-
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_TOKEN_PROP_FRONT }}
-          fetch-depth: 1
-          clean: false
-          submodules: false
+          git clone --branch Development --depth 1 --single-branch `
+            https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git `
+            $repoPath
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
