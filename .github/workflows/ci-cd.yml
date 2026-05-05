@@ -4,8 +4,6 @@ on:
   push:
     branches: [Development]
 
-env:
-  BUILD_DIR: C:\builds\property-frontend
 
 jobs:
   build-and-deploy:
@@ -16,6 +14,9 @@ jobs:
       - name: Clean and clone
         shell: cmd
         run: |
+          git config --global core.sshCommand ""
+          git config --global submodule.recurse false
+          git config --global credential.helper ""
           if exist "%BUILD_DIR%" rd /s /q "%BUILD_DIR%"
           git clone --branch Development --depth 1 --single-branch https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git "%BUILD_DIR%"
 
