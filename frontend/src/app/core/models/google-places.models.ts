@@ -28,3 +28,22 @@ export interface GooglePlaceSuggestion {
 export interface GooglePlacesAutocompleteResponse {
   suggestions?: GooglePlaceSuggestion[];
 }
+
+// ── Reverse Geocoding ─────────────────────────────────────────────────────────
+
+export interface GoogleGeocodeAddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+export interface GoogleGeocodeResult {
+  address_components: GoogleGeocodeAddressComponent[];
+  formatted_address: string;
+  types: string[];
+}
+
+export interface GoogleGeocodeResponse {
+  results: GoogleGeocodeResult[];
+  status: string;
+}

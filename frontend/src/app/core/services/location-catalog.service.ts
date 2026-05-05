@@ -4,12 +4,15 @@ import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import {
+  GoogleGeocodeResponse,
   GooglePlacePrediction,
   GooglePlacesAutocompleteResponse
 } from '../models/google-places.models';
 import { environment } from '../../../environments/environment';
 
-const PLACES_AUTOCOMPLETE_URL = 'https://places.googleapis.com/v1/places:autocomplete';
+const PLACES_AUTOCOMPLETE_URL  = 'https://places.googleapis.com/v1/places:autocomplete';
+const GEOCODE_URL              = 'https://maps.googleapis.com/maps/api/geocode/json';
+const CITY_GEOCODE_TYPES       = new Set(['locality', 'administrative_area_level_2']);
 
 const CITY_LEVEL_TYPES = new Set([
   'locality',
@@ -44,6 +47,25 @@ export class LocationCatalogService {
     ).pipe(
       map(res => res.suggestions?.map(s => s.placePrediction) ?? []),
       catchError(() => of([]))
+    );
+  }
+
+  /** Reverse-geocodes a lat/lng coordinate and returns the city name, or null on failure. */
+  reverseGeocode(lat: number, lng: number): Observable<string | null> {
+    return this.http.get<GoogleGeocodeResponse>(GEOCODE_URL, {
+      params: { latlng: `${lat},${lng}`, key: this.apiKey }
+    }).pipe(
+      map(res => {
+        if (res.status !== 'OK') return null;
+        for (const result of res.results) {
+          const cityComponent = result.address_components.find(c =>
+            c.types.some(t => CITY_GEOCODE_TYPES.has(t))
+          );
+          if (cityComponent) return cityComponent.long_name;
+        }
+        return null;
+      }),
+      catchError(() => of(null))
     );
   }
 

@@ -187,6 +187,7 @@ export class SearchPanelComponent {
     this.setupSpeechRecognition();
     this.wireCityControl();
     this.wireAreaControl();
+    this.detectUserCity();
   }
 
   // ── Wiring ───────────────────────────────────────────────────────────────
@@ -317,6 +318,24 @@ export class SearchPanelComponent {
     }
     this.micError.set('');
     this.recognition.start();
+  }
+
+  private detectUserCity(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        this.locationCatalog.reverseGeocode(coords.latitude, coords.longitude)
+          .subscribe(cityName => {
+            if (!cityName) return;
+            this.city.set(cityName);
+            this.cityControl.setValue(cityName, { emitEvent: false });
+            this.locationCatalog.setSelectedCityName(cityName);
+          });
+      },
+      () => { /* permission denied or unavailable — stay silent */ }
+    );
   }
 
   private setupSpeechRecognition(): void {
