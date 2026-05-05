@@ -17,8 +17,7 @@ jobs:
           git config --global core.sshCommand ""
           git config --global submodule.recurse false
           git config --global credential.helper ""
-          if exist "%BUILD_DIR%" rd /s /q "%BUILD_DIR%"
-          git clone --branch Development --depth 1 --single-branch https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git "%BUILD_DIR%"
+          git clone --branch Development --depth 1 --single-branch https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git repo
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
