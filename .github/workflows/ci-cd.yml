@@ -10,18 +10,26 @@ jobs:
     runs-on: [self-hosted, windows, property-frontend-self-hosted]
 
     steps:
-      - name: Clone repository
+      - name: Clone or update repository
         shell: powershell
         run: |
           $repoPath = "$env:GITHUB_WORKSPACE"
-          Set-Location C:\
-          if (Test-Path $repoPath) {
-            Remove-Item $repoPath -Recurse -Force
+          $remote   = "https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git"
+
+          if (Test-Path "$repoPath\.git") {
+            Write-Host "Repo exists — fetching latest"
+            Set-Location $repoPath
+            git remote set-url origin $remote
+            git fetch --depth 1 origin Development
+            git reset --hard origin/Development
+            git clean -fd
+          } else {
+            Write-Host "No repo found — cloning"
+            if (!(Test-Path $repoPath)) {
+              New-Item -ItemType Directory -Path $repoPath -Force | Out-Null
+            }
+            git clone --branch Development --depth 1 --single-branch $remote $repoPath
           }
-          New-Item -ItemType Directory -Path $repoPath -Force | Out-Null
-          git clone --branch Development --depth 1 --single-branch `
-            https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git `
-            $repoPath
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
