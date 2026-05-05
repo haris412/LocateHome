@@ -15,8 +15,9 @@ jobs:
         run: |
           $repoPath = "$env:GITHUB_WORKSPACE"
           if (Test-Path $repoPath) {
-            Remove-Item "$repoPath\*" -Recurse -Force -ErrorAction SilentlyContinue
+            Remove-Item $repoPath -Recurse -Force
           }
+          New-Item -ItemType Directory -Path $repoPath -Force | Out-Null
           git clone --branch Development --depth 1 --single-branch `
             https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git `
             $repoPath
