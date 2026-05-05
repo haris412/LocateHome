@@ -14,6 +14,7 @@ jobs:
         shell: powershell
         run: |
           $repoPath = "$env:GITHUB_WORKSPACE"
+          Set-Location C:\
           if (Test-Path $repoPath) {
             Remove-Item $repoPath -Recurse -Force
           }
