@@ -60,4 +60,4 @@ jobs:
 
           Set-ItemProperty $appPath -Name physicalPath -Value $target
           Restart-WebAppPool -Name (Get-WebApplication -Site "Default Web Site" -Name "property.web").applicationPool
-          Write-Host "Done — IIS now points to $target"
+          Write-Host "Done -> IIS now points to $target"
