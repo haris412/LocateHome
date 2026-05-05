@@ -1,13 +1,7 @@
 <div class="filter-select">
-  @if (config().locationRole === 'city') {
-    <app-location-city-field
-      [label]="config().label"
-      [placeholder]="config().placeholder"
-      [value]="config().value ?? ''"
-      (valueChanged)="onSelectionChange($event)"
-    />
-  } @else if (config().locationRole === 'area') {
-    <app-location-area-field
+  @if (config().locationRole === 'city' || config().locationRole === 'area') {
+    <app-location-search-field
+      [mode]="config().locationRole!"
       [label]="config().label"
       [placeholder]="config().placeholder"
       [value]="config().value ?? ''"

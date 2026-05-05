@@ -23,9 +23,9 @@ export class HeaderComponent {
   private readonly router = inject(Router);
 
   readonly navItems: readonly HeaderNavItem[] = [
-    { id: 'home', label: 'Home', route: '/home' },
-    { id: 'buy', label: 'Buy', route: '/listings' },
-    { id: 'rent', label: 'Rent', route: '/listings' },
+    { id: 'home',   label: 'Home',        route: '/home' },
+    { id: 'buy',    label: 'Buy',         route: '/listings', queryParams: { purpose: 'For Sale', page: 1 } },
+    { id: 'rent',   label: 'Rent',        route: '/listings', queryParams: { purpose: 'For Rent', page: 1 } },
     { id: 'agents', label: 'Find Agents', route: '/agents' }
   ];
 
@@ -76,6 +76,6 @@ export class HeaderComponent {
   }
 
   private isRentUrl(url: string): boolean {
-    return url.includes('purpose=rent') || url.includes('/rent');
+    return url.includes('purpose=For%20Rent') || url.includes('purpose=For+Rent');
   }
 }

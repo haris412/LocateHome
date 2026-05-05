@@ -1,0 +1,32 @@
+<div class="location-search-field">
+  <label class="location-search-field__label">
+    <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
+    <span>{{ resolvedLabel() }}</span>
+  </label>
+
+  <mat-form-field appearance="outline" class="location-search-field__field" subscriptSizing="dynamic">
+    <input
+      type="text"
+      matInput
+      [placeholder]="resolvedPlaceholder()"
+      [matAutocomplete]="auto"
+      [value]="draft()"
+      [disabled]="isDisabled()"
+      (input)="onInput($event)"
+    />
+    <mat-autocomplete
+      #auto="matAutocomplete"
+      [displayWith]="displayValue"
+      (optionSelected)="onOptionSelected($event)"
+    >
+      @for (pred of suggestions(); track pred.placeId) {
+        <mat-option [value]="pred">
+          <span class="lc-place-main">{{ pred.structuredFormat.mainText.text }}</span>
+          @if (pred.structuredFormat.secondaryText?.text) {
+            <span class="lc-place-secondary">{{ pred.structuredFormat.secondaryText!.text }}</span>
+          }
+        </mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+</div>

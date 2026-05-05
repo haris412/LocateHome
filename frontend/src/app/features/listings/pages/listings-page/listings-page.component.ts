@@ -94,7 +94,7 @@ export class ListingsPageComponent {
         page: 1,
         limit: 20,
         city: value.trim() || null,
-        area: null,
+        neighborhood: null,
         purpose: null,
         propertyType: null,
         subType: null,
@@ -228,8 +228,8 @@ export class ListingsPageComponent {
       propertyType: propertyTypeTop,
       subType: subTypeApi,
       city: params.get('city') ?? undefined,
-      area: (() => {
-        const a = params.get('area');
+      neighborhood: (() => {
+        const a = params.get('neighborhood');
         return a && a.trim() !== '' ? a.trim() : undefined;
       })(),
       minPrice: this.toNumber(params.get('minPrice')),
@@ -256,7 +256,7 @@ export class ListingsPageComponent {
       if (cat) primary = cat;
     }
 
-    const areaParam = params.get('area') ?? '';
+    const areaParam = params.get('neighborhood') ?? '';
     const cityParam = params.get('city') ?? '';
     this.buyFields.update((fields) =>
       this.patchCategoryTypeFields(fields, primary, subtype, areaParam, cityParam)
@@ -459,7 +459,7 @@ export class ListingsPageComponent {
       limit: 20,
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
       city,
-      area,
+      neighborhood: area,
       propertyType: !primaryType || primaryType === 'any' ? null : primaryType,
       subType: !subtype || subtype === 'any' ? null : subtype,
       category: null,

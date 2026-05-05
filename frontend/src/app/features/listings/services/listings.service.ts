@@ -29,7 +29,7 @@ export interface ListingsQueryParams {
   /** Subtype filter (API value, e.g. apartment, upper portion). */
   subType?: string;
   city?: string;
-  area?: string;
+  neighborhood?: string;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: string;
@@ -172,7 +172,7 @@ export class ListingsService {
       ['propertyType', params.propertyType],
       ['subType', params.subType],
       ['city', params.city],
-      ['area', params.area],
+      ['neighborhood', params.neighborhood],
       ['minPrice', params.minPrice],
       ['maxPrice', params.maxPrice],
       ['sortBy', params.sortBy],

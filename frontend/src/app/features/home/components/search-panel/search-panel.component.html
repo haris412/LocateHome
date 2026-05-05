@@ -81,9 +81,12 @@
                             [displayWith]="displayCity"
                             [autoActiveFirstOption]="true"
                             (optionSelected)="onCityOptionSelected($event)">
-            @for (p of filteredCities(); track trackGeoPlace($index, p)) {
-            <mat-option [value]="p">
-              {{ p.name }}{{ p.adminName1 ? ', ' + p.adminName1 : '' }}
+            @for (pred of citySuggestions(); track trackPrediction($index, pred)) {
+            <mat-option [value]="pred">
+              <span class="search-panel__place-main">{{ pred.structuredFormat.mainText.text }}</span>
+              @if (pred.structuredFormat.secondaryText?.text) {
+              <span class="search-panel__place-secondary">{{ pred.structuredFormat.secondaryText!.text }}</span>
+              }
             </mat-option>
             }
           </mat-autocomplete>
@@ -100,7 +103,7 @@
         <mat-form-field appearance="outline"
                         class="search-panel__field-control">
           <input matInput
-                 [formControl]="areaControl"
+                 [formControl]="neighborhoodControl"
                  [matAutocomplete]="areaAuto"
                  placeholder="Neighbourhood or road"
                  autocomplete="off" />
@@ -108,9 +111,12 @@
                             [displayWith]="displayArea"
                             [autoActiveFirstOption]="true"
                             (optionSelected)="onAreaOptionSelected($event)">
-            @for (a of filteredAreas(); track trackAreaItem($index, a)) {
-            <mat-option [value]="a">
-              <span class="search-panel__area-option">{{ a.name }}</span>
+            @for (pred of neighborhoodSuggestions(); track trackPrediction($index, pred)) {
+            <mat-option [value]="pred">
+              <span class="search-panel__place-main">{{ pred.structuredFormat.mainText.text }}</span>
+              @if (pred.structuredFormat.secondaryText?.text) {
+              <span class="search-panel__place-secondary">{{ pred.structuredFormat.secondaryText!.text }}</span>
+              }
             </mat-option>
             }
           </mat-autocomplete>

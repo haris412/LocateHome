@@ -3,8 +3,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { FilterSelectConfig } from '../../../core/models/filter.models';
-import { LocationAreaFieldComponent } from '../location-area-field/location-area-field.component';
-import { LocationCityFieldComponent } from '../location-city-field/location-city-field.component';
+import { LocationSearchFieldComponent } from '../location-search-field/location-search-field.component';
 
 @Component({
   selector: 'app-filter-select',
@@ -13,8 +12,7 @@ import { LocationCityFieldComponent } from '../location-city-field/location-city
     MatFormFieldModule,
     MatSelectModule,
     MatIconModule,
-    LocationCityFieldComponent,
-    LocationAreaFieldComponent
+    LocationSearchFieldComponent
   ],
   templateUrl: './filter-select-card.component.html',
   styleUrl: './filter-select-card.component.scss',

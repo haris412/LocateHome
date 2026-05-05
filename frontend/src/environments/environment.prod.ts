@@ -5,6 +5,7 @@ export const environment = {
   /** Region for `s3://…` URLs (match your S3 bucket region). */
   awsS3Region: 'eu-north-1',
   listingCountryCode: 'PK',
+  googleMapsKey: 'AIzaSyCQhyzoeFIoSD3XYRnHxxwmnaWrBqBv-Io',
   geonames: {
     searchUrl: 'http://api.geonames.org/searchJSON',
     username: 'demo',
