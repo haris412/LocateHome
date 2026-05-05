@@ -1,0 +1,63 @@
+name: Frontend DEV CI/CD
+
+on:
+  push:
+    branches: [Development]
+
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy
+    runs-on: [self-hosted, windows, property-frontend-self-hosted]
+
+    steps:
+      - name: Clean and clone
+        shell: cmd
+        run: |
+          git config --global core.sshCommand ""
+          git config --global submodule.recurse false
+          git config --global credential.helper ""
+          git clone --branch Development --depth 1 --single-branch https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git repo
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        shell: cmd
+        run: cd /d "%BUILD_DIR%\frontend" && npm install --legacy-peer-deps
+
+      - name: Build
+        shell: cmd
+        run: cd /d "%BUILD_DIR%\frontend" && npm run build -- --configuration production
+
+      - name: Patch base href
+        shell: powershell
+        run: |
+          $index = "$env:BUILD_DIR\frontend\dist\frontend\browser\index.html"
+          (Get-Content $index -Raw) -replace '<base href="/">', '<base href="/property.web/">' |
+            Set-Content $index -Encoding utf8
+          Write-Host "base href patched"
+
+      - name: Deploy (blue-green swap)
+        shell: powershell
+        run: |
+          Import-Module WebAdministration
+
+          $source  = "$env:BUILD_DIR\frontend\dist\frontend\browser"
+          $pathA   = "C:\inetpub\property.web\browser"
+          $pathB   = "C:\property-frontend-dev-temp"
+          $appPath = "IIS:\Sites\Default Web Site\property.web"
+
+          $current = (Get-ItemProperty $appPath).physicalPath.TrimEnd('\')
+          $target  = if ($current -eq $pathA) { $pathB } else { $pathA }
+          Write-Host "Current: $current  →  Deploying to: $target"
+
+          if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force }
+          Remove-Item "$target\*" -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item "$source\*" $target -Recurse -Force
+
+          Set-ItemProperty $appPath -Name physicalPath -Value $target
+          Restart-WebAppPool -Name (Get-WebApplication -Site "Default Web Site" -Name "property.web").applicationPool
+          Write-Host "Done -> IIS now points to $target"
