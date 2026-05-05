@@ -4,31 +4,20 @@ on:
   push:
     branches: [Development]
 
+env:
+  BUILD_DIR: C:\builds\property-frontend
+
 jobs:
-  build-and-stage:
-    name: Build & Stage
+  build-and-deploy:
+    name: Build & Deploy
     runs-on: [self-hosted, windows, property-frontend-self-hosted]
 
     steps:
-      - name: Clone or update repository
-        shell: powershell
+      - name: Clean and clone
+        shell: cmd
         run: |
-          $repoPath = "$env:GITHUB_WORKSPACE"
-          $remote   = "https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git"
-
-          if (Test-Path "$repoPath\.git") {
-            Write-Host "Repo exists — fetching latest"
-            git -C $repoPath remote set-url origin $remote
-            git -C $repoPath fetch --depth 1 origin Development
-            git -C $repoPath reset --hard origin/Development
-            git -C $repoPath clean -fd
-          } else {
-            Write-Host "No repo found — cloning"
-            if (!(Test-Path $repoPath)) {
-              New-Item -ItemType Directory -Path $repoPath -Force | Out-Null
-            }
-            git clone --branch Development --depth 1 --single-branch $remote $repoPath
-          }
+          if exist "%BUILD_DIR%" rd /s /q "%BUILD_DIR%"
+          git clone --branch Development --depth 1 --single-branch https://x-access-token:${{ secrets.GH_TOKEN_PROP_FRONT }}@github.com/haris412/LocateHome.git "%BUILD_DIR%"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -36,25 +25,19 @@ jobs:
           node-version: 20
 
       - name: Install dependencies
-        working-directory: frontend
-        shell: powershell
-        run: npm install --legacy-peer-deps
+        shell: cmd
+        run: cd /d "%BUILD_DIR%\frontend" && npm install --legacy-peer-deps
 
       - name: Build
-        working-directory: frontend
-        shell: powershell
-        run: npm run build -- --configuration production
+        shell: cmd
+        run: cd /d "%BUILD_DIR%\frontend" && npm run build -- --configuration production
 
-      - name: Patch index.html base href
+      - name: Patch base href
         shell: powershell
         run: |
-          $indexPath = "$env:GITHUB_WORKSPACE\frontend\dist\frontend\browser\index.html"
-          if (!(Test-Path $indexPath)) {
-            Write-Error "index.html not found at $indexPath"
-            exit 1
-          }
-          (Get-Content $indexPath -Raw) -replace '<base href="/">', '<base href="/property.web/">' |
-            Set-Content $indexPath -Encoding utf8
+          $index = "$env:BUILD_DIR\frontend\dist\frontend\browser\index.html"
+          (Get-Content $index -Raw) -replace '<base href="/">', '<base href="/property.web/">' |
+            Set-Content $index -Encoding utf8
           Write-Host "base href patched"
 
       - name: Deploy (blue-green swap)
@@ -62,45 +45,19 @@ jobs:
         run: |
           Import-Module WebAdministration
 
-          $siteName  = "Default Web Site"
-          $appName   = "property.web"
-          $appPath   = "IIS:\Sites\$siteName\$appName"
-          $pathA     = "C:\inetpub\property.web\browser"
-          $pathB     = "C:\property-frontend-dev-temp"
-          $source    = "$env:GITHUB_WORKSPACE\frontend\dist\frontend\browser"
+          $source  = "$env:BUILD_DIR\frontend\dist\frontend\browser"
+          $pathA   = "C:\inetpub\property.web\browser"
+          $pathB   = "C:\property-frontend-dev-temp"
+          $appPath = "IIS:\Sites\Default Web Site\property.web"
 
-          if (!(Test-Path $source)) {
-            Write-Error "Build output not found at $source"
-            exit 1
-          }
+          $current = (Get-ItemProperty $appPath).physicalPath.TrimEnd('\')
+          $target  = if ($current -eq $pathA) { $pathB } else { $pathA }
+          Write-Host "Current: $current  →  Deploying to: $target"
 
-          $app = Get-WebApplication -Site $siteName -Name $appName
-          if (!$app) {
-            Write-Error "IIS application '$appName' not found under '$siteName'"
-            exit 1
-          }
-
-          $currentPath = $app.PhysicalPath.TrimEnd('\')
-          Write-Host "Current IIS physical path: $currentPath"
-
-          if ($currentPath -eq $pathA) {
-            Write-Host "Currently on A — deploying to B ($pathB)"
-            $target = $pathB
-          } else {
-            Write-Host "Currently on B — deploying to A ($pathA)"
-            $target = $pathA
-          }
-
-          if (!(Test-Path $target)) {
-            New-Item -ItemType Directory -Path $target -Force
-          }
-
+          if (!(Test-Path $target)) { New-Item -ItemType Directory -Path $target -Force }
           Remove-Item "$target\*" -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item -Path "$source\*" -Destination $target -Recurse -Force
-          Write-Host "Build copied to $target"
+          Copy-Item "$source\*" $target -Recurse -Force
 
           Set-ItemProperty $appPath -Name physicalPath -Value $target
-          Write-Host "IIS physical path updated to $target"
-
-          Restart-WebAppPool -Name (Get-WebApplication -Site $siteName -Name $appName).applicationPool
-          Write-Host "App pool restarted"
+          Restart-WebAppPool -Name (Get-WebApplication -Site "Default Web Site" -Name "property.web").applicationPool
+          Write-Host "Done — IIS now points to $target"
