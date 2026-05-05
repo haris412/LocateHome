@@ -36,22 +36,62 @@ jobs:
         shell: powershell
         run: npm run build -- --configuration production
 
-      - name: Copy build to staging folder
+      - name: Patch index.html base href
         shell: powershell
         run: |
-          $source      = "frontend\dist\frontend"
-          $destination = "C:\property-frontend-dev-temp"
+          $indexPath = "$env:GITHUB_WORKSPACE\frontend\dist\frontend\browser\index.html"
+          if (!(Test-Path $indexPath)) {
+            Write-Error "index.html not found at $indexPath"
+            exit 1
+          }
+          (Get-Content $indexPath -Raw) -replace '<base href="/">', '<base href="/property.web/">' |
+            Set-Content $indexPath -Encoding utf8
+          Write-Host "base href patched"
+
+      - name: Deploy (blue-green swap)
+        shell: powershell
+        run: |
+          Import-Module WebAdministration
+
+          $siteName  = "Default Web Site"
+          $appName   = "property.web"
+          $appPath   = "IIS:\Sites\$siteName\$appName"
+          $pathA     = "C:\inetpub\property.web\browser"
+          $pathB     = "C:\property-frontend-dev-temp"
+          $source    = "$env:GITHUB_WORKSPACE\frontend\dist\frontend\browser"
 
           if (!(Test-Path $source)) {
             Write-Error "Build output not found at $source"
             exit 1
           }
 
-          if (!(Test-Path $destination)) {
-            New-Item -ItemType Directory -Path $destination -Force
+          $app = Get-WebApplication -Site $siteName -Name $appName
+          if (!$app) {
+            Write-Error "IIS application '$appName' not found under '$siteName'"
+            exit 1
           }
 
-          Remove-Item "$destination\*" -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item -Path "$source\*" -Destination $destination -Recurse -Force
+          $currentPath = $app.PhysicalPath.TrimEnd('\')
+          Write-Host "Current IIS physical path: $currentPath"
 
-          Write-Host "Build copied to $destination"
+          if ($currentPath -eq $pathA) {
+            Write-Host "Currently on A — deploying to B ($pathB)"
+            $target = $pathB
+          } else {
+            Write-Host "Currently on B — deploying to A ($pathA)"
+            $target = $pathA
+          }
+
+          if (!(Test-Path $target)) {
+            New-Item -ItemType Directory -Path $target -Force
+          }
+
+          Remove-Item "$target\*" -Recurse -Force -ErrorAction SilentlyContinue
+          Copy-Item -Path "$source\*" -Destination $target -Recurse -Force
+          Write-Host "Build copied to $target"
+
+          Set-ItemProperty $appPath -Name physicalPath -Value $target
+          Write-Host "IIS physical path updated to $target"
+
+          Restart-WebAppPool -Name (Get-WebApplication -Site $siteName -Name $appName).applicationPool
+          Write-Host "App pool restarted"
