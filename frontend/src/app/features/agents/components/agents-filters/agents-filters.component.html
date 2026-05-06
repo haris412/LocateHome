@@ -19,9 +19,11 @@
 
           <mat-option [value]="null">All locations</mat-option>
 
-          <ng-container *ngFor="let loc of locations">
+          @for (loc of locations; track loc) {
+          <ng-container>
             <mat-option [value]="loc">{{ loc }}</mat-option>
           </ng-container>
+          }
 
         </mat-select>
 
@@ -45,10 +47,11 @@
         <mat-select (selectionChange)="updateFilter('agency', $event.value)">
 
           <mat-option [value]="null">All agencies</mat-option>
-
-          <ng-container *ngFor="let agency of agencies">
+          @for (agency of agencies; track agency) {
+          <ng-container>
             <mat-option [value]="agency">{{ agency }}</mat-option>
           </ng-container>
+          }
 
         </mat-select>
 
