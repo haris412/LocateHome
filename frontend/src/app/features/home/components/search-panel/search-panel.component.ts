@@ -4,14 +4,13 @@ import {
   PLATFORM_ID,
   computed,
   inject,
-  signal,
-  EventEmitter,
-  Output
+  output,
+  signal
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, map, share, skip, switchMap, tap } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { of, startWith } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,8 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 
 import { PriceRangeFieldComponent, PriceRange } from '../../../../shared/ui/price-range-field/price-range-field.component';
 import { FilterOption } from '../../../../core/models/filter.models';
-import { GeoNamePlace } from '../../../../core/models/geonames.models';
-import { OsmLocationPickItem } from '../../../../core/models/overpass.models';
+import { GooglePlacePrediction } from '../../../../core/models/google-places.models';
 import { LocationCatalogService } from '../../../../core/services/location-catalog.service';
 import { FiltersCatalogService } from '../../../../core/services/filters-catalog.service';
 import {
@@ -44,7 +42,7 @@ export interface SearchPanelSearchPayload {
   /** Subtype slug (kebab-case) or 'any' */
   subtype: string;
   city: string;
-  area: string;
+  neighborhood: string;
   minPrice: number | null;
   maxPrice: number | null;
   bedrooms: string;
@@ -84,11 +82,11 @@ interface QuickChip {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchPanelComponent {
-  private readonly platformId    = inject(PLATFORM_ID);
+  private readonly platformId      = inject(PLATFORM_ID);
   private readonly locationCatalog = inject(LocationCatalogService);
   private readonly filtersCatalog  = inject(FiltersCatalogService);
 
-  @Output() readonly search = new EventEmitter<SearchPanelSearchPayload>();
+  readonly search = output<SearchPanelSearchPayload>();
 
   // ── Tab / mode ──────────────────────────────────────────────────────────
 
@@ -101,29 +99,15 @@ export class SearchPanelComponent {
 
   // ── Location state ──────────────────────────────────────────────────────
 
-  readonly province = signal('any');
-  readonly city     = signal('Any');
-  readonly area     = signal('Any');
+  readonly province     = signal('any');
+  readonly city         = signal('Any');
+  readonly neighborhood = signal('Any');
 
-  readonly cityControl = new FormControl<string | GeoNamePlace>('', { nonNullable: true });
-  readonly areaControl = new FormControl<string | OsmLocationPickItem>('', { nonNullable: true });
+  readonly cityControl         = new FormControl<string | GooglePlacePrediction>('', { nonNullable: true });
+  readonly neighborhoodControl = new FormControl<string | GooglePlacePrediction>('', { nonNullable: true });
 
-  /** All cities for the selected province — loaded from GeoNames. */
-  readonly allGeoPlaces = signal<GeoNamePlace[]>([]);
-
-  /** Area suggestions for the selected city — loaded from Overpass. */
-  readonly areaSuggestions = signal<OsmLocationPickItem[]>([]);
-
-  private readonly cityQueryText = signal('');
-  private readonly areaQueryText = signal('');
-
-  readonly filteredCities = computed(() =>
-    this.locationCatalog.filterPlacesByTerm(this.allGeoPlaces(), this.cityQueryText())
-  );
-
-  readonly filteredAreas = computed(() =>
-    this.locationCatalog.filterAreaSuggestionsByTerm(this.areaSuggestions(), this.areaQueryText())
-  );
+  readonly citySuggestions         = signal<GooglePlacePrediction[]>([]);
+  readonly neighborhoodSuggestions = signal<GooglePlacePrediction[]>([]);
 
   // ── Filter state ────────────────────────────────────────────────────────
 
@@ -159,13 +143,13 @@ export class SearchPanelComponent {
   // ── Quick-filter chips ──────────────────────────────────────────────────
 
   readonly quickChips = signal<QuickChip[]>([
-    { id: 'voice-enabled',    label: 'Voice enabled search', icon: 'graphic_eq', active: false },
-    { id: 'new-projects',     label: 'New projects',         icon: 'auto_awesome' },
-    { id: 'ready-to-move',    label: 'Ready to move' },
-    { id: 'pet-friendly',     label: 'Pet friendly' },
-    { id: 'parking',          label: 'Parking' },
-    { id: 'video-tours',      label: 'Video tours' },
-    { id: 'verified-listings',label: 'Verified listings' }
+    { id: 'voice-enabled',     label: 'Voice enabled search', icon: 'graphic_eq', active: false },
+    { id: 'new-projects',      label: 'New projects',         icon: 'auto_awesome' },
+    { id: 'ready-to-move',     label: 'Ready to move' },
+    { id: 'pet-friendly',      label: 'Pet friendly' },
+    { id: 'parking',           label: 'Parking' },
+    { id: 'video-tours',       label: 'Video tours' },
+    { id: 'verified-listings', label: 'Verified listings' }
   ]);
 
   readonly showMoreFilters = signal(false);
@@ -183,17 +167,17 @@ export class SearchPanelComponent {
 
   // ── Display helpers (passed to [displayWith]) ───────────────────────────
 
-  readonly displayCity = (v: GeoNamePlace | string | null): string =>
-    v == null || typeof v === 'string' ? (v ?? '') : v.name;
+  readonly displayCity = (v: GooglePlacePrediction | string | null): string => {
+    if (v == null || typeof v === 'string') return v ?? '';
+    return v.structuredFormat.mainText.text;
+  };
 
-  readonly displayArea = (v: OsmLocationPickItem | string | null): string =>
-    v == null || typeof v === 'string' ? (v ?? '') : v.name;
+  readonly displayArea = (v: GooglePlacePrediction | string | null): string => {
+    if (v == null || typeof v === 'string') return v ?? '';
+    return v.structuredFormat.mainText.text;
+  };
 
-  // ── Track-by helpers ────────────────────────────────────────────────────
-
-  readonly trackGeoPlace = (_: number, p: GeoNamePlace): number => p.geonameId;
-  readonly trackAreaItem  = (_: number, a: OsmLocationPickItem): string =>
-    `${a.kind}-${a.name}-${a.lat}-${a.lon}`;
+  readonly trackPrediction = (_: number, p: GooglePlacePrediction): string => p.placeId;
 
   // ─────────────────────────────────────────────────────────────────────────
 
@@ -203,93 +187,50 @@ export class SearchPanelComponent {
     this.setupSpeechRecognition();
     this.wireCityControl();
     this.wireAreaControl();
-    this.wireProvinceCityLoader();
-    this.wireAreaSuggestions();
+    this.detectUserCity();
   }
 
   // ── Wiring ───────────────────────────────────────────────────────────────
 
-  /**
-   * Reloads the city list whenever the province changes.
-   * A shared observable is used so that skip(1) and switchMap
-   * both operate on the same underlying signal emission.
-   */
-  private wireProvinceCityLoader(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    const province$ = toObservable(this.province).pipe(
-      share(),
-      takeUntilDestroyed()
-    );
-
-    // Clear city/area on subsequent province changes (not the initial emission).
-    province$.pipe(skip(1)).subscribe(() => this.clearCityAndArea());
-
-    // switchMap cancels any in-flight request when the province changes again.
-    province$
-      .pipe(switchMap((province) => this.locationCatalog.loadCitiesForProvince(province)))
-      .subscribe((places) => this.allGeoPlaces.set(places));
-  }
-
-  /** Loads area suggestions whenever the selected city changes. */
-  private wireAreaSuggestions(): void {
-    toObservable(this.locationCatalog.selectedCityPlace)
-      .pipe(
-        tap((place) => { if (!place) this.areaSuggestions.set([]); }),
-        switchMap((place) => {
-          if (!place) return of([] as OsmLocationPickItem[]);
-          const lat = parseFloat(place.lat);
-          const lng = parseFloat(place.lng);
-          if (Number.isNaN(lat) || Number.isNaN(lng)) return of([] as OsmLocationPickItem[]);
-          return this.locationCatalog.getAreaSuggestionsAround(lat, lng);
-        }),
-        takeUntilDestroyed()
-      )
-      .subscribe((items) => this.areaSuggestions.set(items));
-  }
-
-  /** Syncs city signal and query text from the city FormControl. */
   private wireCityControl(): void {
-    const toText = (v: string | GeoNamePlace): string =>
-      typeof v === 'string' ? v : (v?.name ?? '');
-
-    // Sync query text for autocomplete filtering (immediate).
-    this.cityControl.valueChanges
-      .pipe(startWith(this.cityControl.value), map(toText), takeUntilDestroyed())
-      .subscribe((text) => {
-        this.cityQueryText.set(text);
-        this.city.set(text.trim() || 'Any');
-        if (!text.trim()) {
-          this.locationCatalog.clearSelectedCityPlace();
-          this.areaControl.setValue('', { emitEvent: false });
-          this.areaQueryText.set('');
-          this.area.set('Any');
+    this.cityControl.valueChanges.pipe(
+      startWith(this.cityControl.value),
+      map(v => (typeof v === 'string' ? v : v?.structuredFormat.mainText.text ?? '')),
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (!query.trim()) {
+          this.city.set('Any');
+          this.citySuggestions.set([]);
+          this.neighborhoodControl.setValue('', { emitEvent: false });
+          this.neighborhood.set('Any');
+          this.neighborhoodSuggestions.set([]);
+          return of([]);
         }
-      });
-
-    // Auto-select city when typing produces an exact single match (debounced).
-    this.cityControl.valueChanges
-      .pipe(debounceTime(450), distinctUntilChanged(), takeUntilDestroyed())
-      .subscribe((v) => {
-        const text = toText(v).trim();
-        if (!text) return;
-        const match = this.locationCatalog.matchSinglePlaceByName(this.allGeoPlaces(), text);
-        if (match) this.locationCatalog.setSelectedCityPlace(match);
-      });
+        return this.locationCatalog.searchPlaces(query);
+      }),
+      takeUntilDestroyed()
+    ).subscribe(predictions => this.citySuggestions.set(predictions));
   }
 
-  /** Syncs area signal and query text from the area FormControl. */
   private wireAreaControl(): void {
-    this.areaControl.valueChanges
-      .pipe(
-        startWith(this.areaControl.value),
-        map((v) => (typeof v === 'string' ? v : (v?.name ?? ''))),
-        takeUntilDestroyed()
-      )
-      .subscribe((text) => {
-        this.areaQueryText.set(text);
-        this.area.set(text.trim() || 'Any');
-      });
+    this.neighborhoodControl.valueChanges.pipe(
+      startWith(this.neighborhoodControl.value),
+      map(v => (typeof v === 'string' ? v : v?.structuredFormat.mainText.text ?? '')),
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (!query.trim()) {
+          this.neighborhood.set('Any');
+          this.neighborhoodSuggestions.set([]);
+          return of([]);
+        }
+        // Prefix with selected city to get more relevant area results.
+        const cityName = this.city() !== 'Any' ? `${this.city()} ` : '';
+        return this.locationCatalog.searchPlaces(`${cityName}${query}`);
+      }),
+      takeUntilDestroyed()
+    ).subscribe(predictions => this.neighborhoodSuggestions.set(predictions));
   }
 
   // ── Event handlers ───────────────────────────────────────────────────────
@@ -304,7 +245,7 @@ export class SearchPanelComponent {
   onPrimaryTypeSelected(value: string): void {
     this.primaryType.set(value);
     const validSubtypes = this.filtersCatalog.getSubtypeOptions(value);
-    if (!validSubtypes.some((o) => o.id === this.subtype())) {
+    if (!validSubtypes.some(o => o.id === this.subtype())) {
       this.subtype.set('any');
     }
   }
@@ -318,22 +259,20 @@ export class SearchPanelComponent {
   }
 
   onCityOptionSelected(event: MatAutocompleteSelectedEvent): void {
-    const place = event.option.value as GeoNamePlace;
-    if (!place?.name) return;
-    this.locationCatalog.setSelectedCityPlace(place);
-    this.cityControl.setValue(place);
-    this.areaControl.setValue('');
-    this.areaQueryText.set('');
-    this.area.set('Any');
-    this.locationCatalog.setSelectedAreaPick(null);
+    const pred = event.option.value as GooglePlacePrediction;
+    if (!pred?.placeId) return;
+    const { city } = this.locationCatalog.parsePlaceCityNeighborhood(pred);
+    this.city.set(city || 'Any');
+    this.neighborhoodControl.setValue('', { emitEvent: false });
+    this.neighborhood.set('Any');
+    this.neighborhoodSuggestions.set([]);
   }
 
   onAreaOptionSelected(event: MatAutocompleteSelectedEvent): void {
-    const item = event.option.value as OsmLocationPickItem;
-    if (!item?.name) return;
-    this.locationCatalog.setSelectedAreaPick(item);
-    this.areaControl.setValue(item);
-    this.area.set(item.name);
+    const pred = event.option.value as GooglePlacePrediction;
+    if (!pred?.placeId) return;
+    const name = pred.structuredFormat.mainText.text;
+    this.neighborhood.set(name || 'Any');
   }
 
   onPriceRangeChange(range: PriceRange): void {
@@ -341,13 +280,13 @@ export class SearchPanelComponent {
   }
 
   toggleChip(id: string): void {
-    this.quickChips.update((chips) =>
-      chips.map((chip) => chip.id === id ? { ...chip, active: !chip.active } : chip)
+    this.quickChips.update(chips =>
+      chips.map(chip => chip.id === id ? { ...chip, active: !chip.active } : chip)
     );
   }
 
   toggleMoreFilters(): void {
-    this.showMoreFilters.update((v) => !v);
+    this.showMoreFilters.update(v => !v);
   }
 
   runSearch(): void {
@@ -356,8 +295,8 @@ export class SearchPanelComponent {
       keyword:     this.keyword(),
       primaryType: this.primaryType(),
       subtype:     this.subtype(),
-      city:        this.city(),
-      area:        this.area(),
+      city:         this.city(),
+      neighborhood: this.neighborhood(),
       minPrice:    this.priceRange().min,
       maxPrice:    this.priceRange().max,
       bedrooms:    this.bedrooms(),
@@ -381,6 +320,24 @@ export class SearchPanelComponent {
     this.recognition.start();
   }
 
+  private detectUserCity(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        this.locationCatalog.reverseGeocode(coords.latitude, coords.longitude)
+          .subscribe(cityName => {
+            if (!cityName) return;
+            this.city.set(cityName);
+            this.cityControl.setValue(cityName, { emitEvent: false });
+            this.locationCatalog.setSelectedCityName(cityName);
+          });
+      },
+      () => { /* permission denied or unavailable — stay silent */ }
+    );
+  }
+
   private setupSpeechRecognition(): void {
     if (!isPlatformBrowser(this.platformId)) return;
 
@@ -399,8 +356,8 @@ export class SearchPanelComponent {
     r.interimResults = true;
     r.lang           = 'en-US';
 
-    r.onstart  = () => { this.isListening.set(true);  this.micError.set(''); };
-    r.onend    = () =>   this.isListening.set(false);
+    r.onstart  = () => { this.isListening.set(true); this.micError.set(''); };
+    r.onend    = () => this.isListening.set(false);
     r.onerror  = (e: SpeechRecognitionErrorLike) => {
       this.isListening.set(false);
       this.micError.set(
@@ -417,24 +374,12 @@ export class SearchPanelComponent {
       const clean = transcript.trim();
       if (clean) {
         this.keyword.set(`"${clean}"`);
-        this.quickChips.update((chips) =>
-          chips.map((c) => c.id === 'voice-enabled' ? { ...c, active: true } : c)
+        this.quickChips.update(chips =>
+          chips.map(c => c.id === 'voice-enabled' ? { ...c, active: true } : c)
         );
       }
     };
 
     this.recognition = r;
-  }
-
-  // ── Helpers ──────────────────────────────────────────────────────────────
-
-  private clearCityAndArea(): void {
-    this.cityControl.setValue('', { emitEvent: false });
-    this.cityQueryText.set('');
-    this.city.set('Any');
-    this.areaControl.setValue('', { emitEvent: false });
-    this.areaQueryText.set('');
-    this.area.set('Any');
-    this.locationCatalog.clearSelectedCityPlace();
   }
 }

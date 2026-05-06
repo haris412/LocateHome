@@ -149,6 +149,21 @@
     gap: 0.3rem;
   }
 
+  &__place-main {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--font-main);
+    line-height: 1.3;
+  }
+
+  &__place-secondary {
+    display: block;
+    font-size: 0.72rem;
+    color: var(--font-secondary);
+    line-height: 1.2;
+  }
+
   &__field-label {
     display: inline-flex;
     align-items: center;

@@ -29,7 +29,7 @@ export interface ListingsQueryParams {
   /** Subtype filter (API value, e.g. apartment, upper portion). */
   subType?: string;
   city?: string;
-  area?: string;
+  neighborhood?: string;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: string;
@@ -51,7 +51,7 @@ export class ListingsService {
   private readonly baseUrl = `${environment.apiUrl}/api/properties`;
   // TODO: Replace hardcoded token with real auth flow
   // ⚠️ Token expires in 3 days — regenerate via POST /api/auth/login when it does
-  private readonly authToken = '';
+  private readonly authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQ5NzEyNjdjNjZlZTgwZGYxOGJhMTciLCJlbWFpbCI6ImFsaUBleGFtcGxlLmNvbSIsImlhdCI6MTc3NTg1Nzk2MiwiZXhwIjoxNzc2MTE3MTYyfQ.DdPilNsci0c42NgUfEArZlTPqyb1o0Qk45gEY7Z7Ois';
 
   /**
    * Same GET /api/properties page as `resolvePropertyMongoId`, plus owner `userId` for the
@@ -172,7 +172,7 @@ export class ListingsService {
       ['propertyType', params.propertyType],
       ['subType', params.subType],
       ['city', params.city],
-      ['area', params.area],
+      ['neighborhood', params.neighborhood],
       ['minPrice', params.minPrice],
       ['maxPrice', params.maxPrice],
       ['sortBy', params.sortBy],
