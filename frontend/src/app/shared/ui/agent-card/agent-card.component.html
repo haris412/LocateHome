@@ -64,7 +64,11 @@
       </div>
     }
 
+<<<<<<< feature/agents
     @if (agent.stats.publishedListings != null) {
+=======
+    @if (item().stats.properties) {
+>>>>>>> Development
       <div class="agent-card__info-row">
         <span class="agent-card__info-icon" aria-hidden="true">
           <mat-icon fontSet="material-symbols-outlined">home</mat-icon>
@@ -72,7 +76,11 @@
 
         <div class="agent-card__info-text">
           <span class="agent-card__info-label">Listings</span>
+<<<<<<< feature/agents
           <span class="agent-card__info-value">{{ agent.stats.publishedListings }} properties</span>
+=======
+          <span class="agent-card__info-value">{{ item().stats.properties }} properties</span>
+>>>>>>> Development
         </div>
       </div>
     }
