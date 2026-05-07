@@ -13,9 +13,13 @@
       <mat-form-field appearance="outline" class="agents-filter__field-control">
         <mat-select (selectionChange)="updateFilter('location', $event.value)">
           <mat-option [value]="null">All locations</mat-option>
+
           @for (loc of locations; track loc) {
+          <ng-container>
             <mat-option [value]="loc">{{ loc }}</mat-option>
+          </ng-container>
           }
+
         </mat-select>
       </mat-form-field>
     </div>
@@ -32,8 +36,11 @@
         <mat-select (selectionChange)="updateFilter('agency', $event.value)">
           <mat-option [value]="null">All agencies</mat-option>
           @for (agency of agencies; track agency) {
+          <ng-container>
             <mat-option [value]="agency">{{ agency }}</mat-option>
+          </ng-container>
           }
+
         </mat-select>
       </mat-form-field>
     </div>

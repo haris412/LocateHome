@@ -64,7 +64,48 @@ export class ListingsPageComponent {
     { id: 'parking', label: 'Parking' }
   ]);
 
-  readonly listings = signal<ListingItem[]>([]);
+  readonly listings = signal<ListingItem[]>([
+    {
+      id: '1',
+      title: 'Skyline Marina Apartment',
+      address: 'Dubai Marina, Dubai',
+      price: '$945,000',
+      badge: 'For Sale',
+      badgeVariant: 'sale',
+      imageUrl: 'assets/images/listings/featured-1.png',
+      beds: 2,
+      baths: 2,
+      area: '1,240 sqft',
+      favorite: false
+    },
+    {
+      id: '2',
+      title: 'Palm View Residence',
+      address: 'Palm Jumeirah, Dubai',
+      price: '$1,850,000',
+      badge: 'Featured',
+      badgeVariant: 'featured',
+      imageUrl: 'assets/images/listings/featured-2.png',
+      beds: 3,
+      baths: 3,
+      area: '2,140 sqft',
+      favorite: true
+    },
+    {
+      id: '1',
+      title: 'Skyline Marina Apartment',
+      address: 'Dubai Marina, Dubai',
+      price: '$945,000',
+      badge: 'For Sale',
+      badgeVariant: 'sale',
+      imageUrl: 'assets/images/listings/featured-1.png',
+      beds: 2,
+      baths: 2,
+      area: '1,240 sqft',
+      favorite: false
+    },
+    
+  ]);
   readonly totalResults = signal(0);
   readonly selectedCityLabel = signal('All locations');
 

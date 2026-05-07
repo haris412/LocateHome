@@ -1,19 +1,88 @@
 .listings-grid {
   display: grid;
   gap: 1.25rem;
-  justify-content: start;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
 
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-}
+  > * {
+    width: 100%;
+    max-width: 21rem;
+    justify-self: start;
+  }
 
-/* Prevent single card stretch */
-@media (min-width: 768px) {
-  .listings-grid > * {
-    max-width: 22rem;
+  &.listings-grid--compact {
+    justify-content: start;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 21rem));
+
+    > * {
+      max-width: none;
+    }
+  }
+
+  &.listings-grid--list {
+    grid-template-columns: 1fr;
+    .listings-grid {
+      display: grid;
+      gap: 1.25rem;
+      grid-template-columns: 1fr; // default: 1 column
+    }
+
+    /* >= 768px: force 2 columns */
+    @media (min-width: 768px) {
+      .listings-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    /* >= 992px: 3 columns */
+    @media (min-width: 992px) {
+      .listings-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    /* >= 1200px: 4 columns */
+    @media (min-width: 1200px) {
+      .listings-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    /* optional: keep cards from becoming huge */
+    .listings-grid > * {
+      width: 100%;
+      max-width: 22rem;
+      justify-self: start;
+    }
+
+    /* list mode override */
+    .listings-grid.listings-grid--list {
+      grid-template-columns: 1fr !important;
+    }
+    > * {
+      max-width: none;
+      justify-self: stretch;
+    }
   }
 }
+
 @media (max-width: 767.98px) {
   .listings-grid {
     justify-content: center;
+
+    > * {
+      justify-self: center;
+    }
+
+    &.listings-grid--compact {
+      justify-content: center;
+    }
+
+    &.listings-grid--list {
+      justify-content: stretch;
+
+      > * {
+        justify-self: stretch;
+      }
+    }
   }
 }

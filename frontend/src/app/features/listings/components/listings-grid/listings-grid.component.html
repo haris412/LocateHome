@@ -1,6 +1,7 @@
 <div
   class="listings-grid"
   [class.listings-grid--list]="viewMode() === 'list'"
+  [class.listings-grid--compact]="viewMode() === 'grid' && items().length < 4"
 >
   @for (item of items(); track item.id) {
     <app-listing-card
