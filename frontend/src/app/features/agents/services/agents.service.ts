@@ -1,37 +1,49 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 import { AgentItem } from '@/core/models/agent.model';
 import { environment } from '../../../../environments/environment';
 
-// ── API shapes ────────────────────────────────────────────────────────────────
-
-export interface AgentsApiAgent {
+interface AgencyDto {
   _id: string;
   name: string;
-  role: string;
-  avatarUrl: string;
-  rating: number;
-  totalListings?: number;
-  phone?: string;
-  location?: string;
-  priceRange?: string;
-  specialties?: string[];
-  bio?: string;
+  logoUrl?: string;
 }
 
-export interface AgentsApiResponse {
-  data: {
-    agents: AgentsApiAgent[];
-  };
+export interface AgentDto {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  displayName?: string;
+  profileImageUrl?: string;
+  phoneNumber?: string;
+  location?: string;
+  agency?: AgencyDto;
+  publishedListings: number;
+  rating?: number;
+  ratingCount?: number;
+}
+
+export interface FeaturedAgentDto extends AgentDto {
+  profileImageUrl: string;
+  rating: number;
+  ratingCount: number;
+}
+
+export interface AgentsResponse {
+  data: { agents: AgentDto[] };
   page: number;
   totalPages: number;
   total: number;
 }
 
-// ── Public types ──────────────────────────────────────────────────────────────
+export interface FeaturedAgentsResponse {
+  success: boolean;
+  count: number;
+  data: { agents: FeaturedAgentDto[] };
+}
 
 export interface AgentsQueryParams {
   page?: number;
@@ -51,19 +63,25 @@ export interface AgentsResult {
   total: number;
 }
 
-// ── Service ───────────────────────────────────────────────────────────────────
-
 @Injectable({ providedIn: 'root' })
 export class AgentsService {
-  private readonly http    = inject(HttpClient);
-  private readonly baseUrl = `${environment.apiUrl}/api/agents`;
+  private readonly http        = inject(HttpClient);
+  private readonly baseUrl     = `${environment.apiUrl}/api/users/agents`;
+  private readonly featuredUrl = `${environment.apiUrl}/api/users/agents/featured`;
+
+  getFeaturedAgents(): Observable<AgentItem[]> {
+    return this.http.get<FeaturedAgentsResponse>(this.featuredUrl).pipe(
+      map(res => res.data.agents.map(a => this.toAgentItem(a))),
+      catchError(() => of([]))
+    );
+  }
 
   getAgents(params: AgentsQueryParams = {}): Observable<AgentsResult> {
-    return this.http.get<AgentsApiResponse>(this.baseUrl, {
-      params: this.buildHttpParams(params)
+    return this.http.get<AgentsResponse>(this.baseUrl, {
+      params: this.buildParams(params)
     }).pipe(
       map(res => ({
-        items:      res.data.agents.map(a => this.mapToAgentItem(a)),
+        items:      res.data.agents.map(a => this.toAgentItem(a)),
         page:       res.page,
         totalPages: res.totalPages,
         total:      res.total
@@ -73,15 +91,15 @@ export class AgentsService {
   }
 
   getAgentById(id: string): Observable<AgentItem | null> {
-    if (!id?.trim()) return of(null);
+    if (!id.trim()) return of(null);
     const url = `${this.baseUrl}/${encodeURIComponent(id.trim())}`;
-    return this.http.get<{ data: AgentsApiAgent }>(url).pipe(
-      map(res => this.mapToAgentItem(res.data)),
+    return this.http.get<{ data: AgentDto }>(url).pipe(
+      map(res => this.toAgentItem(res.data)),
       catchError(() => of(null))
     );
   }
 
-  private buildHttpParams(params: AgentsQueryParams): HttpParams {
+  private buildParams(params: AgentsQueryParams): HttpParams {
     let p = new HttpParams();
     const entries: [string, string | number | undefined][] = [
       ['page',      params.page],
@@ -101,25 +119,20 @@ export class AgentsService {
     return p;
   }
 
-  private mapToAgentItem(a: AgentsApiAgent): AgentItem {
+  private toAgentItem(a: AgentDto): AgentItem {
     return {
-      id:       a._id,
-      name:     a.name,
-      role:     a.role,
-      avatarUrl: a.avatarUrl,
+      id:         a._id,
+      name:       a.displayName ?? `${a.firstName} ${a.lastName}`.trim(),
+      agencyName: a.agency?.name ?? '',
+      avatarUrl:  a.profileImageUrl ?? '',
       stats: {
-        rating:     a.rating,
-        properties: a.totalListings,
-        salesLabel: a.totalListings != null ? `${a.totalListings} listings` : undefined
+        rating:            a.rating,
+        ratingCount:       a.ratingCount,
+        publishedListings: a.publishedListings
       },
       contact: {
-        phone:    a.phone,
+        phone:    a.phoneNumber,
         location: a.location
-      },
-      meta: {
-        priceRange:  a.priceRange,
-        tags:        a.specialties,
-        description: a.bio
       }
     };
   }

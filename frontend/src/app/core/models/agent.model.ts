@@ -1,13 +1,13 @@
 export interface AgentItem {
   id: string;
   name: string;
-  role: string;
+  agencyName: string;
   avatarUrl: string;
 
   stats: {
-    rating: number;
-    properties?: number;
-    salesLabel?: string;
+    rating?: number;
+    ratingCount?: number;
+    publishedListings?: number;
   };
 
   contact?: {
@@ -20,4 +20,10 @@ export interface AgentItem {
     tags?: string[];
     description?: string;
   };
+}
+
+export interface AgentFilters {
+  location: string | null;
+  agency:   string | null;
+  rating:   number | null;
 }

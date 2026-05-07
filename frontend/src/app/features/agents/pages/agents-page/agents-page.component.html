@@ -1,39 +1,59 @@
 <div class="agents-page">
 
-  <!-- HERO -->
   <app-agents-hero />
 
-  <!-- FILTER BAR -->
   <div class="container filters-wrapper">
     <app-agents-filters (filtersChange)="onFiltersChange($event)" />
   </div>
 
-  <!-- LIST -->
   <div class="container agents-section">
 
     <div class="section-header d-flex flex-wrap align-items-center justify-content-between">
       <div>
         <h2>All Agents</h2>
-        <p>Browse premium agents and search by location.</p>
+        <p>
+          @if (loading()) {
+            Loading agents&hellip;
+          } @else if (total() > 0) {
+            {{ total() }} agent{{ total() === 1 ? '' : 's' }} found
+          } @else {
+            Browse premium agents and search by location.
+          }
+        </p>
       </div>
     </div>
-    <!-- GRID -->
-    <div class="row g-4 mt-2">
 
-      @for (agent of allAgents(); track agent.id) {
-      <div class="col-12 col-md-6 col-lg-4">
-        <app-agent-card [item]="agent" />
+    @if (loading()) {
+      <div class="row g-4 mt-2">
+        @for (_ of skeletons; track $index) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="agent-card-skeleton" aria-hidden="true"></div>
+          </div>
+        }
       </div>
+    } @else if (agents().length === 0) {
+      <div class="agents-empty">
+        <p>No agents found. Try adjusting your filters.</p>
+      </div>
+    } @else {
+      <div class="row g-4 mt-2">
+        @for (agent of agents(); track agent.id) {
+          <div class="col-12 col-md-6 col-lg-4">
+            <app-agent-card [item]="agent" />
+          </div>
+        }
+      </div>
+
+      @if (pageCount() > 1) {
+        <div class="mt-5 d-flex justify-content-center">
+          <app-pagination
+            [page]="page()"
+            [pageCount]="pageCount()"
+            (pageChange)="onPageChange($event)"
+            ariaLabel="Agents pagination" />
+        </div>
       }
-
-    </div>
-    <!-- PAGINATION -->
-    <div class="mt-5 d-flex justify-content-center">
-      <app-pagination [page]="page()"
-                      [pageCount]="pageCount()"
-                      (pageChange)="onPageChange($event)"
-                      ariaLabel="Agents pagination" />
-    </div>
+    }
 
   </div>
 

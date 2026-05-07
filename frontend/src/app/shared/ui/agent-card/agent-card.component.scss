@@ -42,7 +42,6 @@
     color: var(--primary);
   }
 
-  /* rating pill like screenshot */
   &__rating {
     display: inline-flex;
     align-items: center;
@@ -66,7 +65,6 @@
     }
   }
 
-  /* stacked info rows */
   &__info {
     display: grid;
     gap: 0.65rem;
@@ -123,11 +121,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-  }
 
-  a &__info-value:hover,
-  a &__info-value:focus-visible {
-    text-decoration: underline;
+    &:is(a):hover,
+    &:is(a):focus-visible {
+      text-decoration: underline;
+    }
   }
 
   &__actions {

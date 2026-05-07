@@ -1,33 +1,38 @@
-<article class="agent-card" [attr.aria-labelledby]="'agent-name-' + item().id">
+@let agent = item();
+
+<article class="agent-card" [attr.aria-labelledby]="'agent-name-' + agent.id">
   <div class="agent-card__top">
     <img
       class="agent-card__avatar"
-      [src]="item().avatarUrl"
+      [src]="agent.avatarUrl"
       width="56"
       height="56"
-      [alt]="'Portrait of ' + item().name"
+      [alt]="'Portrait of ' + agent.name"
     />
 
     <div class="agent-card__header">
-      <h3 class="agent-card__name" [id]="'agent-name-' + item().id">
-        {{ item().name }}
+      <h3 class="agent-card__name" [id]="'agent-name-' + agent.id">
+        {{ agent.name }}
       </h3>
 
-      <p class="agent-card__agency">
-        {{ item().role }}
-      </p>
+      @if (agent.agencyName) {
+        <p class="agent-card__agency">{{ agent.agencyName }}</p>
+      }
     </div>
   </div>
 
-  <!-- Rating pill -->
-  <div class="agent-card__rating">
-    <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">star</mat-icon>
-    <span>{{ item().stats.rating }} rating</span>
-  </div>
+  @if (agent.stats.rating != null) {
+    <div class="agent-card__rating">
+      <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">star</mat-icon>
+      <span>{{ agent.stats.rating }}</span>
+      @if (agent.stats.ratingCount != null) {
+        <span class="agent-card__rating-count">({{ agent.stats.ratingCount }} reviews)</span>
+      }
+    </div>
+  }
 
-  <!-- Info rows -->
   <div class="agent-card__info">
-    @if (item().contact?.phone) {
+    @if (agent.contact?.phone) {
       <div class="agent-card__info-row">
         <span class="agent-card__info-icon" aria-hidden="true">
           <mat-icon fontSet="material-symbols-outlined">call</mat-icon>
@@ -37,16 +42,16 @@
           <span class="agent-card__info-label">Phone</span>
           <a
             class="agent-card__info-value"
-            [href]="'tel:' + item().contact?.phone"
-            [attr.aria-label]="'Call ' + item().name"
+            [href]="'tel:' + agent.contact?.phone"
+            [attr.aria-label]="'Call ' + agent.name"
           >
-            {{ item().contact?.phone }}
+            {{ agent.contact?.phone }}
           </a>
         </div>
       </div>
     }
 
-    @if (item().contact?.location) {
+    @if (agent.contact?.location) {
       <div class="agent-card__info-row">
         <span class="agent-card__info-icon" aria-hidden="true">
           <mat-icon fontSet="material-symbols-outlined">location_on</mat-icon>
@@ -54,12 +59,12 @@
 
         <div class="agent-card__info-text">
           <span class="agent-card__info-label">Location</span>
-          <span class="agent-card__info-value">{{ item().contact?.location }}</span>
+          <span class="agent-card__info-value">{{ agent.contact?.location }}</span>
         </div>
       </div>
     }
 
-    @if (item().stats.properties) {
+    @if (agent.stats.publishedListings != null) {
       <div class="agent-card__info-row">
         <span class="agent-card__info-icon" aria-hidden="true">
           <mat-icon fontSet="material-symbols-outlined">home</mat-icon>
@@ -67,13 +72,12 @@
 
         <div class="agent-card__info-text">
           <span class="agent-card__info-label">Listings</span>
-          <span class="agent-card__info-value">{{ item().stats.properties }} properties</span>
+          <span class="agent-card__info-value">{{ agent.stats.publishedListings }} properties</span>
         </div>
       </div>
     }
   </div>
 
-  <!-- Actions -->
   <div class="agent-card__actions">
     <button type="button" class="agent-card__btn agent-card__btn--primary">
       <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">person</mat-icon>

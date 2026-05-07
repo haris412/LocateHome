@@ -1,46 +1,32 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, output, signal } from '@angular/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 
-export interface AgentFilters {
-  location: string | null;
-  agency: string | null;
-  rating: number | null;
-}
+import { AgentFilters } from '@/core/models/agent.model';
 
 @Component({
   selector: 'app-agents-filters',
-  standalone: true,
-  imports: [
-    MatFormFieldModule,
-    MatSelectModule,
-    MatInputModule,
-    MatIconModule
-  ],
+  imports: [MatFormFieldModule, MatSelectModule, MatInputModule, MatIconModule],
   templateUrl: './agents-filters.component.html',
-  styleUrls: ['./agents-filters.component.scss']
+  styleUrl: './agents-filters.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AgentsFiltersComponent {
+  readonly filtersChange = output<AgentFilters>();
 
-  @Output() filtersChange = new EventEmitter<AgentFilters>();
+  readonly filters = signal<AgentFilters>({ location: null, agency: null, rating: null });
 
-  readonly filters = signal<AgentFilters>({
-    location: null,
-    agency: null,
-    rating: null
-  });
+  readonly locations = ['Beverly Hills', 'Downtown', 'Waterfront'];
+  readonly agencies  = ['Urban Key', 'Prime Nest'];
+  readonly ratings   = [4.5, 4.7, 4.8];
 
-  locations = ['Beverly Hills', 'Downtown', 'Waterfront'];
-  agencies = ['All agencies', 'Urban Key', 'Prime Nest'];
-  ratings = [4.5, 4.7, 4.8];
-
-  updateFilter(key: keyof AgentFilters, value: any) {
+  updateFilter(key: keyof AgentFilters, value: string | number | null): void {
     this.filters.update(f => ({ ...f, [key]: value }));
   }
 
-  applyFilters() {
+  applyFilters(): void {
     this.filtersChange.emit(this.filters());
   }
 }
