@@ -8,8 +8,8 @@
   </div>
 
   @if (linkLabel()) {
-  <a href="#"
-     class="section-heading__link">{{ linkLabel() }}</a>
+  <a class="section-heading__link"
+     [routerLink]="linkHref() || null">{{ linkLabel() }}</a>
   }
   @if (subText()) {
   <p class="section-heading__subtext">

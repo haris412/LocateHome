@@ -1,0 +1,139 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+import { AgentItem } from '@/core/models/agent.model';
+import { environment } from '../../../../environments/environment';
+
+interface AgencyDto {
+  _id: string;
+  name: string;
+  logoUrl?: string;
+}
+
+export interface AgentDto {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  displayName?: string;
+  profileImageUrl?: string;
+  phoneNumber?: string;
+  location?: string;
+  agency?: AgencyDto;
+  publishedListings: number;
+  rating?: number;
+  ratingCount?: number;
+}
+
+export interface FeaturedAgentDto extends AgentDto {
+  profileImageUrl: string;
+  rating: number;
+  ratingCount: number;
+}
+
+export interface AgentsResponse {
+  data: { agents: AgentDto[] };
+  page: number;
+  totalPages: number;
+  total: number;
+}
+
+export interface FeaturedAgentsResponse {
+  success: boolean;
+  count: number;
+  data: { agents: FeaturedAgentDto[] };
+}
+
+export interface AgentsQueryParams {
+  page?: number;
+  limit?: number;
+  name?: string;
+  location?: string;
+  specialty?: string;
+  minRating?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface AgentsResult {
+  items: AgentItem[];
+  page: number;
+  totalPages: number;
+  total: number;
+}
+
+@Injectable({ providedIn: 'root' })
+export class AgentsService {
+  private readonly http        = inject(HttpClient);
+  private readonly baseUrl     = `${environment.apiUrl}/api/users/agents`;
+  private readonly featuredUrl = `${environment.apiUrl}/api/users/agents/featured`;
+
+  getFeaturedAgents(): Observable<AgentItem[]> {
+    return this.http.get<FeaturedAgentsResponse>(this.featuredUrl).pipe(
+      map(res => res.data.agents.map(a => this.toAgentItem(a))),
+      catchError(() => of([]))
+    );
+  }
+
+  getAgents(params: AgentsQueryParams = {}): Observable<AgentsResult> {
+    return this.http.get<AgentsResponse>(this.baseUrl, {
+      params: this.buildParams(params)
+    }).pipe(
+      map(res => ({
+        items:      res.data.agents.map(a => this.toAgentItem(a)),
+        page:       res.page,
+        totalPages: res.totalPages,
+        total:      res.total
+      })),
+      catchError(() => of({ items: [], page: 1, totalPages: 0, total: 0 }))
+    );
+  }
+
+  getAgentById(id: string): Observable<AgentItem | null> {
+    if (!id.trim()) return of(null);
+    const url = `${this.baseUrl}/${encodeURIComponent(id.trim())}`;
+    return this.http.get<{ data: AgentDto }>(url).pipe(
+      map(res => this.toAgentItem(res.data)),
+      catchError(() => of(null))
+    );
+  }
+
+  private buildParams(params: AgentsQueryParams): HttpParams {
+    let p = new HttpParams();
+    const entries: [string, string | number | undefined][] = [
+      ['page',      params.page],
+      ['limit',     params.limit],
+      ['name',      params.name],
+      ['location',  params.location],
+      ['specialty', params.specialty],
+      ['minRating', params.minRating],
+      ['sortBy',    params.sortBy],
+      ['sortOrder', params.sortOrder]
+    ];
+    for (const [key, value] of entries) {
+      if (value !== undefined && value !== null && value !== '') {
+        p = p.set(key, String(value));
+      }
+    }
+    return p;
+  }
+
+  private toAgentItem(a: AgentDto): AgentItem {
+    return {
+      id:         a._id,
+      name:       a.displayName ?? `${a.firstName} ${a.lastName}`.trim(),
+      agencyName: a.agency?.name ?? '',
+      avatarUrl:  a.profileImageUrl ?? '',
+      stats: {
+        rating:            a.rating,
+        ratingCount:       a.ratingCount,
+        publishedListings: a.publishedListings
+      },
+      contact: {
+        phone:    a.phoneNumber,
+        location: a.location
+      }
+    };
+  }
+}

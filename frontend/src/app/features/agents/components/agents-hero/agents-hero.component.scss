@@ -1,6 +1,8 @@
 .hero {
   width: 100%;
   padding: 100px 0 120px;
+  margin: 0;
+  border-radius: 0;
   background: linear-gradient(
     135deg,
     var(--gradient-primary-start),
@@ -9,17 +11,10 @@
   color: white;
 }
 
-/* Remove outer margin → true edge-to-edge */
-.hero {
-  margin: 0;
-  border-radius: 0;
-}
-
 .hero-content {
   max-width: 640px;
 }
 
-/* Badge */
 .hero-badge {
   background: rgba(255, 255, 255, 0.15);
   padding: 6px 14px;
@@ -27,7 +22,6 @@
   font-size: 0.85rem;
 }
 
-/* Heading */
 h1 {
   font-size: 2.5rem;
   font-weight: 700;
@@ -39,7 +33,6 @@ p {
   margin-top: 0.5rem;
 }
 
-/* 🔥 GLASS TAGS */
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -49,19 +42,15 @@ p {
   span {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-
     background: rgba(255, 255, 255, 0.15);
     border: 1px solid rgba(255, 255, 255, 0.25);
-
     padding: 6px 14px;
     border-radius: var(--radius-pill);
     font-size: 0.8rem;
-
     color: white;
   }
 }
 
-/* MOBILE */
 @media (max-width: 768px) {
   h1 {
     font-size: 1.7rem;

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import {
   CategoryItem,
@@ -6,8 +7,8 @@ import {
   TestimonialItem,
   TrendItem
 } from '@/core/models/home.models';
-import { AgentItem } from '@/core/models/agent.model';
 import { ListingItem } from '@/core/models/listing.models';
+import { AgentsService } from '../../../agents/services/agents.service';
 import { SearchPanelSearchPayload } from '../../components/search-panel/search-panel.component';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { SearchPanelComponent } from '../../components/search-panel/search-panel.component';
@@ -17,7 +18,6 @@ import { CategoriesSectionComponent } from '../../components/categories-section/
 import { TestimonialsSectionComponent } from '../../components/testimonials-section/testimonials-section.component';
 import { AgentsSectionComponent } from '../../components/agents-section/agents-section.component';
 import { AppPromoSectionComponent } from '../../components/app-promo-section/app-promo-section.component';
-import { FooterSectionComponent } from '@/shared/ui/footer-section/footer-section.component';
 import { SectionHeadingComponent } from '@/shared/ui/section-heading/section-heading.component';
 import { ValuationSectionComponent } from "../../components/valuation-section/valuation-section.component";
 
@@ -40,7 +40,8 @@ import { ValuationSectionComponent } from "../../components/valuation-section/va
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomePageComponent {
-  private readonly router = inject(Router);
+  private readonly router        = inject(Router);
+  private readonly agentsService = inject(AgentsService);
   readonly heroStats = signal<StatPillItem[]>([
     { id: '1', label: 'Properties', value: '12k+' },
     { id: '2', label: 'Verified agents', value: '1.2k' },
@@ -87,79 +88,10 @@ export class HomePageComponent {
     { id: '3', name: 'Sandra Parker', role: 'Renter in Austin', avatarUrl: 'assets/images/people/testimonial-3.jpg', rating: '4.9', review: 'The process felt modern, simple and transparent from first search to final move.' }
   ]);
 
-  readonly agents = signal<AgentItem[]>([
-    {
-      id: '1',
-      name: 'Sophia Bennett',
-      role: 'Luxury specialist',
-      avatarUrl: 'assets/images/people/agent-1.png',
-
-      stats: {
-        rating: 4.9,
-        properties: 49,
-        salesLabel: '49 listings'
-      },
-
-      contact: {
-        location: 'Beverly Hills, CA'
-      },
-
-      meta: {
-        priceRange: '$2M+',
-        description:
-          'Known for premium city homes and guided buying journeys.',
-        tags: ['Luxury', 'Video tours', 'Negotiation']
-      }
-    },
-
-    {
-      id: '2',
-      name: 'Arman Sheikh',
-      role: 'Residential advisor',
-      avatarUrl: 'assets/images/people/agent-2.png',
-
-      stats: {
-        rating: 4.8,
-        properties: 32,
-        salesLabel: '32 listings'
-      },
-
-      contact: {
-        location: 'Austin, TX'
-      },
-
-      meta: {
-        priceRange: '$400k - $1.8M',
-        description:
-          'Strong fit for family homes and suburban buyers.',
-        tags: ['Family homes', 'Investors', 'Neighborhood expert']
-      }
-    },
-
-    {
-      id: '3',
-      name: 'Daniel Rivera',
-      role: 'Rental market lead',
-      avatarUrl: 'assets/images/people/agent-3.png',
-
-      stats: {
-        rating: 5.0,
-        properties: 65,
-        salesLabel: '65 listings'
-      },
-
-      contact: {
-        location: 'New York, NY'
-      },
-
-      meta: {
-        priceRange: '$1.2k - $8k / mo',
-        description:
-          'Helps renters move faster with curated shortlists and tour support.',
-        tags: ['Rentals', 'Fast response', 'Local market']
-      }
-    }
-  ]);
+  readonly agents = toSignal(
+    this.agentsService.getFeaturedAgents(),
+    { initialValue: [] }
+  );
 
 
 

@@ -1,81 +1,58 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
 
+import { AgentFilters } from '@/core/models/agent.model';
+import { AgentsService } from '../../services/agents.service';
+import { AgentsFiltersComponent } from '../../components/agents-filters/agents-filters.component';
 import { AgentsHeroComponent } from '../../components/agents-hero/agents-hero.component';
-import { AgentsFiltersComponent, AgentFilters } from '../../components/agents-filters/agents-filters.component';
-import { PaginationComponent } from '../../../../shared/ui/pagination/pagination.component';
 import { AgentCardComponent } from '../../../../shared/ui/agent-card/agent-card.component';
+import { PaginationComponent } from '../../../../shared/ui/pagination/pagination.component';
 
-import { AgentItem } from '@/core/models/agent.model';
-import { AGENTS_MOCK } from '../../mocks/agents.mock';
+const PAGE_SIZE = 6;
 
 @Component({
   selector: 'app-agents-page',
-  imports: [
-    CommonModule,
-    AgentsHeroComponent,
-    AgentsFiltersComponent,
-    PaginationComponent,
-    AgentCardComponent
-  ],
+  imports: [AgentsHeroComponent, AgentsFiltersComponent, AgentCardComponent, PaginationComponent],
   templateUrl: './agents-page.component.html',
   styleUrl: './agents-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AgentsPageComponent {
-  // pagination
-  readonly page = signal(1);
-  readonly pageSize = signal(6);
+  private readonly agentsService = inject(AgentsService);
 
-  // data
-  readonly allAgents = signal<readonly AgentItem[]>(AGENTS_MOCK);
-  readonly filters = signal<AgentFilters>({
-    location: null,
-    agency: null,
-    rating: null
-  });
+  readonly page    = signal(1);
+  readonly loading = signal(false);
+  readonly filters = signal<AgentFilters>({ location: null, agency: null, rating: null });
 
-  // derived
-  readonly filteredAgents = computed(() => {
-    const { location, agency, rating } = this.filters();
+  protected readonly skeletons = new Array<null>(PAGE_SIZE).fill(null);
 
-    return this.allAgents().filter(agent => {
-      const matchesLocation = !location || agent.contact?.location === location;
-      const matchesAgency = !agency || agent.role === agency; // adjust if you later add real agency field
-      const matchesRating = rating == null || agent.stats.rating >= rating;
+  private readonly params = computed(() => ({
+    page:      this.page(),
+    limit:     PAGE_SIZE,
+    location:  this.filters().location  ?? undefined,
+    minRating: this.filters().rating    ?? undefined,
+  }));
 
-      return matchesLocation && matchesAgency && matchesRating;
-    });
-  });
+  private readonly result$ = toObservable(this.params).pipe(
+    switchMap(params => {
+      this.loading.set(true);
+      return this.agentsService.getAgents(params);
+    }),
+    tap(() => this.loading.set(false)),
+    shareReplay(1)
+  );
 
-  readonly pageCount = computed(() => {
-    const total = this.filteredAgents().length;
-    return Math.max(1, Math.ceil(total / this.pageSize()));
-  });
+  readonly agents    = toSignal(this.result$.pipe(map(r => r.items)),      { initialValue: [] });
+  readonly pageCount = toSignal(this.result$.pipe(map(r => r.totalPages)), { initialValue: 1 });
+  readonly total     = toSignal(this.result$.pipe(map(r => r.total)),      { initialValue: 0 });
 
-  readonly pagedAgents = computed(() => {
-    const totalPages = this.pageCount();
-    const p = clamp(this.page(), 1, totalPages);
-
-    // keep page signal valid when filters reduce results
-    if (p !== this.page()) this.page.set(p);
-
-    const size = this.pageSize();
-    const start = (p - 1) * size;
-
-    return this.filteredAgents().slice(start, start + size);
-  });
-
-  onFiltersChange(next: AgentFilters) {
+  protected onFiltersChange(next: AgentFilters): void {
     this.filters.set(next);
     this.page.set(1);
   }
 
-  onPageChange(next: number) {
-    this.page.set(clamp(next, 1, this.pageCount()));
+  protected onPageChange(next: number): void {
+    this.page.set(next);
   }
-}
-
-function clamp(v: number, min: number, max: number): number {
-  return Math.min(Math.max(v, min), max);
 }
