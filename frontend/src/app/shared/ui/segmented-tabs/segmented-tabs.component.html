@@ -1,31 +1,22 @@
-<div class="segmented-tabs" role="tablist" aria-label="Authentication tabs">
+<div class="segmented-tabs"
+     role="tablist"
+     aria-label="Segmented tabs"
+     [style.--segmented-tab-count]="tabs().length">
   <div
     class="segmented-tabs__pill"
-    [class.segmented-tabs__pill--login]="visualActive() === 'login'"
+    [ngStyle]="pillStyle()"
     aria-hidden="true"
   ></div>
 
-  <button
-    type="button"
-    role="tab"
-    class="segmented-tabs__button"
-    [class.segmented-tabs__button--active]="visualActive() === 'signup'"
-    [attr.aria-selected]="active() === 'signup'"
-    [attr.tabindex]="active() === 'signup' ? 0 : -1"
-    (click)="selectTab('signup')"
-  >
-    Sign up
+  @for (tab of tabs(); track tab.id) {
+  <button type="button"
+          role="tab"
+          class="segmented-tabs__button"
+          [class.segmented-tabs__button--active]="visualActive() === tab.id"
+          [attr.aria-selected]="active() === tab.id"
+          [attr.tabindex]="active() === tab.id ? 0 : -1"
+          (click)="selectTab(tab.id)">
+    {{ tab.label }}
   </button>
-
-  <button
-    type="button"
-    role="tab"
-    class="segmented-tabs__button"
-    [class.segmented-tabs__button--active]="visualActive() === 'login'"
-    [attr.aria-selected]="active() === 'login'"
-    [attr.tabindex]="active() === 'login' ? 0 : -1"
-    (click)="selectTab('login')"
-  >
-    Log in
-  </button>
+  }
 </div>

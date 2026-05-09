@@ -29,7 +29,7 @@
 
   &__name {
     margin: 0;
-    font-size: 1.25rem;
+    font-size: var(--font-size-h4);
     font-weight: 800;
     color: var(--font-main);
     line-height: 1.2;
@@ -37,7 +37,7 @@
 
   &__agency {
     margin: 0;
-    font-size: 0.875rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 600;
     color: var(--primary);
   }
@@ -50,7 +50,7 @@
     padding: 0.45rem 0.75rem;
     border-radius: var(--radius-pill);
     background: color-mix(in srgb, var(--tertiary) 70%, var(--surface) 30%);
-    font-size: 0.85rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 700;
     color: var(--font-main);
 
@@ -108,13 +108,13 @@
   }
 
   &__info-label {
-    font-size: 0.75rem;
+    font-size: var(--font-size-caption);
     font-weight: 700;
     color: var(--font-secondary);
   }
 
   &__info-value {
-    font-size: 0.95rem;
+    font-size: var(--font-size-body);
     font-weight: 800;
     color: var(--font-main);
     text-decoration: none;
@@ -141,7 +141,7 @@
     border-radius: var(--radius-field);
     border: 1px solid var(--border-soft);
     background: var(--surface);
-    font-size: 0.9rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 700;
     color: var(--primary);
     display: inline-flex;

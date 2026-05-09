@@ -15,7 +15,7 @@
     background: var(--surface);
     border: 1px solid var(--border-soft);
     border-radius: 28px;
-    box-shadow: 0 24px 80px rgba(31, 22, 48, 0.18);
+    box-shadow: 0 24px 80px var(--shadow-purple-md);
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -33,7 +33,7 @@
   &__title {
     margin: 0 0 0.25rem;
     color: var(--font-main);
-    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-size: var(--font-size-h3);
     font-weight: 800;
   }
 
@@ -49,7 +49,7 @@
     border-radius: var(--radius-lg);
     background: var(--surface-muted);
     color: var(--font-main);
-    font-size: 1.5rem;
+    font-size: var(--font-size-h3);
     line-height: 1;
     display: inline-flex;
     align-items: center;
@@ -91,7 +91,7 @@
 
   &__listing-price {
     color: var(--font-main);
-    font-size: 1.4rem;
+    font-size: var(--font-size-h3);
     font-weight: 800;
     margin-bottom: 0.25rem;
   }
@@ -105,7 +105,7 @@
   &__listing-agent {
     color: var(--font-main);
     font-weight: 600;
-    font-size: 0.92rem;
+    font-size: var(--font-size-body-sm);
   }
 
   &__panel {
@@ -125,7 +125,7 @@
     h3 {
       margin: 0;
       color: var(--font-main);
-      font-size: 1.05rem;
+      font-size: var(--font-size-body-lg);
       font-weight: 800;
     }
   }
@@ -158,7 +158,7 @@
     border-radius: var(--radius-pill);
     background: var(--surface-muted);
     color: var(--font-main);
-    font-size: 0.82rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 700;
   }
 
@@ -166,7 +166,7 @@
     margin-bottom: 0.75rem;
     color: var(--font-secondary);
     font-weight: 700;
-    font-size: 0.92rem;
+    font-size: var(--font-size-body-sm);
   }
 
   &__slots-grid {
@@ -231,7 +231,7 @@
   &__confirm-btn {
     background: var(--primary);
     color: var(--surface);
-    box-shadow: 0 14px 28px rgba(255, 107, 87, 0.22);
+    box-shadow: 0 14px 28px var(--shadow-coral-lg);
   }
 
   &__empty-slots {
@@ -251,15 +251,15 @@
     margin-bottom: 0.75rem;
     padding: 0.65rem 0.9rem;
     border-radius: var(--radius-field);
-    background: rgba(255, 193, 7, 0.12);
+    background: var(--warning-bg-soft);
     color: var(--font-main);
-    font-size: 0.9rem;
+    font-size: var(--font-size-body-sm);
   }
 
   &__confirm-error {
     margin: 0.75rem 0 0;
     color: var(--error-strong);
-    font-size: 0.9rem;
+    font-size: var(--font-size-body-sm);
   }
 }
 
@@ -286,36 +286,36 @@
   min-height: 1.85rem;
   padding: 0.3rem 0.65rem;
   border-radius: var(--radius-pill);
-  font-size: 0.76rem;
+  font-size: var(--font-size-caption);
   font-weight: 700;
 
   &--available {
-    background: rgba(39, 174, 96, 0.1);
+    background: var(--status-success-bg-soft);
     color: var(--status-success-text);
   }
 
   &--selected {
-    background: rgba(255, 107, 87, 0.12);
+    background: var(--status-selected-bg-soft);
     color: var(--primary);
   }
 
   &--confirmed {
-    background: rgba(18, 179, 182, 0.12);
+    background: var(--status-confirmed-bg-soft);
     color: var(--status-confirmed-text);
   }
 
   &--booked {
-    background: rgba(245, 130, 32, 0.12);
+    background: var(--status-booked-bg-soft);
     color: var(--status-booked-text);
   }
 
   &--blocked {
-    background: rgba(122, 102, 118, 0.12);
+    background: var(--status-blocked-bg-soft);
     color: var(--status-blocked-text);
   }
 
   &--not-available {
-    background: rgba(90, 90, 90, 0.1);
+    background: var(--status-unavailable-bg-soft);
     color: var(--status-unavailable-text);
   }
 }
@@ -348,23 +348,23 @@
 
   strong {
     color: var(--font-main);
-    font-size: 1rem;
+    font-size: var(--font-size-body);
     line-height: 1.1;
   }
 
   span {
-    font-size: 0.8rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 700;
   }
 
   small {
-    font-size: 0.72rem;
+    font-size: var(--font-size-caption);
     color: var(--font-secondary);
   }
 
   &--available {
-    background: rgba(39, 174, 96, 0.04);
-    border-color: rgba(39, 174, 96, 0.2);
+    background: var(--status-success-bg-subtle);
+    border-color: var(--status-success-border-soft);
 
     span {
       color: var(--status-success-text);
@@ -372,9 +372,9 @@
   }
 
   &--selected {
-    background: rgba(255, 107, 87, 0.08);
+    background: var(--status-selected-bg-subtle);
     border-color: var(--primary);
-    box-shadow: 0 12px 24px rgba(255, 107, 87, 0.12);
+    box-shadow: 0 12px 24px var(--status-selected-bg-soft);
 
     span {
       color: var(--primary);
@@ -382,8 +382,8 @@
   }
 
   &--confirmed {
-    background: rgba(18, 179, 182, 0.08);
-    border-color: rgba(18, 179, 182, 0.22);
+    background: var(--status-confirmed-bg-subtle);
+    border-color: var(--status-confirmed-border-soft);
 
     span {
       color: var(--status-confirmed-text);
@@ -391,8 +391,8 @@
   }
 
   &--booked {
-    background: rgba(245, 130, 32, 0.1);
-    border-color: rgba(245, 130, 32, 0.22);
+    background: var(--status-booked-bg-subtle);
+    border-color: var(--status-booked-border-soft);
 
     span {
       color: var(--status-booked-text);
@@ -400,8 +400,8 @@
   }
 
   &--blocked {
-    background: rgba(122, 102, 118, 0.1);
-    border-color: rgba(122, 102, 118, 0.18);
+    background: var(--status-blocked-bg-subtle);
+    border-color: var(--status-blocked-border-soft);
 
     span {
       color: var(--status-blocked-text);
@@ -409,8 +409,8 @@
   }
 
   &--not-available {
-    background: rgba(90, 90, 90, 0.08);
-    border-color: rgba(90, 90, 90, 0.22);
+    background: var(--status-unavailable-bg-subtle);
+    border-color: var(--status-unavailable-border-soft);
 
     span {
       color: var(--status-unavailable-text);
@@ -473,7 +473,7 @@
     min-height: 84px;
 
     strong {
-      font-size: 0.95rem;
+      font-size: var(--font-size-body);
     }
   }
 }

@@ -16,14 +16,14 @@
 }
 
 .hero-badge {
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--surface-white-15);
   padding: 6px 14px;
   border-radius: var(--radius-pill);
-  font-size: 0.85rem;
+  font-size: var(--font-size-body-sm);
 }
 
 h1 {
-  font-size: 2.5rem;
+  font-size: var(--font-size-display);
   font-weight: 700;
   margin-top: 1rem;
 }
@@ -42,18 +42,18 @@ p {
   span {
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: var(--surface-white-15);
+    border: 1px solid var(--surface-white-25);
     padding: 6px 14px;
     border-radius: var(--radius-pill);
-    font-size: 0.8rem;
+    font-size: var(--font-size-body-sm);
     color: white;
   }
 }
 
 @media (max-width: 768px) {
   h1 {
-    font-size: 1.7rem;
+    font-size: var(--font-size-h3);
   }
 
   .hero {

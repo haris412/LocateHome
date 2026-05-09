@@ -19,49 +19,89 @@ html {
 :root {
   --font-family: "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
 
-  /* Brand */
-  --primary: rgb(124, 58, 237); /* #7C3AED */
-  --primary-hover: rgb(150, 97, 241); /* #9661F1 */
-  --primary-strong: color-mix(in srgb, var(--primary) 85%, black);
-  --primary-soft: rgb(231, 220, 252); /* #E7DCFC */
-  --primary-soft-hover: rgb(239, 231, 253); /* #EFE7FD */
-  --primary-cta-hover: rgb(166, 121, 243); /* #A679F3 */
+  /* Typography */
+  --font-size-display: clamp(2.25rem, 3.5vw, 3rem);
+  --font-size-h1: clamp(2rem, 3vw, 2.5rem);
+  --font-size-h2: clamp(1.75rem, 2.4vw, 2.125rem);
+  --font-size-h3: clamp(1.375rem, 1.8vw, 1.625rem);
+  --font-size-h4: clamp(1.125rem, 1.3vw, 1.25rem);
+  --font-size-h5: 1.125rem;
+  --font-size-h6: 1rem;
 
-  --secondary: rgb(197, 232, 223); /* #C5E8DF */
-  --tertiary: rgb(240, 249, 246); /* #F0F9F6 */
+  --font-size-body-lg: 1.0625rem;
+  --font-size-body: 1rem;
+  --font-size-body-sm: 0.9375rem;
+  --font-size-caption: 0.8125rem;
+  --font-size-overline: 0.75rem;
+
+  --line-height-display: 1.05;
+  --line-height-heading: 1.15;
+  --line-height-body: 1.6;
+  --line-height-compact: 1.35;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-heavy: 800;
+
+  /* Brand */
+  --primary: rgb(18, 64, 118); /* #124076 */
+  --primary-hover: rgb(15, 54, 100); /* #0F3664 */
+  --primary-strong: rgb(11, 41, 78); /* #0B294E */
+  --primary-soft: rgb(231, 238, 247); /* #E7EEF7 */
+  --primary-soft-hover: rgb(219, 230, 243); /* #DBE6F3 */
+  --primary-cta-hover: rgb(28, 83, 144); /* #1C5390 */
+
+  --secondary: rgb(231, 235, 241); /* refined blue-gray */
+  --tertiary: rgb(247, 249, 252); /* pale app surface */
 
   /* Text */
-  --font-main: rgb(16, 32, 28); /* #10201C */
-  --font-secondary: rgb(92, 111, 106); /* #5C6F6A */
+  --font-main: rgb(24, 29, 36); /* refined near-black */
+  --font-secondary: rgb(92, 99, 112); /* soft slate gray */
 
   /* Surfaces */
   --surface: rgb(255, 255, 255); /* #FFFFFF */
-  --surface-soft: rgb(248, 250, 252); /* #F8FAFC */
-  --surface-muted: rgb(243, 247, 246); /* #F3F7F6 */
-  --surface-page: rgb(251, 251, 251); /* #FBFBFB */
-  --surface-disabled: rgb(212, 212, 212); /* #D4D4D4 */
-  --surface-footer: rgb(16, 32, 28); /* dark footer */
+  --surface-soft: rgb(249, 250, 252); /* #F9FAFC */
+  --surface-muted: rgb(244, 246, 249); /* #F4F6F9 */
+  --surface-page: rgb(248, 249, 251); /* #F8F9FB */
+  --surface-disabled: rgb(214, 218, 225); /* #D6DAE1 */
+  --surface-footer: rgb(18, 24, 33); /* deep charcoal footer */
 
   /* Borders */
-  --border-soft: rgb(231, 245, 242); /* softer mint border */
-  --border-soft-strong: rgb(197, 232, 223); /* #C5E8DF */
-  --border-field: rgb(239, 248, 245); /* #EFF8F5 */
-  --border-field-hover: rgb(87, 188, 162); /* #57BCA2 */
-  --border-white-soft: rgba(255, 255, 255, 0.45);
-  --border-card-soft: rgba(197, 232, 223, 0.7);
+  --border-soft: rgb(230, 233, 238); /* #E6E9EE */
+  --border-soft-strong: rgb(207, 213, 222); /* #CFD5DE */
+  --border-field: rgb(224, 228, 235); /* #E0E4EB */
+  --border-field-hover: rgb(168, 177, 191); /* #A8B1BF */
+  --border-white-soft: rgba(255, 255, 255, 0.5);
+  --border-card-soft: rgba(207, 213, 222, 0.72);
 
   /* Status */
-  --success: rgb(15, 159, 122); /* #0F9F7A */
-  --error: rgb(220, 38, 38);
-  --warning: rgb(234, 179, 8); /* #EAB308 */
-  --info: rgb(78, 100, 189); /* #4E64BD */
-  --standby: rgb(63, 178, 149); /* #3FB295 */
+  --success: rgb(39, 174, 96); /* refined green */
+  --error: rgb(214, 48, 49); /* refined red */
+  --warning: rgb(230, 145, 56); /* softer amber */
+  --info: rgb(18, 64, 118); /* brand blue */
+  --standby: rgb(132, 140, 153); /* neutral gray */
 
-  /* Snackbar gradient */
-  --snackbar-accent: rgb(166, 121, 243); /* #A679F3 */
+  /* Snackbar */
+  --snackbar-accent: rgb(28, 83, 144); /* #1C5390 */
 
   /* Shadows */
-  --shadow-soft: 0 18px 50px rgba(16, 32, 28, 0.08);
+  --shadow-soft: 0 18px 50px rgba(18, 24, 33, 0.08);
+  --shadow-ink-xs: rgba(16, 32, 28, 0.08);
+  --shadow-ink-sm: rgba(16, 32, 28, 0.1);
+  --shadow-black-sm: rgba(0, 0, 0, 0.12);
+  --shadow-black-md: rgba(0, 0, 0, 0.18);
+  --shadow-black-lg: rgba(0, 0, 0, 0.2);
+  --shadow-black-xl: rgba(0, 0, 0, 0.22);
+  --shadow-black-strong: rgba(0, 0, 0, 0.35);
+  --shadow-black-overlay: rgba(0, 0, 0, 0.45);
+  --shadow-purple-xs: rgba(31, 22, 48, 0.06);
+  --shadow-purple-sm: rgba(31, 22, 48, 0.12);
+  --shadow-purple-md: rgba(31, 22, 48, 0.18);
+  --shadow-coral-sm: rgba(255, 107, 87, 0.12);
+  --shadow-coral-md: rgba(255, 107, 87, 0.2);
+  --shadow-coral-lg: rgba(255, 107, 87, 0.22);
 
   /* Radius */
   --radius-xl: 18px;
@@ -78,60 +118,122 @@ html {
   --mdc-outlined-text-field-label-text-color: var(--font-secondary);
   --mdc-outlined-text-field-input-text-color: var(--font-main);
   --mdc-outlined-text-field-container-shape: var(--radius-field);
+
   --mat-form-field-outlined-focus-outline-color: var(--primary);
   --mat-option-selected-state-label-text-color: var(--primary);
   --mat-form-field-outlined-container-shape: var(--radius-field);
   --mat-button-filled-label-text-font: "Plus Jakarta Sans";
   --mat-button-outlined-container-shape: var(--radius-field);
 
-  --overlay-backdrop: rgba(16, 32, 28, 0.6);
+  /* Overlays */
+  --overlay-backdrop: rgba(18, 24, 33, 0.58);
+  --overlay-black-strong: rgba(0, 0, 0, 0.92);
+  --overlay-navy-0: rgba(10, 15, 28, 0);
+  --overlay-navy-soft: rgba(10, 15, 28, 0.1);
+  --overlay-navy-muted: rgba(10, 15, 28, 0.18);
+  --overlay-navy-strong: rgba(10, 15, 28, 0.72);
 
-  --status-success-text: rgb(15, 159, 122);
-  --status-confirmed-text: rgb(78, 100, 189);
-  --status-booked-text: rgb(234, 179, 8);
+  /* Status text */
+  --status-success-text: rgb(39, 174, 96);
+  --status-confirmed-text: rgb(18, 64, 118);
+  --status-booked-text: rgb(230, 145, 56);
   --status-blocked-text: var(--font-secondary);
-  --status-unavailable-text: rgb(102, 102, 102);
+  --status-unavailable-text: rgb(132, 140, 153);
+  --status-success-bg-subtle: rgba(39, 174, 96, 0.04);
+  --status-success-bg-soft: rgba(39, 174, 96, 0.1);
+  --status-success-border-soft: rgba(39, 174, 96, 0.2);
+  --status-selected-bg-subtle: rgba(255, 107, 87, 0.08);
+  --status-selected-bg-soft: rgba(255, 107, 87, 0.12);
+  --status-selected-border-strong: rgba(255, 107, 87, 0.35);
+  --status-confirmed-bg-subtle: rgba(18, 179, 182, 0.08);
+  --status-confirmed-bg-soft: rgba(18, 179, 182, 0.12);
+  --status-confirmed-border-soft: rgba(18, 179, 182, 0.22);
+  --status-booked-bg-subtle: rgba(245, 130, 32, 0.1);
+  --status-booked-bg-soft: rgba(245, 130, 32, 0.12);
+  --status-booked-border-soft: rgba(245, 130, 32, 0.22);
+  --status-blocked-bg-subtle: rgba(122, 102, 118, 0.1);
+  --status-blocked-bg-soft: rgba(122, 102, 118, 0.12);
+  --status-blocked-border-soft: rgba(122, 102, 118, 0.18);
+  --status-unavailable-bg-subtle: rgba(90, 90, 90, 0.08);
+  --status-unavailable-bg-soft: rgba(90, 90, 90, 0.1);
+  --status-unavailable-border-soft: rgba(90, 90, 90, 0.22);
+  --warning-bg-soft: rgba(255, 193, 7, 0.12);
 
-  --error-strong: rgb(198, 40, 40);
+  --error-strong: rgb(184, 32, 38);
 
-  --purpose-rent-border: rgba(124, 58, 237, 0.2);
-  --purpose-rent-bg: rgba(124, 58, 237, 0.08);
-  --purpose-rent-text: rgb(124, 58, 237);
+  /* Purpose badges */
+  --purpose-rent-border: rgba(18, 64, 118, 0.2);
+  --purpose-rent-bg: rgba(18, 64, 118, 0.08);
+  --purpose-rent-text: rgb(18, 64, 118);
 
-  --purpose-sale-border: rgba(15, 159, 122, 0.2);
-  --purpose-sale-bg: rgba(15, 159, 122, 0.08);
-  --purpose-sale-text: rgb(15, 159, 122);
+  --purpose-sale-border: rgba(39, 174, 96, 0.2);
+  --purpose-sale-bg: rgba(39, 174, 96, 0.08);
+  --purpose-sale-text: rgb(39, 174, 96);
 
-  --status-highlight-bg: rgb(234, 179, 8);
-  --status-highlight-text: rgb(43, 26, 0);
+  /* Highlight badges */
+  --status-highlight-bg: rgb(245, 191, 79); /* refined gold */
+  --status-highlight-text: rgb(54, 39, 12);
 
-  --badge-accent-purple: rgb(124, 58, 237);
-  --badge-accent-teal: rgb(15, 159, 122);
-  --accent-rating: rgb(166, 121, 243);
+  /* Badge accents */
+  --badge-accent-purple: rgb(18, 64, 118);
+  --badge-accent-teal: rgb(132, 140, 153);
+  --accent-rating: rgb(28, 83, 144);
 
-  --surface-frost: rgba(255, 255, 255, 0.95);
+  /* Frosted surfaces */
+  --surface-frost: rgba(255, 255, 255, 0.94);
+  --surface-white: rgba(255, 255, 255);
+  --surface-white-0: rgba(255, 255, 255, 0);
+  --surface-white-08: rgba(255, 255, 255, 0.08);
+  --surface-white-10: rgba(255, 255, 255, 0.1);
+  --surface-white-12: rgba(255, 255, 255, 0.12);
+  --surface-white-14: rgba(255, 255, 255, 0.14);
+  --surface-white-15: rgba(255, 255, 255, 0.15);
+  --surface-white-16: rgba(255, 255, 255, 0.16);
+  --surface-white-18: rgba(255, 255, 255, 0.18);
+  --surface-white-20: rgba(255, 255, 255, 0.2);
+  --surface-white-25: rgba(255, 255, 255, 0.25);
+  --surface-white-45: rgba(255, 255, 255, 0.45);
+  --surface-white-68: rgba(255, 255, 255, 0.68);
+  --surface-white-70: rgba(255, 255, 255, 0.7);
+  --surface-white-72: rgba(255, 255, 255, 0.72);
+  --surface-white-82: rgba(255, 255, 255, 0.82);
+  --surface-white-86: rgba(255, 255, 255, 0.86);
+  --surface-white-88: rgba(255, 255, 255, 0.88);
+  --surface-white-90: rgba(255, 255, 255, 0.9);
+  --surface-white-92: rgba(255, 255, 255, 0.92);
+  --surface-cream-frost: rgba(255, 248, 243, 0.96);
+  --surface-purple-glass: rgba(31, 22, 48, 0.88);
 
-  --overlay-dark-strong: rgba(10, 12, 18, 0.9);
-  --surface-dark: rgb(15, 19, 32);
-  --surface-dark-muted: rgb(22, 27, 42);
+  /* Soft borders */
+  --border-warm-soft: rgba(234, 217, 208, 0.8);
+  --border-warm: rgba(234, 217, 208, 0.9);
+  --border-warm-strong: rgba(234, 217, 208, 0.95);
+  --border-mint-card: rgba(197, 232, 223, 0.82);
+  --border-mint-card-hover: rgba(197, 232, 223, 1);
+
+  /* Dark surfaces */
+  --overlay-dark-strong: rgba(8, 12, 18, 0.9);
+  --surface-dark: rgb(18, 24, 33);
+  --surface-dark-muted: rgb(31, 38, 50);
   --surface-black: rgb(0, 0, 0);
+
   /* === HERO / BRAND GRADIENT SYSTEM === */
 
-  --gradient-primary-start: rgb(124, 58, 237); /* purple */
-  --gradient-primary-end: rgb(15, 159, 122); /* teal */
+  --gradient-primary-start: rgb(18, 64, 118); /* deep blue */
+  --gradient-primary-end: rgb(67, 83, 105); /* refined slate */
 
-  --gradient-soft-start: rgb(248, 250, 252); /* light */
-  --gradient-soft-end: rgb(255, 248, 243); /* peach */
+  --gradient-soft-start: rgb(249, 250, 252);
+  --gradient-soft-end: rgb(239, 243, 248);
 
   --gradient-radial-overlay: radial-gradient(
     circle at 20% 20%,
-    rgba(124, 58, 237, 0.12),
+    rgba(18, 64, 118, 0.12),
     transparent 60%
   );
 
   --gradient-radial-overlay-2: radial-gradient(
     circle at 80% 30%,
-    rgba(15, 159, 122, 0.12),
+    rgba(67, 83, 105, 0.12),
     transparent 60%
   );
 }
@@ -139,6 +241,10 @@ html {
 html,
 body {
   height: 100%;
+  font-family: var(--font-family);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--font-main);
 }
 
 body {
@@ -146,6 +252,63 @@ body {
   font-family: var(--font-family) !important;
   color: var(--font-main);
   background: var(--surface-page);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  color: var(--font-main);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-heading);
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+}
+
+h4 {
+  font-size: var(--font-size-h4);
+}
+
+h5 {
+  font-size: var(--font-size-h5);
+}
+
+h6 {
+  font-size: var(--font-size-h6);
+}
+
+p {
+  margin: 0;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--font-secondary);
+}
+
+span,
+label,
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+small {
+  font-size: var(--font-size-caption);
+  line-height: var(--line-height-compact);
 }
 
 *,
@@ -262,7 +425,7 @@ textarea,
   position: relative;
   text-align: center;
   color: var(--font-secondary);
-  font-size: 0.875rem;
+  font-size: var(--font-size-body-sm);
 }
 
 .visually-divider::before,
@@ -314,7 +477,7 @@ textarea,
   }
 
   .auth-option-flag {
-    font-size: 1.25rem;
+    font-size: var(--font-size-h4);
     line-height: 1;
   }
 

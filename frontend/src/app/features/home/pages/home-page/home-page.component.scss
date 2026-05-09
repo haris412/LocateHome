@@ -20,7 +20,7 @@
   }
 
   &__section {
-    margin-top: 7rem;
+    margin-top: 3rem;
 
     &:first-child {
       margin-top: 0;
@@ -39,19 +39,8 @@
 
   &__band {
     width: 100%;
-    padding-block: 6.5rem;
-    background:
-      radial-gradient(
-        circle at 30% 0%,
-        rgba(15, 159, 122, 0.12) 0%,
-        rgba(15, 159, 122, 0) 26%
-      ),
-      radial-gradient(
-        circle at 70% 0%,
-        rgba(124, 58, 237, 0.14) 0%,
-        rgba(124, 58, 237, 0) 28%
-      ),
-      #f8fafc;
+    padding-block: 3rem;
+    background: var(--surface);
 
     &--soft {
       background: color-mix(in srgb, var(--secondary) 58%, var(--surface) 42%);

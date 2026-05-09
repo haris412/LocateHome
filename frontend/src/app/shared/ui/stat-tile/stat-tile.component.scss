@@ -6,24 +6,24 @@
   height: 100%;
 
   &__label {
-    font-size: 0.82rem;
+    font-size: var(--font-size-body-sm);
     color: var(--font-secondary);
     margin-bottom: 0.25rem;
   }
 
   &__value {
-    font-size: 1.25rem;
+    font-size: var(--font-size-h4);
     line-height: 1.1;
     font-weight: 800;
     color: var(--font-main);
   }
 
   &--dark {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.14);
+    background: var(--surface-white-08);
+    border-color: var(--surface-white-14);
 
     .stat-tile__label {
-      color: rgba(255, 255, 255, 0.72);
+      color: var(--surface-white-72);
     }
 
     .stat-tile__value {

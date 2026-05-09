@@ -13,12 +13,8 @@ import { SearchPanelSearchPayload } from '../../components/search-panel/search-p
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { SearchPanelComponent } from '../../components/search-panel/search-panel.component';
 import { ListingsCarouselSectionComponent } from '@/shared/ui/listings-carousel-section/listings-carousel-section.component';
-import { TrendingPanelComponent } from '../../components/trending-panel/trending-panel.component';
-import { CategoriesSectionComponent } from '../../components/categories-section/categories-section.component';
-import { TestimonialsSectionComponent } from '../../components/testimonials-section/testimonials-section.component';
 import { AgentsSectionComponent } from '../../components/agents-section/agents-section.component';
 import { AppPromoSectionComponent } from '../../components/app-promo-section/app-promo-section.component';
-import { SectionHeadingComponent } from '@/shared/ui/section-heading/section-heading.component';
 import { ValuationSectionComponent } from "../../components/valuation-section/valuation-section.component";
 
 @Component({
@@ -27,12 +23,8 @@ import { ValuationSectionComponent } from "../../components/valuation-section/va
     HeroSectionComponent,
     SearchPanelComponent,
     ListingsCarouselSectionComponent,
-    TrendingPanelComponent,
-    CategoriesSectionComponent,
-    TestimonialsSectionComponent,
     AgentsSectionComponent,
     AppPromoSectionComponent,
-    SectionHeadingComponent,
     ValuationSectionComponent
   ],
   templateUrl: './home-page.component.html',
@@ -140,7 +132,7 @@ export class HomePageComponent {
     return {
       page: 1,
       limit: 20,
-      purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
+      purpose: payload.mode === 'rent' ? 'For Rent' : 'For Sale',
       city: city ?? null,
       neighborhood: area ?? null,
       propertyType: category ?? null,

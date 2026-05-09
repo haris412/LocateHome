@@ -13,7 +13,7 @@
     border-radius: 0.8rem;
     background: transparent;
     color: var(--font-secondary);
-    font-size: 1rem;
+    font-size: var(--font-size-body);
     font-weight: 700;
 
     &--active {

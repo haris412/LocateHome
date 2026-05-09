@@ -1,26 +1,47 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   output,
   signal
 } from '@angular/core';
+import { NgStyle } from '@angular/common';
 
-type AuthTab = 'signup' | 'login';
+export interface SegmentedTabItem {
+  id: string;
+  label: string;
+}
 
 @Component({
   selector: 'app-segmented-tabs',
   standalone: true,
+  imports: [NgStyle],
   templateUrl: './segmented-tabs.component.html',
   styleUrl: './segmented-tabs.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SegmentedTabsComponent {
-  readonly active = input.required<AuthTab>();
-  readonly changed = output<AuthTab>();
+  readonly tabs = input<readonly SegmentedTabItem[]>([
+    { id: 'signup', label: 'Sign up' },
+    { id: 'login', label: 'Log in' }
+  ]);
+  readonly active = input.required<string>();
+  readonly changed = output<string>();
 
-  readonly visualActive = signal<AuthTab>('signup');
+  readonly visualActive = signal('signup');
   readonly isAnimating = signal(false);
+  readonly activeIndex = computed(() => {
+    const index = this.tabs().findIndex(tab => tab.id === this.visualActive());
+    return index >= 0 ? index : 0;
+  });
+  readonly pillStyle = computed(() => {
+    const count = Math.max(this.tabs().length, 1);
+    return {
+      width: `calc(${100 / count}% - 4px)`,
+      transform: `translateX(${this.activeIndex() * 100}%)`
+    };
+  });
 
   private switchDelayMs = 120;
   private pendingTimeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -35,7 +56,7 @@ export class SegmentedTabsComponent {
     }
   }
 
-  selectTab(next: AuthTab): void {
+  selectTab(next: string): void {
     if (next === this.active() || this.isAnimating()) {
       return;
     }

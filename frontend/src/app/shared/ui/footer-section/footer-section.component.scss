@@ -1,6 +1,6 @@
 .footer-section {
   padding: 4rem 0;
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid var(--surface-white-12);
   background: var(--surface-footer);
   &__container {
     width: min(100%, 1440px);
@@ -29,17 +29,17 @@
   }
 
   h3 {
-    font-size: 1.25rem;
+    font-size: var(--font-size-h4);
   }
 
   h4 {
-    font-size: 0.95rem;
+    font-size: var(--font-size-body);
   }
 
   p,
   a {
     color: color-mix(in srgb, var(--surface) 72%, transparent);
-    font-size: 0.9rem;
+    font-size: var(--font-size-body-sm);
     line-height: 1.6;
   }
 

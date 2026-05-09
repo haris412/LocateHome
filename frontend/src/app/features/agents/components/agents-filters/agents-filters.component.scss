@@ -22,12 +22,12 @@
     align-items: center;
     gap: 0.35rem;
     color: var(--font-secondary);
-    font-size: 0.75rem;
+    font-size: var(--font-size-caption);
     font-weight: 700;
     margin-bottom: 0.3rem;
 
     .mat-icon {
-      font-size: 0.95rem;
+      font-size: var(--font-size-body);
       width: 0.95rem;
       height: 0.95rem;
       color: var(--standby);
@@ -97,13 +97,13 @@
     width: 1.9rem;
     height: 1.9rem;
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.16);
+    background: var(--surface-white-16);
     display: flex;
     align-items: center;
     justify-content: center;
 
     .mat-icon {
-      font-size: 1rem;
+      font-size: var(--font-size-body);
       width: 1rem;
       height: 1rem;
       display: flex;

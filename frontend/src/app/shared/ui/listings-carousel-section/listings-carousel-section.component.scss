@@ -13,17 +13,17 @@
   &__title {
     margin: 0 0 0.45rem;
     color: var(--font-main);
-    font-size: clamp(1.5rem, 2.7vw, 2rem);
+    font-size: var(--font-size-h3);
     font-weight: 800;
     line-height: 1;
   }
   &__title--small {
-    font-size: clamp(1.25rem, 2.3vw, 1.25rem);
+    font-size: var(--font-size-h4);
   }
   &__subtitle {
     margin: 0;
     color: var(--font-secondary);
-    font-size: 1.05rem;
+    font-size: var(--font-size-body);
     line-height: 1.45;
   }
 
@@ -40,7 +40,7 @@
     align-items: center;
     gap: 0.35rem;
     color: var(--primary);
-    font-size: 1rem;
+    font-size: var(--font-size-body);
     text-decoration: none;
   }
 
@@ -72,7 +72,7 @@
     }
 
     .material-icons {
-      font-size: 1.25rem;
+      font-size: var(--font-size-h4);
     }
   }
 
@@ -84,14 +84,14 @@
     border-radius: 0.75rem;
     background: var(--surface-soft);
     color: var(--font-secondary);
-    font-size: 0.8rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 500;
     width: fit-content;
   }
 
   &__track {
     display: flex;
-    gap: 1.25rem;
+    gap: 0.5rem;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
@@ -99,21 +99,7 @@
     scrollbar-gutter: stable;
 
     &::-webkit-scrollbar {
-      height: 6px;
-    }
-
-    &::-webkit-scrollbar-button {
       display: none;
-    }
-
-    &::-webkit-scrollbar-track {
-      background: var(--secondary);
-      border-radius: 999px;
-    }
-
-    &::-webkit-scrollbar-thumb {
-      background: var(--primary);
-      border-radius: 999px;
     }
   }
 
@@ -121,6 +107,7 @@
     flex: 0 0 auto;
     width: auto;
     scroll-snap-align: start;
+    padding-inline: 0.25rem;
   }
   &__primary-btn {
     display: inline-flex;
@@ -145,11 +132,11 @@
 @media (max-width: 575.98px) {
   .listings-carousel-section {
     &__title {
-      font-size: 2rem;
+      font-size: var(--font-size-h2);
     }
 
     &__subtitle {
-      font-size: 0.95rem;
+      font-size: var(--font-size-body);
     }
 
     &__track {

@@ -18,11 +18,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatSelectModule } from '@angular/material/select';
 
-import { PriceRangeFieldComponent, PriceRange } from '../../../../shared/ui/price-range-field/price-range-field.component';
+import { PriceRange } from '../../../../shared/ui/price-range-field/price-range-field.component';
 import { FilterOption } from '../../../../core/models/filter.models';
 import { GooglePlacePrediction } from '../../../../core/models/google-places.models';
 import { LocationCatalogService } from '../../../../core/services/location-catalog.service';
 import { FiltersCatalogService } from '../../../../core/services/filters-catalog.service';
+import { SegmentedTabsComponent, SegmentedTabItem } from '../../../../shared/ui/segmented-tabs/segmented-tabs.component';
 import {
   SpeechRecognitionConstructor,
   SpeechRecognitionErrorLike,
@@ -32,7 +33,7 @@ import {
 
 // ─── Public types ─────────────────────────────────────────────────────────────
 
-export type SearchMode = 'buy' | 'rent';
+export type SearchMode = 'buy' | 'rent' | 'sell';
 
 export interface SearchPanelSearchPayload {
   mode: SearchMode;
@@ -52,11 +53,6 @@ export interface SearchPanelSearchPayload {
 
 // ─── Private types ────────────────────────────────────────────────────────────
 
-interface SearchTab {
-  id: SearchMode;
-  label: string;
-}
-
 interface QuickChip {
   id: string;
   label: string;
@@ -75,7 +71,7 @@ interface QuickChip {
     MatAutocompleteModule,
     MatSelectModule,
     ReactiveFormsModule,
-    PriceRangeFieldComponent
+    SegmentedTabsComponent
   ],
   templateUrl: './search-panel.component.html',
   styleUrl: './search-panel.component.scss',
@@ -90,9 +86,10 @@ export class SearchPanelComponent {
 
   // ── Tab / mode ──────────────────────────────────────────────────────────
 
-  readonly tabs: readonly SearchTab[] = [
+  readonly tabs: readonly SegmentedTabItem[] = [
     { id: 'buy', label: 'Buy' },
-    { id: 'rent', label: 'Rent' }
+    { id: 'rent', label: 'Rent' },
+    { id: 'sell', label: 'Sell' }
   ];
 
   readonly activeTab = signal<SearchMode>('buy');
@@ -153,6 +150,7 @@ export class SearchPanelComponent {
   ]);
 
   readonly showMoreFilters = signal(false);
+  readonly showVoicePanel = signal(false);
 
   // ── Voice search ────────────────────────────────────────────────────────
 
@@ -161,6 +159,12 @@ export class SearchPanelComponent {
   readonly micError     = signal('');
   readonly voiceHint    = computed(() =>
     this.isListening() ? 'Listening… speak now' : 'Tap to speak'
+  );
+  readonly priceRangeMode = computed<'buy' | 'rent'>(() =>
+    this.activeTab() === 'rent' ? 'rent' : 'buy'
+  );
+  readonly priceRangeOptions = computed(() =>
+    this.filtersCatalog.getPriceRangeForMode(this.priceRangeMode())
   );
 
   private recognition: SpeechRecognitionLike | null = null;
@@ -235,7 +239,8 @@ export class SearchPanelComponent {
 
   // ── Event handlers ───────────────────────────────────────────────────────
 
-  setActiveTab(tab: SearchMode): void {
+  setActiveTab(tab: string): void {
+    if (tab !== 'buy' && tab !== 'rent' && tab !== 'sell') return;
     this.activeTab.set(tab);
     this.primaryType.set('any');
     this.subtype.set('any');
@@ -279,6 +284,19 @@ export class SearchPanelComponent {
     this.priceRange.set(range);
   }
 
+  onMinPriceSelected(value: number | null): void {
+    this.priceRange.update(range => ({ ...range, min: value }));
+  }
+
+  onMaxPriceSelected(value: number | null): void {
+    this.priceRange.update(range => ({ ...range, max: value }));
+  }
+
+  formatPrice(value: number): string {
+    const symbol = this.filtersCatalog.priceRanges()?.symbol ?? 'PKR';
+    return `${symbol} ${value.toLocaleString()}`;
+  }
+
   toggleChip(id: string): void {
     this.quickChips.update(chips =>
       chips.map(chip => chip.id === id ? { ...chip, active: !chip.active } : chip)
@@ -308,6 +326,7 @@ export class SearchPanelComponent {
   // ── Voice search ─────────────────────────────────────────────────────────
 
   startVoiceSearch(): void {
+    this.showVoicePanel.set(true);
     if (!this.micSupported() || !this.recognition) {
       this.micError.set('Voice search is not supported in this browser.');
       return;
@@ -318,6 +337,13 @@ export class SearchPanelComponent {
     }
     this.micError.set('');
     this.recognition.start();
+  }
+
+  closeVoicePanel(): void {
+    if (this.isListening()) {
+      this.recognition?.stop();
+    }
+    this.showVoicePanel.set(false);
   }
 
   private detectUserCity(): void {

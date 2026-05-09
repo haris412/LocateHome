@@ -24,9 +24,17 @@
 
       <div class="home-header__actions">
         <a routerLink="/auth"
-           class="home-header__btn home-header__btn--secondary">Log in</a>
-        <a routerLink="/auth"
-           class="home-header__btn home-header__btn--primary">Sign up</a>
+           class="home-header__btn home-header__btn--secondary">
+          Log in
+        </a>
+        <a routerLink="/listings/sell"
+           class="home-header__btn home-header__btn--primary">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>
+            add_home
+          </mat-icon>
+          <span>Add property</span>
+        </a>
       </div>
 
       <button type="button"
@@ -60,6 +68,7 @@
            aria-label="Mobile navigation">
         @for (item of navItems; track item.id) {
         <a [routerLink]="item.route"
+           [queryParams]="item.queryParams"
            class="home-header__mobile-link"
            (click)="closeMobileMenu()">
           {{ item.label }}
@@ -74,10 +83,14 @@
           Log in
         </a>
 
-        <a routerLink="/auth"
-            (click)="closeMobileMenu()"
+        <a routerLink="/listings/sell"
+           (click)="closeMobileMenu()"
            class="home-header__btn home-header__btn--primary home-header__btn--mobile">
-          Sign up
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>
+            add_home
+          </mat-icon>
+          <span>Add property</span>
         </a>
       </div>
     </div>

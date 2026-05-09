@@ -7,17 +7,17 @@
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--surface) 82%, var(--secondary) 18%);
   color: var(--font-secondary);
-  font-size: 0.82rem;
+  font-size: var(--font-size-body-sm);
   font-weight: 600;
 
   .mat-icon {
-    font-size: 0.95rem;
+    font-size: var(--font-size-body);
     width: 0.95rem;
     height: 0.95rem;
   }
 
   &--dark {
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.82);
+    background: var(--surface-white-10);
+    color: var(--surface-white-82);
   }
 }

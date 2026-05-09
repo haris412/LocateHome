@@ -34,7 +34,7 @@
     min-height: 2rem;
     border-radius: var(--radius-pill);
     padding: 0.35rem 0.8rem;
-    font-size: 0.8rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 800;
     border: 1px solid var(--border-soft);
     background: var(--surface);
@@ -61,7 +61,7 @@
     background: var(--status-highlight-bg);
     color: var(--status-highlight-text);
     padding: 0.35rem 0.8rem;
-    font-size: 0.8rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 800;
   }
 
@@ -76,7 +76,7 @@
 
   &__listing-title {
     color: var(--font-main);
-    font-size: clamp(1.25rem, 2.8vw, 1.75rem);
+    font-size: var(--font-size-h3);
     line-height: 1.25;
     font-weight: 800;
   }
@@ -96,7 +96,7 @@
   }
 
   &__map-link {
-    font-size: 0.95rem;
+    font-size: var(--font-size-body);
     font-weight: 600;
     color: var(--primary);
     text-decoration: none;
@@ -106,7 +106,7 @@
     }
 
     mat-icon {
-      font-size: 1.1rem;
+      font-size: var(--font-size-body-lg);
       width: 1.1rem;
       height: 1.1rem;
     }
@@ -119,13 +119,13 @@
   }
 
   &__price-suffix {
-    font-size: 1.1rem;
+    font-size: var(--font-size-body-lg);
     padding-bottom: 0.3rem;
   }
 
   &__address {
     margin-top: 0.5rem;
-    font-size: 1rem;
+    font-size: var(--font-size-body);
   }
 
   &__schedule-btn {
@@ -151,7 +151,7 @@
   &__section-title {
     margin: 0;
     color: var(--font-main);
-    font-size: clamp(1.4rem, 2vw, 2rem);
+    font-size: var(--font-size-h3);
     font-weight: 900;
   }
 }

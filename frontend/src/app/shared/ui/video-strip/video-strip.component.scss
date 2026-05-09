@@ -28,7 +28,7 @@
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 18px 38px rgba(31, 22, 48, 0.18);
+    box-shadow: 0 18px 38px var(--shadow-purple-md);
   }
 
   &__image {
@@ -43,8 +43,8 @@
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(to top, rgba(10, 15, 28, 0.72), rgba(10, 15, 28, 0.1)),
-      linear-gradient(to right, rgba(10, 15, 28, 0.18), rgba(10, 15, 28, 0));
+      linear-gradient(to top, var(--overlay-navy-strong), var(--overlay-navy-soft)),
+      linear-gradient(to right, var(--overlay-navy-muted), var(--overlay-navy-0));
   }
 
   &__play {
@@ -54,16 +54,16 @@
     width: 4rem;
     height: 4rem;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.18);
+    background: var(--surface-white-18);
     backdrop-filter: blur(10px);
     color: var(--surface);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 22px var(--shadow-black-lg);
 
     .mat-icon {
-      font-size: 2rem;
+      font-size: var(--font-size-h2);
       width: 2rem;
       height: 2rem;
     }
@@ -80,10 +80,10 @@
   &__title {
     margin: 0;
     color: var(--surface);
-    font-size: 1rem;
+    font-size: var(--font-size-body);
     font-weight: 800;
     line-height: 1.2;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+    text-shadow: 0 2px 12px var(--shadow-black-strong);
   }
 }
 
@@ -101,7 +101,7 @@
     }
 
     &__title {
-      font-size: 0.92rem;
+      font-size: var(--font-size-body-sm);
     }
   }
 }

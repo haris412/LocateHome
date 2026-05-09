@@ -8,7 +8,7 @@
   &--compact {
     padding: 1rem;
     border-radius: var(--radius-lg);
-    box-shadow: 0 14px 36px rgba(31, 22, 48, 0.06);
+    box-shadow: 0 14px 36px var(--shadow-purple-xs);
   }
 
   &--soft {
