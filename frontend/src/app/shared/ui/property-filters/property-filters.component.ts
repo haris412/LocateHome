@@ -10,7 +10,7 @@ import {
   input,
   signal
 } from '@angular/core';
-import { isPlatformBrowser, NgIf } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { LocationCatalogService } from '../../../core/services/location-catalog.service';
 
@@ -23,9 +23,10 @@ import {
 import { FiltersCatalogService } from '../../../core/services/filters-catalog.service';
 
 import { FilterShellComponent } from '../filter-shell/filter-shell.component';
-import { FilterSegmentTabsComponent } from '../filter-segment-tabs/filter-segment-tabs.component';
 import { FilterSelectComponent } from '../filter-select-card/filter-select-card.component';
 import { FilterChipGroupComponent } from '../filter-chip-group/filter-chip-group.component';
+import { SegmentedTabsComponent } from '../segmented-tabs/segmented-tabs.component';
+import { LocationSearchFieldComponent } from '../location-search-field/location-search-field.component';
 export interface PropertyFilterPayload {
   mode: FilterMode;
   query: string;
@@ -73,9 +74,10 @@ interface SpeechRecognitionEventLike {
   imports: [
     MatIconModule,
     FilterShellComponent,
-    FilterSegmentTabsComponent,
+    SegmentedTabsComponent,
     FilterSelectComponent,
-    FilterChipGroupComponent
+    FilterChipGroupComponent,
+    LocationSearchFieldComponent
   ],
   templateUrl: './property-filters.component.html',
   styleUrl: './property-filters.component.scss',
@@ -137,9 +139,35 @@ export class PropertyFiltersComponent {
     this.mode() === 'buy' ? this.localBuyChips() : this.localRentChips()
   );
 
+  readonly locationField = computed(() =>
+    this.activeFields().find((field) => field.id === 'city' || field.id === 'location') ?? null
+  );
+
+  readonly areaField = computed(() =>
+    this.activeFields().find((field) => field.id === 'area') ?? null
+  );
+
+  readonly priceField = computed(() =>
+    this.activeFields().find((field) => field.id === 'price') ?? null
+  );
+
+  readonly minPriceField = computed(() => this.priceSlotField('Min Price'));
+  readonly maxPriceField = computed(() => this.priceSlotField('Max Price'));
+
+  readonly advancedFields = computed(() =>
+    this.activeFields().filter(
+      (field) =>
+        field.id !== 'city' &&
+        field.id !== 'location' &&
+        field.id !== 'area' &&
+        field.id !== 'price'
+    )
+  );
+
   readonly isListening = signal(false);
   readonly micSupported = signal(false);
   readonly micError = signal('');
+  readonly showVoicePanel = signal(false);
 
   private recognition: SpeechRecognitionLike | null = null;
 
@@ -149,13 +177,19 @@ export class PropertyFiltersComponent {
     });
 
     effect(() => {
-      this.searchQuery.set(this.searchQueryInput());
+      const value = this.searchQueryInput();
+      this.searchQuery.set(value);
+      this.syncSearchFieldValue(value);
     });
 
     effect(() => {
       this.localBuyFields.set(
         this.buyFields().map((field) => ({
           ...field,
+          value:
+            field.id === 'city' || field.id === 'location'
+              ? this.searchQuery()
+              : field.value,
           options: [...field.options]
         }))
       );
@@ -165,6 +199,10 @@ export class PropertyFiltersComponent {
       this.localRentFields.set(
         this.rentFields().map((field) => ({
           ...field,
+          value:
+            field.id === 'city' || field.id === 'location'
+              ? this.searchQuery()
+              : field.value,
           options: [...field.options]
         }))
       );
@@ -189,7 +227,11 @@ export class PropertyFiltersComponent {
     this.setupSpeechRecognition();
   }
 
-  setMode(mode: FilterMode): void {
+  setMode(mode: string): void {
+    if (mode !== 'buy' && mode !== 'rent') {
+      return;
+    }
+
     this.mode.set(mode);
     this.emitFiltersChanged();
   }
@@ -273,6 +315,7 @@ export class PropertyFiltersComponent {
 
   updateSearch(value: string): void {
     this.searchQuery.set(value);
+    this.syncSearchFieldValue(value);
     this.searchQueryChange.emit(value);
     this.emitFiltersChanged();
   }
@@ -286,6 +329,8 @@ export class PropertyFiltersComponent {
       return;
     }
 
+    this.showVoicePanel.set(true);
+
     if (!this.micSupported() || !this.recognition) {
       this.micError.set('Voice search is not supported in this browser.');
       return;
@@ -298,6 +343,40 @@ export class PropertyFiltersComponent {
 
     this.micError.set('');
     this.recognition.start();
+  }
+
+  closeVoicePanel(): void {
+    if (this.isListening() && this.recognition) {
+      this.recognition.stop();
+    }
+
+    this.showVoicePanel.set(false);
+  }
+
+  private priceSlotField(label: string): FilterSelectConfig | null {
+    const field = this.priceField();
+
+    if (!field) {
+      return null;
+    }
+
+    return {
+      ...field,
+      label,
+      placeholder: 'Any'
+    };
+  }
+
+  private syncSearchFieldValue(value: string): void {
+    const syncFields = (fields: FilterSelectConfig[]) =>
+      fields.map((field) =>
+        field.id === 'city' || field.id === 'location'
+          ? { ...field, value }
+          : field
+      );
+
+    this.localBuyFields.update(syncFields);
+    this.localRentFields.update(syncFields);
   }
 
   private emitFiltersChanged(): void {
@@ -341,6 +420,7 @@ export class PropertyFiltersComponent {
     recognition.onstart = () => {
       this.isListening.set(true);
       this.micError.set('');
+      this.showVoicePanel.set(true);
     };
 
     recognition.onend = () => {
@@ -366,9 +446,7 @@ export class PropertyFiltersComponent {
       const cleanTranscript = transcript.trim();
 
       if (cleanTranscript) {
-        this.searchQuery.set(cleanTranscript);
-        this.searchQueryChange.emit(cleanTranscript);
-        this.emitFiltersChanged();
+        this.updateSearch(cleanTranscript);
         this.runSearch();
       }
     };

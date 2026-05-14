@@ -1,6 +1,6 @@
 <div class="segmented-tabs"
      role="tablist"
-     aria-label="Segmented tabs"
+     [attr.aria-label]="ariaLabel()"
      [style.--segmented-tab-count]="tabs().length">
   <div
     class="segmented-tabs__pill"

@@ -1,79 +1,166 @@
 <app-filter-shell>
-  <section
-    class="property-filters"
-    [class.property-filters--hero]="variant() === 'hero'"
-    [class.property-filters--toolbar]="variant() === 'toolbar'"
-  >
-    <div class="property-filters__top">
-      <app-filter-segment-tabs
-        [items]="tabs"
-        [active]="mode()"
-        (changed)="setMode($event)"
-      />
+  <section class="property-filters"
+           [class.property-filters--hero]="variant() === 'hero'"
+           [class.property-filters--toolbar]="variant() === 'toolbar'"
+           aria-label="Property listing filters">
+    <div class="property-filters__header">
+      <div>
+        <h3 class="property-filters__title">Find Your Perfect Property</h3>
+        <p class="property-filters__subtitle">
+          Browse verified listings and find a place that fits your lifestyle.
+        </p>
+      </div>
 
-      <div class="property-filters__actions">
+      <div class="property-filters__header-actions">
         @if (showMoreFiltersToggle()) {
-          <button
-            type="button"
-            class="property-filters__action-btn"
-            [class.property-filters__action-btn--active]="showMoreFilters()"
-            (click)="toggleMoreFilters()"
-            [attr.aria-expanded]="showMoreFilters()"
-            aria-controls="property-filters-more"
-          >
-            <mat-icon
-              fontSet="material-symbols-outlined"
-              inline
-              class="property-filters__action-icon"
-            >
-              tune
-            </mat-icon>
-            <span>More filters</span>
-          </button>
+        <button type="button"
+                class="property-filters__action-btn"
+                [class.property-filters__action-btn--active]="showMoreFilters()"
+                (click)="toggleMoreFilters()"
+                [attr.aria-expanded]="showMoreFilters()"
+                aria-controls="property-filters-more">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline
+                    class="property-filters__action-icon">
+            tune
+          </mat-icon>
+          <span>More filters</span>
+        </button>
         }
       </div>
     </div>
 
-    <div class="property-filters__grid">
-      @for (field of activeFields(); track field.id) {
-        <div
-          class="property-filters__grid-item"
-          [class.property-filters__grid-item--wide]="
-            field.id === 'city' ||
-            field.id === 'location' ||
-            field.id === 'keyword' ||
-            field.id === 'area'
-          "
-          [class.property-filters__grid-item--medium]="
-            field.id === 'primaryType' ||
-            field.id === 'purpose' ||
-            field.id === 'price' ||
-            field.id === 'size'
-          "
-          [class.property-filters__grid-item--narrow]="
-            field.id === 'beds' ||
-            field.id === 'baths' ||
-            field.id === 'subtype'
-          "
-        >
-          <app-filter-select
-            [config]="field"
-            (valueChanged)="updateField($event)"
-          />
+    <div class="property-filters__command-wrap">
+      <div class="property-filters__command-bar">
+        <div class="property-filters__primary-row row g-2 g-lg-3">
+          <div class="property-filters__purpose-field col-12 col-md-5 col-xl-3">
+
+            <app-segmented-tabs class="property-filters__purpose-tabs"
+                                [tabs]="tabs"
+                                [active]="mode()"
+                                ariaLabel="Listing purpose"
+                                (changed)="setMode($event)" />
+          </div>
+
+          @if (locationField(); as field) {
+          <div class="property-filters__location-field col-12 col-md-7 col-xl-5">
+            <app-location-search-field [mode]="field.locationRole ?? 'city'"
+                                       [label]="''"
+                                       placeholder="Search location, neighbourhood, or address"
+                                       [value]="searchQuery()"
+                                       (valueChanged)="updateSearch($event)" />
+
+            @if (voiceEnabled()) {
+            <button type="button"
+                    class="property-filters__icon-button property-filters__icon-button--mic"
+                    [class.property-filters__icon-button--active]="isListening()"
+                    [disabled]="!micSupported()"
+                    (click)="startVoiceSearch()"
+                    [attr.aria-label]="isListening() ? 'Stop voice search' : 'Start voice search'"
+                    [attr.aria-expanded]="showVoicePanel()"
+                    aria-controls="property-filters-voice-panel">
+              <mat-icon fontSet="material-symbols-outlined"
+                        inline>
+                {{ isListening() ? 'graphic_eq' : 'mic' }}
+              </mat-icon>
+            </button>
+            }
+          </div>
+          }
+
+          <div class="property-filters__price-group col-12 col-xl-4">
+            <div class="property-filters__price-row row g-2">
+              @if (minPriceField(); as field) {
+              <div class="property-filters__price-field col-12 col-md-6">
+                <app-filter-select [config]="field"
+                                   (valueChanged)="updateField($event)" />
+              </div>
+              }
+
+              @if (maxPriceField(); as field) {
+              <div class="property-filters__price-field col-12 col-md-6">
+                <app-filter-select [config]="field"
+                                   (valueChanged)="updateField($event)" />
+              </div>
+              }
+            </div>
+          </div>
         </div>
+      </div>
+
+      @if (showVoicePanel()) {
+      <div id="property-filters-voice-panel"
+           class="property-filters__voice-panel"
+           role="status"
+           aria-live="polite">
+        <div class="property-filters__voice-head">
+          <span class="property-filters__voice-icon"
+                aria-hidden="true">
+            <mat-icon fontSet="material-symbols-outlined"
+                      inline>
+              {{ isListening() ? 'graphic_eq' : 'mic' }}
+            </mat-icon>
+          </span>
+
+          <div class="property-filters__voice-content">
+            <h3 class="property-filters__voice-title">
+              {{ isListening() ? 'Start speaking' : 'Voice search' }}
+            </h3>
+            <p class="property-filters__voice-copy">
+              {{ micError() || 'Try: "3 bedroom apartment in Downtown under $2,000"' }}
+            </p>
+          </div>
+
+          <button type="button"
+                  class="property-filters__voice-close"
+                  (click)="closeVoicePanel()"
+                  aria-label="Close voice transcription panel">
+            <mat-icon fontSet="material-symbols-outlined"
+                      inline>
+              close
+            </mat-icon>
+          </button>
+        </div>
+
+        <div class="property-filters__voice-wave"
+             aria-hidden="true"></div>
+
+        <p class="property-filters__voice-transcript">
+          {{ searchQuery() || 'Listening for your property search...' }}
+        </p>
+      </div>
       }
     </div>
 
-    <div
-      id="property-filters-more"
-      class="property-filters__more-panel"
-      [class.property-filters__more-panel--open]="showMoreFilters()"
-    >
-      <div class="property-filters__more-panel-inner">
-        <app-filter-chip-group
-          [items]="activeChips()"
-          (toggled)="toggleChip($event)"
-        />
+    <div class="property-filters__advanced-grid row g-3">
+      @for (field of advancedFields(); track field.id) {
+      <div class="property-filters__advanced-item col-12 col-md-6"
+           [class.property-filters__advanced-item--wide]="field.id === 'area' || field.id === 'keyword'"
+           [class.col-xl-6]="field.id === 'area' || field.id === 'keyword'"
+           [class.col-xl-3]="field.id !== 'area' && field.id !== 'keyword'">
+        <app-filter-select [config]="field"
+                           (valueChanged)="updateField($event)" />
+      </div>
+      }
+    </div>
+
+    <div class="property-filters__quick-filters">
+      <!-- @if (areaField(); as field) {
+      <div class="property-filters__area-field">
+        <app-filter-select [config]="field"
+                           (valueChanged)="updateField($event)" />
+      </div>
+      } -->
+
+      <div id="property-filters-more"
+           class="property-filters__more-panel"
+           [class.property-filters__more-panel--open]="showMoreFilters()">
+        <div class="property-filters__more-panel-inner">
+          <div class="property-filters__chip-row">
+            <app-filter-chip-group [items]="activeChips()"
+                                   (toggled)="toggleChip($event)" />
+          </div>
+        </div>
       </div>
     </div>
   </section>
