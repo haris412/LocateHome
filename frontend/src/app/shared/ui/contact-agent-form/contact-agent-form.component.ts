@@ -21,6 +21,13 @@ import {
 } from '../../../core/models/appointment.models';
 import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
 
+export interface ContactAgentFormData {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
 @Component({
   selector: 'app-contact-agent-form',
   standalone: true,
@@ -70,12 +77,7 @@ export class ContactAgentFormComponent {
     initialPhone: this.overlayInitials().phone
   }));
 
-  @Output() readonly submitted = new EventEmitter<{
-    name: string;
-    email: string;
-    phone: string;
-    message: string;
-  }>();
+  @Output() readonly submitted = new EventEmitter<ContactAgentFormData>();
 
   @Output() readonly appointmentBooked = new EventEmitter<AppointmentBookingPayload>();
 
@@ -97,7 +99,6 @@ export class ContactAgentFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-
     this.submitted.emit(this.form.getRawValue());
   }
 

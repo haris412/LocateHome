@@ -1,17 +1,9 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 import { environment } from '../../../../environments/environment';
-
-// TODO: Replace hardcoded token with real auth flow (align with ListingsService)
-const AUTH_TOKEN =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQwMWM1MjgxMGJhZGEyM2ViOTdmZTUiLCJlbWFpbCI6ImJpbGFsQG1haWwuY29tIiwiaWF0IjoxNzc1MjQ2NDIyLCJleHAiOjE3NzU1MDU2MjJ9.wlRGFBanb8vkx6MRJGM1hOU__x7oSX3YQd8FXLQQFAY';
-
-function authHeaders(): HttpHeaders {
-  return new HttpHeaders({ Authorization: `Bearer ${AUTH_TOKEN}` });
-}
 
 /** Body for POST /api/appointments */
 export interface CreateAppointmentRequest {
@@ -38,12 +30,12 @@ export class AppointmentBookingService {
 
   getUserAvailability(userId: string): Observable<unknown> {
     const url = `${this.api}/api/users/${userId}/availability`;
-    return this.http.get<unknown>(url, { headers: authHeaders() });
+    return this.http.get<unknown>(url);
   }
 
   getAppointmentsForUser(userId: string): Observable<unknown> {
     const url = `${this.api}/api/appointments/user/${userId}`;
-    return this.http.get<unknown>(url, { headers: authHeaders() });
+    return this.http.get<unknown>(url);
   }
 
   /**
@@ -52,7 +44,7 @@ export class AppointmentBookingService {
    */
   getUserProfile(userId: string): Observable<{ firstName?: string; lastName?: string }> {
     const url = `${this.api}/api/users/${userId}/name`;
-    return this.http.get<unknown>(url, { headers: authHeaders() }).pipe(
+    return this.http.get<unknown>(url).pipe(
       map((raw) => {
         const row = unwrapRecord(raw);
         const first = pickStr(row, 'firstName');
@@ -72,7 +64,7 @@ export class AppointmentBookingService {
       client: body.client,
       appointmentType: body.appointmentType
     };
-    return this.http.post<unknown>(url, payload, { headers: authHeaders() });
+    return this.http.post<unknown>(url, payload);
   }
 }
 

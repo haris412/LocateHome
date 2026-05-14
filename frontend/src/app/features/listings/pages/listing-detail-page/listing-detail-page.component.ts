@@ -19,6 +19,9 @@ import {
   AppointmentBookingPayload,
   AppointmentOverlayData
 } from '../../../../core/models/appointment.models';
+import { ConversationService } from '../../services/conversation.service';
+import { CreateConversationDto } from '@/features/auth/models/conversation.model';
+import { ContactAgentFormData } from '@/shared/ui/contact-agent-form/contact-agent-form.component';
 
 @Component({
   selector: 'app-listing-detail-page',
@@ -31,6 +34,7 @@ import {
 export class ListingDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly listingsService = inject(ListingsService);
+  private readonly conversationService = inject(ConversationService);
 
   readonly detail = signal<PropertyDetailViewModel | null>(null);
   readonly detailLoading = signal(false);
@@ -130,13 +134,24 @@ export class ListingDetailPageComponent {
     console.log('video selected', videoId);
   }
 
-  onInquirySubmitted(payload: {
-    name: string;
-    email: string;
-    phone: string;
-    message: string;
-  }): void {
-    console.log('inquiry submitted', payload);
+  onInquirySubmitted(inquiry: ContactAgentFormData): void {
+    console.log('inquiry submitted', inquiry);
+    let payload: CreateConversationDto = {
+      propertyId: this.detail()?.id ?? '',
+      propertyTitle: this.detail()?.listingTitle ?? '',
+      propertyPrice: this.detail()?.price ?? '',
+      recipientId: this.detail()?.agent.userId ?? '',
+      sellerName: this.detail()?.agent.name ?? '',
+      senderEmail: inquiry.email ?? '',
+      senderName: inquiry.name ?? '',
+      senderPhone: inquiry.phone ?? '',
+      message: inquiry.message ?? ''
+    };
+
+    this.conversationService.create(payload).subscribe({
+      error: (err) => console.error('Failed to submit inquiry', err),
+      complete: () => this.overlayOpen.set(false)
+    });
   }
 
   onNearbyFavoriteToggled(id: string): void {
