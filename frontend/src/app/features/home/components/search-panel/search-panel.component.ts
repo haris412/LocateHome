@@ -88,8 +88,7 @@ export class SearchPanelComponent {
 
   readonly tabs: readonly SegmentedTabItem[] = [
     { id: 'buy', label: 'Buy' },
-    { id: 'rent', label: 'Rent' },
-    { id: 'sell', label: 'Sell' }
+    { id: 'rent', label: 'Rent' }
   ];
 
   readonly activeTab = signal<SearchMode>('buy');

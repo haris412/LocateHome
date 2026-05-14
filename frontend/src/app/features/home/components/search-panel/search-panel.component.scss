@@ -35,7 +35,11 @@
 
   &__tabs {
     width: min(420px, 100%);
-    --segmented-tabs-bg: color-mix(in srgb, var(--surface-frost) 16%, var(--surface-white-10) 84%);
+    --segmented-tabs-bg: color-mix(
+      in srgb,
+      var(--surface-frost) 16%,
+      var(--surface-white-10) 84%
+    );
     --segmented-tabs-border: var(--surface-white-20);
     --segmented-tabs-pill-bg: var(--surface);
     --segmented-tabs-active-color: var(--font-main);
@@ -49,11 +53,12 @@
   &__command-bar {
     min-height: 96px;
     display: grid;
-    grid-template-columns: minmax(280px, 1fr) 190px auto 190px auto;
+    grid-template-columns: minmax(280px, 1fr) 150px;
     align-items: center;
     gap: 0;
     padding: 0.65rem 0.9rem 0.65rem 1.35rem;
-    border: 1px solid color-mix(in srgb, var(--border-soft) 82%, var(--surface) 18%);
+    border: 1px solid
+      color-mix(in srgb, var(--border-soft) 82%, var(--surface) 18%);
     border-radius: var(--radius-lg);
     background: var(--surface);
     box-shadow: 0 28px 64px var(--shadow-black-md);
@@ -105,6 +110,7 @@
     gap: 0.7rem;
     padding-inline-start: 1.15rem;
     border-inline-start: 1px solid var(--border-soft);
+    justify-content: flex-end;
   }
 
   &__icon-button {
@@ -171,12 +177,11 @@
     padding: 1.35rem 1.45rem 1.55rem;
     border: 1px solid color-mix(in srgb, var(--standby) 28%, transparent);
     border-radius: var(--radius-lg);
-    background:
-      linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--secondary) 86%, transparent),
-        color-mix(in srgb, var(--primary) 18%, var(--secondary) 82%)
-      );
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--secondary) 86%, transparent),
+      color-mix(in srgb, var(--primary) 18%, var(--secondary) 82%)
+    );
     color: var(--surface);
     box-shadow: 0 24px 70px var(--shadow-black-lg);
     backdrop-filter: blur(18px);
@@ -265,8 +270,12 @@
     margin: 1.35rem 0 1.1rem;
     border-radius: 999px;
     opacity: 0.88;
-    background:
-      radial-gradient(circle at center, var(--standby) 0 2px, transparent 2.5px) 0 50% / 11px 12px repeat-x;
+    background: radial-gradient(
+        circle at center,
+        var(--standby) 0 2px,
+        transparent 2.5px
+      )
+      0 50% / 11px 12px repeat-x;
   }
 
   &__voice-transcript {
@@ -346,16 +355,8 @@
     margin-top: -6rem;
 
     &__command-bar {
-      grid-template-columns: 1fr 1fr;
       gap: 0.85rem;
       padding: 1rem;
-    }
-
-    &__location-field {
-      grid-column: 1 / -1;
-      padding: 0 0 0.85rem;
-      border-inline-end: 0;
-      border-bottom: 1px solid var(--border-soft);
     }
 
     &__price-field {
@@ -367,11 +368,8 @@
     }
 
     &__actions {
-      grid-column: 1 / -1;
       justify-content: flex-end;
-      padding: 0.85rem 0 0;
       border-inline-start: 0;
-      border-top: 1px solid var(--border-soft);
     }
 
     &__voice-panel {
@@ -393,7 +391,6 @@
     }
 
     &__command-bar {
-      grid-template-columns: 1fr;
       border-radius: var(--radius-xl);
     }
 
@@ -422,6 +419,24 @@
     &__icon-button {
       width: 52px;
       height: 52px;
+    }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .search-panel {
+    &__command-bar {
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+      padding: 1rem;
+    }
+    &__location-field {
+      padding: 0 0 0.85rem;
+      border-inline-end: 0;
+      border-bottom: 1px solid var(--border-soft);
+    }
+    &__actions {
+      padding: 0.85rem 0 0;
     }
   }
 }
