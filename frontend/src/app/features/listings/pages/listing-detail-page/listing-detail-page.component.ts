@@ -1,7 +1,6 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   inject,
   signal
 } from '@angular/core';
@@ -11,7 +10,6 @@ import { map, switchMap, tap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 import { ListingDetailShellComponent } from '../../components/listing-detail-shell/listing-detail-shell.component';
-import { AppointmentOverlayComponent } from '../../components/appointment-overlay/appointment-overlay.component';
 import { ListingsService } from '../../services/listings.service';
 import { mapApiPropertyToDetailView } from '../../utils/map-api-property-to-detail-vm';
 import { PropertyDetailViewModel } from '../../../../core/models/property-detail.vm';
@@ -19,11 +17,12 @@ import {
   AppointmentBookingPayload,
   AppointmentOverlayData
 } from '../../../../core/models/appointment.models';
+import { AppointmentOverlayService } from '../../../../shared/services/appointment-overlay.service';
 
 @Component({
   selector: 'app-listing-detail-page',
   standalone: true,
-  imports: [ListingDetailShellComponent, AppointmentOverlayComponent],
+  imports: [ListingDetailShellComponent],
   templateUrl: './listing-detail-page.component.html',
   styleUrl: './listing-detail-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,33 +30,28 @@ import {
 export class ListingDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly listingsService = inject(ListingsService);
+  private readonly appointmentOverlay = inject(AppointmentOverlayService);
 
   readonly detail = signal<PropertyDetailViewModel | null>(null);
   readonly detailLoading = signal(false);
   readonly detailError = signal<string | null>(null);
 
-  readonly overlayOpen = signal(false);
-
-  readonly overlayData = computed((): AppointmentOverlayData | null => {
-    const d = this.detail();
-    if (!d) {
-      return null;
-    }
+  private buildOverlayData(detail: PropertyDetailViewModel): AppointmentOverlayData {
     return {
       listing: {
-        propertyId: d.id,
-        price: d.price,
-        address: d.addressLine,
-        imageUrl: d.gallery.primaryImage
+        propertyId: detail.id,
+        price: detail.price,
+        address: detail.addressLine,
+        imageUrl: detail.gallery.primaryImage
       },
-      agentName: d.agent.name,
-      agentUserId: d.agent.userId,
-      dateSlots: d.appointmentDateSlots ?? [],
+      agentName: detail.agent.name,
+      agentUserId: detail.agent.userId,
+      dateSlots: detail.appointmentDateSlots ?? [],
       initialName: '',
-      initialEmail: d.agent.email ?? '',
-      initialPhone: d.agent.phone ?? ''
+      initialEmail: detail.agent.email ?? '',
+      initialPhone: detail.agent.phone ?? ''
     };
-  });
+  }
 
   constructor() {
     this.route.paramMap
@@ -89,7 +83,7 @@ export class ListingDetailPageComponent {
         this.detail.set(vm);
         this.detailError.set(err);
         if (!vm) {
-          this.overlayOpen.set(false);
+          this.appointmentOverlay.close();
         }
       });
   }
@@ -107,11 +101,12 @@ export class ListingDetailPageComponent {
   }
 
   onScheduleVisit(): void {
-    this.overlayOpen.set(true);
-  }
+    const detail = this.detail();
+    if (!detail) return;
 
-  onOverlayClosed(): void {
-    this.overlayOpen.set(false);
+    this.appointmentOverlay.open(this.buildOverlayData(detail), {
+      onConfirmed: payload => this.onAppointmentConfirmed(payload)
+    });
   }
 
   onOpenGallery(): void {
@@ -145,6 +140,5 @@ export class ListingDetailPageComponent {
 
   onAppointmentConfirmed(payload: AppointmentBookingPayload): void {
     console.log('appointment booked', payload);
-    this.overlayOpen.set(false);
   }
 }

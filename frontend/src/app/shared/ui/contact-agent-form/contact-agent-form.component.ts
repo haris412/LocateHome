@@ -3,10 +3,8 @@ import {
   Component,
   EventEmitter,
   Output,
-  computed,
   inject,
-  input,
-  signal
+  input
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -19,7 +17,7 @@ import {
   AppointmentDateSlots,
   AppointmentOverlayData
 } from '../../../core/models/appointment.models';
-import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
+import { AppointmentOverlayService } from '../../services/appointment-overlay.service';
 
 @Component({
   selector: 'app-contact-agent-form',
@@ -28,8 +26,7 @@ import { AppointmentOverlayComponent } from '../../../features/listings/componen
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    InfoCardComponent,
-    AppointmentOverlayComponent
+    InfoCardComponent
   ],
   templateUrl: './contact-agent-form.component.html',
   styleUrl: './contact-agent-form.component.scss',
@@ -37,6 +34,7 @@ import { AppointmentOverlayComponent } from '../../../features/listings/componen
 })
 export class ContactAgentFormComponent {
   private readonly fb = inject(FormBuilder);
+  private readonly appointmentOverlay = inject(AppointmentOverlayService);
 
   readonly agent = input.required<PropertyAgent>();
   readonly submitLabel = input('Request a tour');
@@ -49,26 +47,6 @@ export class ContactAgentFormComponent {
   readonly listingAddress = input('');
   readonly listingImageUrl = input('');
   readonly appointmentDateSlots = input<AppointmentDateSlots[]>([]);
-
-  readonly isAppointmentOpen = signal(false);
-
-  /** Captured when opening overlay so initial details match the form at click time */
-  private readonly overlayInitials = signal({ name: '', email: '', phone: '' });
-
-  readonly appointmentOverlayData = computed<AppointmentOverlayData>(() => ({
-    agentName: this.agent().name,
-    agentUserId: this.agent().userId,
-    listing: {
-      propertyId: this.listingId(),
-      imageUrl: this.listingImageUrl(),
-      price: this.listingPrice(),
-      address: this.listingAddress()
-    },
-    dateSlots: this.appointmentDateSlots(),
-    initialName: this.overlayInitials().name,
-    initialEmail: this.overlayInitials().email,
-    initialPhone: this.overlayInitials().phone
-  }));
 
   @Output() readonly submitted = new EventEmitter<{
     name: string;
@@ -104,20 +82,27 @@ export class ContactAgentFormComponent {
   openBookAppointmentOverlay(): void {
     if (!this.listingId()) return;
     const v = this.form.getRawValue();
-    this.overlayInitials.set({
-      name: v.name,
-      email: v.email,
-      phone: v.phone
-    });
-    this.isAppointmentOpen.set(true);
-  }
+    const data: AppointmentOverlayData = {
+      agentName: this.agent().name,
+      agentUserId: this.agent().userId,
+      listing: {
+        propertyId: this.listingId(),
+        imageUrl: this.listingImageUrl(),
+        price: this.listingPrice(),
+        address: this.listingAddress()
+      },
+      dateSlots: this.appointmentDateSlots(),
+      initialName: v.name,
+      initialEmail: v.email,
+      initialPhone: v.phone
+    };
 
-  closeBookAppointmentOverlay(): void {
-    this.isAppointmentOpen.set(false);
+    this.appointmentOverlay.open(data, {
+      onConfirmed: payload => this.handleAppointmentConfirmed(payload)
+    });
   }
 
   handleAppointmentConfirmed(payload: AppointmentBookingPayload): void {
     this.appointmentBooked.emit(payload);
-    this.isAppointmentOpen.set(false);
   }
 }

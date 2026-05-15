@@ -4,7 +4,7 @@
 
 .listing-detail-shell {
   &__topbar {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
 
   &__back-link,
@@ -12,13 +12,14 @@
   &__schedule-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.4rem;
     border: 1px solid var(--border-soft);
     background: var(--surface);
     color: var(--font-main);
     border-radius: var(--radius-field);
-    min-height: 44px;
-    padding: 0.75rem 1rem;
+    min-height: 40px;
+    padding: 0.625rem 0.875rem;
+    font-size: var(--font-size-body-sm);
     font-weight: 700;
     transition: 0.2s ease;
 
@@ -31,10 +32,10 @@
   &__purpose-chip {
     display: inline-flex;
     align-items: center;
-    min-height: 2rem;
+    min-height: 1.75rem;
     border-radius: var(--radius-pill);
-    padding: 0.35rem 0.8rem;
-    font-size: var(--font-size-body-sm);
+    padding: 0.25rem 0.7rem;
+    font-size: var(--font-size-caption);
     font-weight: 800;
     border: 1px solid var(--border-soft);
     background: var(--surface);
@@ -56,27 +57,27 @@
   &__status-chip {
     display: inline-flex;
     align-items: center;
-    min-height: 2rem;
+    min-height: 1.75rem;
     border-radius: var(--radius-pill);
     background: var(--status-highlight-bg);
     color: var(--status-highlight-text);
-    padding: 0.35rem 0.8rem;
-    font-size: var(--font-size-body-sm);
+    padding: 0.25rem 0.7rem;
+    font-size: var(--font-size-caption);
     font-weight: 800;
   }
 
   &__main-stack {
     display: grid;
-    gap: 1.5rem;
+    gap: 1.25rem;
 
     @media (min-width: 992px) {
-      gap: 2rem;
+      gap: 1.5rem;
     }
   }
 
   &__listing-title {
     color: var(--font-main);
-    font-size: var(--font-size-h3);
+    font-size: var(--font-size-h4);
     line-height: 1.25;
     font-weight: 800;
   }
@@ -84,19 +85,19 @@
   &__price-row {
     display: flex;
     align-items: flex-end;
-    gap: 0.5rem;
+    gap: 0.4rem;
     flex-wrap: wrap;
   }
 
   &__price {
     color: var(--font-main);
-    font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+    font-size: var(--font-size-h2);
     line-height: 1;
     font-weight: 700;
   }
 
   &__map-link {
-    font-size: var(--font-size-body);
+    font-size: var(--font-size-body-sm);
     font-weight: 600;
     color: var(--primary);
     text-decoration: none;
@@ -106,7 +107,7 @@
     }
 
     mat-icon {
-      font-size: var(--font-size-body-lg);
+      font-size: var(--font-size-body);
       width: 1.1rem;
       height: 1.1rem;
     }
@@ -119,13 +120,13 @@
   }
 
   &__price-suffix {
-    font-size: var(--font-size-body-lg);
-    padding-bottom: 0.3rem;
+    font-size: var(--font-size-body);
+    padding-bottom: 0.2rem;
   }
 
   &__address {
-    margin-top: 0.5rem;
-    font-size: var(--font-size-body);
+    margin-top: 0.35rem;
+    font-size: var(--font-size-body-sm);
   }
 
   &__schedule-btn {
@@ -134,7 +135,8 @@
 
   &__rich-text {
     color: var(--font-secondary);
-    line-height: 1.85;
+    font-size: var(--font-size-body-sm);
+    line-height: var(--line-height-body);
 
     p:last-child {
       margin-bottom: 0;

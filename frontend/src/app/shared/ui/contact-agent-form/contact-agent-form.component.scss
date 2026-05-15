@@ -89,3 +89,56 @@
     }
   }
 }
+
+:host-context(.listing-detail-shell) {
+  .agent-form {
+    &__profile {
+      margin-bottom: 0.75rem;
+    }
+
+    &__avatar {
+      width: 3rem;
+      height: 3rem;
+    }
+
+    &__name {
+      font-size: var(--font-size-h5);
+    }
+
+    &__role,
+    &__blurb {
+      font-size: var(--font-size-body-sm);
+    }
+
+    &__blurb {
+      margin-bottom: 0.75rem;
+      line-height: var(--line-height-body);
+    }
+
+    &__fields {
+      gap: 0.25rem;
+    }
+
+    &__metric {
+      padding: 0.7rem 0.45rem;
+
+      strong {
+        font-size: var(--font-size-body-sm);
+      }
+
+      span {
+        font-size: var(--font-size-caption);
+      }
+    }
+
+    &__primary-btn {
+      min-height: 44px;
+      font-size: var(--font-size-body-sm);
+    }
+
+    &__secondary-btn {
+      min-height: 40px;
+      font-size: var(--font-size-body-sm);
+    }
+  }
+}

@@ -15,3 +15,13 @@
     background: var(--tertiary);
   }
 }
+
+:host-context(.listing-detail-shell) {
+  .info-card {
+    padding: 1.25rem;
+
+    &--compact {
+      padding: 0.85rem;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+@if (state().isOpen && overlayData(); as data) {
+  <app-appointment-overlay
+    [open]="state().isOpen"
+    [data]="data"
+    (closed)="closeAppointmentOverlay()"
+    (confirmed)="confirmAppointment($event)"
+  />
+}
