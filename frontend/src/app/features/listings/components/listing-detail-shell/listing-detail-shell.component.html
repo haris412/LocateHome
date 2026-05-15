@@ -142,7 +142,6 @@
                                 [listingAddress]="vm().addressLine"
                                 [listingImageUrl]="vm().gallery.primaryImage"
                                 [appointmentDateSlots]="vm().appointmentDateSlots || []"
-                                (submitted)="inquirySubmitted.emit($event)"
                                 (appointmentBooked)="appointmentBooked.emit($event)" />
       </div>
     </div>

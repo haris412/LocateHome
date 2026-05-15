@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Output,
-  computed,
   inject,
   input,
   signal
@@ -19,6 +18,8 @@ import {
   AppointmentDateSlots,
   AppointmentOverlayData
 } from '../../../core/models/appointment.models';
+import { InquiryType } from '../../../core/models/inquiry.models';
+import { InquiryService } from '../../../core/services/inquiry.service';
 import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
 
 @Component({
@@ -36,79 +37,89 @@ import { AppointmentOverlayComponent } from '../../../features/listings/componen
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContactAgentFormComponent {
-  private readonly fb = inject(FormBuilder);
+  private readonly fb             = inject(FormBuilder);
+  private readonly inquiryService = inject(InquiryService);
 
-  readonly agent = input.required<PropertyAgent>();
-  readonly submitLabel = input('Request a tour');
-  readonly secondary1 = input('Book appointment');
-  readonly secondary2 = input('Ask a question');
+  // ── Inputs ───────────────────────────────────────────────────────────────
+
+  readonly agent        = input.required<PropertyAgent>();
+  readonly submitLabel  = input('Request a tour');
+  readonly secondary1   = input('Book appointment');
+  readonly secondary2   = input('Ask a question');
   readonly defaultMessage = input('');
 
-  readonly listingId = input('');
-  readonly listingPrice = input('');
-  readonly listingAddress = input('');
+  readonly listingId       = input('');
+  readonly listingPrice    = input('');
+  readonly listingAddress  = input('');
   readonly listingImageUrl = input('');
   readonly appointmentDateSlots = input<AppointmentDateSlots[]>([]);
 
+  // ── Inquiry service state ────────────────────────────────────────────────
+
+  readonly isSubmitting = this.inquiryService.isSubmitting;
+  readonly submitError  = this.inquiryService.submitError;
+  readonly inquiryId    = this.inquiryService.inquiryId;
+
+  // ── Appointment overlay state ────────────────────────────────────────────
+
   readonly isAppointmentOpen = signal(false);
 
-  /** Captured when opening overlay so initial details match the form at click time */
   private readonly overlayInitials = signal({ name: '', email: '', phone: '' });
 
-  readonly appointmentOverlayData = computed<AppointmentOverlayData>(() => ({
-    agentName: this.agent().name,
-    agentUserId: this.agent().userId,
-    listing: {
-      propertyId: this.listingId(),
-      imageUrl: this.listingImageUrl(),
-      price: this.listingPrice(),
-      address: this.listingAddress()
-    },
-    dateSlots: this.appointmentDateSlots(),
-    initialName: this.overlayInitials().name,
-    initialEmail: this.overlayInitials().email,
-    initialPhone: this.overlayInitials().phone
-  }));
+  readonly appointmentOverlayData = (() => {
+    const compute = (): AppointmentOverlayData => ({
+      agentName:   this.agent().name,
+      agentUserId: this.agent().userId,
+      listing: {
+        propertyId: this.listingId(),
+        imageUrl:   this.listingImageUrl(),
+        price:      this.listingPrice(),
+        address:    this.listingAddress()
+      },
+      dateSlots:    this.appointmentDateSlots(),
+      initialName:  this.overlayInitials().name,
+      initialEmail: this.overlayInitials().email,
+      initialPhone: this.overlayInitials().phone
+    });
+    return compute;
+  })();
 
-  @Output() readonly submitted = new EventEmitter<{
-    name: string;
-    email: string;
-    phone: string;
-    message: string;
-  }>();
+  // ── Outputs ──────────────────────────────────────────────────────────────
 
   @Output() readonly appointmentBooked = new EventEmitter<AppointmentBookingPayload>();
 
+  // ── Form ─────────────────────────────────────────────────────────────────
+
   readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.minLength(7)]],
+    name:    ['', [Validators.required, Validators.minLength(2)]],
+    email:   ['', [Validators.required, Validators.email]],
+    phone:   ['', [Validators.required, Validators.minLength(7)]],
     message: ['', [Validators.required, Validators.minLength(10)]]
   });
 
   ngOnInit(): void {
-    this.form.patchValue({
-      message: this.defaultMessage()
-    });
+    this.form.patchValue({ message: this.defaultMessage() });
   }
 
-  submit(): void {
+  // ── Actions ──────────────────────────────────────────────────────────────
+
+  submit(type: InquiryType = 'tour'): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
 
-    this.submitted.emit(this.form.getRawValue());
+    const { name, email, phone, message } = this.form.getRawValue();
+
+    this.inquiryService
+      .submit({ propertyId: this.listingId(), type, name, email, phone, message })
+      .subscribe({ next: () => this.form.reset() });
   }
 
   openBookAppointmentOverlay(): void {
     if (!this.listingId()) return;
-    const v = this.form.getRawValue();
-    this.overlayInitials.set({
-      name: v.name,
-      email: v.email,
-      phone: v.phone
-    });
+    const { name, email, phone } = this.form.getRawValue();
+    this.overlayInitials.set({ name, email, phone });
     this.isAppointmentOpen.set(true);
   }
 
