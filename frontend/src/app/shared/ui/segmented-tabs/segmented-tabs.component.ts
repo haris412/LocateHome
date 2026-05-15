@@ -27,6 +27,7 @@ export class SegmentedTabsComponent {
     { id: 'login', label: 'Log in' }
   ]);
   readonly active = input.required<string>();
+  readonly ariaLabel = input('Segmented tabs');
   readonly changed = output<string>();
 
   readonly visualActive = signal('signup');

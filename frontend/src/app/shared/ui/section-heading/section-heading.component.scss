@@ -73,3 +73,26 @@
     }
   }
 }
+
+:host-context(.listing-detail-shell) {
+  .section-heading {
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+
+    &__title {
+      margin-bottom: 0.25rem;
+      font-size: var(--font-size-h5);
+    }
+
+    &__subtitle,
+    &__subtext,
+    &__action {
+      font-size: var(--font-size-body-sm);
+    }
+
+    &__action {
+      gap: 0.4rem;
+      padding: 0.4rem 0.75rem;
+    }
+  }
+}
