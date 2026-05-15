@@ -175,14 +175,15 @@
     width: min(100%, 1080px);
     margin: 0;
     padding: 1.35rem 1.45rem 1.55rem;
-    border: 1px solid color-mix(in srgb, var(--standby) 28%, transparent);
+    border: 1px solid
+      color-mix(in srgb, var(--primary) 18%, var(--border-soft) 82%);
     border-radius: var(--radius-lg);
     background: linear-gradient(
       135deg,
-      color-mix(in srgb, var(--secondary) 86%, transparent),
-      color-mix(in srgb, var(--primary) 18%, var(--secondary) 82%)
+      color-mix(in srgb, var(--surface-frost) 92%, var(--primary-soft) 8%),
+      color-mix(in srgb, var(--primary-soft) 78%, var(--surface) 22%)
     );
-    color: var(--surface);
+    color: var(--font-main);
     box-shadow: 0 24px 70px var(--shadow-black-lg);
     backdrop-filter: blur(18px);
     transform: translateX(-50%);
@@ -194,9 +195,15 @@
       right: 132px;
       width: 28px;
       height: 28px;
-      border-top: 1px solid color-mix(in srgb, var(--standby) 28%, transparent);
-      border-left: 1px solid color-mix(in srgb, var(--standby) 28%, transparent);
-      background: color-mix(in srgb, var(--secondary) 88%, var(--primary) 12%);
+      border-top: 1px solid
+        color-mix(in srgb, var(--primary) 18%, var(--border-soft) 82%);
+      border-left: 1px solid
+        color-mix(in srgb, var(--primary) 18%, var(--border-soft) 82%);
+      background: color-mix(
+        in srgb,
+        var(--surface-frost) 90%,
+        var(--primary-soft) 10%
+      );
       transform: rotate(45deg);
     }
   }
@@ -213,9 +220,12 @@
   &__voice-icon {
     width: 64px;
     height: 64px;
-    border-radius: 999px;
-    color: var(--standby);
-    background: color-mix(in srgb, var(--standby) 26%, transparent);
+    border-radius: var(--radius-pill);
+    color: var(--primary);
+    background: color-mix(in srgb, var(--primary-soft) 88%, var(--surface) 12%);
+    border: 1px solid
+      color-mix(in srgb, var(--primary) 14%, var(--border-soft) 86%);
+    box-shadow: 0 14px 30px var(--shadow-purple-xs);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -229,38 +239,47 @@
 
   &__voice-title {
     margin: 0 0 0.25rem;
-    color: var(--surface);
+    color: var(--font-main);
     font-size: var(--font-size-body-lg);
-    font-weight: 800;
+    font-weight: var(--font-weight-heavy);
     line-height: 1.2;
   }
 
   &__voice-copy {
     margin: 0;
-    color: color-mix(in srgb, var(--standby) 78%, var(--surface) 22%);
+    color: var(--font-secondary);
     font-size: var(--font-size-body);
-    font-weight: 700;
+    font-weight: var(--font-weight-semibold);
   }
 
   &__voice-close {
     width: 44px;
     height: 44px;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: transparent;
-    color: color-mix(in srgb, var(--surface) 74%, transparent);
+    color: var(--font-secondary);
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      transform 0.2s ease;
 
     &:hover,
     &:focus-visible {
-      color: var(--surface);
-      background: color-mix(in srgb, var(--surface) 10%, transparent);
+      color: var(--primary);
+      background: color-mix(
+        in srgb,
+        var(--primary-soft) 78%,
+        var(--surface) 22%
+      );
+      transform: translateY(-1px);
     }
 
     &:focus-visible {
-      outline: 2px solid var(--standby);
+      outline: 2px solid color-mix(in srgb, var(--primary) 42%, transparent);
       outline-offset: 2px;
     }
   }
@@ -268,11 +287,11 @@
   &__voice-wave {
     height: 28px;
     margin: 1.35rem 0 1.1rem;
-    border-radius: 999px;
-    opacity: 0.88;
+    border-radius: var(--radius-pill);
+    opacity: 0.9;
     background: radial-gradient(
         circle at center,
-        var(--standby) 0 2px,
+        color-mix(in srgb, var(--primary) 72%, var(--primary-soft) 28%) 0 2px,
         transparent 2.5px
       )
       0 50% / 11px 12px repeat-x;
@@ -280,9 +299,9 @@
 
   &__voice-transcript {
     margin: 0;
-    color: color-mix(in srgb, var(--surface) 88%, var(--standby) 12%);
+    color: var(--font-main);
     font-size: var(--font-size-body);
-    font-weight: 700;
+    font-weight: var(--font-weight-bold);
     text-align: center;
   }
 

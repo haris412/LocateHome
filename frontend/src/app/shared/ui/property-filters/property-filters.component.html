@@ -89,46 +89,45 @@
       </div>
 
       @if (showVoicePanel()) {
-      <div id="property-filters-voice-panel"
-           class="property-filters__voice-panel"
-           role="status"
-           aria-live="polite">
-        <div class="property-filters__voice-head">
-          <span class="property-filters__voice-icon"
-                aria-hidden="true">
-            <mat-icon fontSet="material-symbols-outlined"
-                      inline>
-              {{ isListening() ? 'graphic_eq' : 'mic' }}
-            </mat-icon>
-          </span>
+      <div class="property-filters__voice-panel"
+         role="status"
+         aria-live="polite">
+      <div class="property-filters__voice-panel-head">
+        <span class="property-filters__voice-icon"
+              aria-hidden="true">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>
+            {{ isListening() ? 'graphic_eq' : 'mic' }}
+          </mat-icon>
+        </span>
 
-          <div class="property-filters__voice-content">
-            <h3 class="property-filters__voice-title">
-              {{ isListening() ? 'Start speaking' : 'Voice search' }}
-            </h3>
-            <p class="property-filters__voice-copy">
-              {{ micError() || 'Try: "3 bedroom apartment in Downtown under $2,000"' }}
-            </p>
-          </div>
-
-          <button type="button"
-                  class="property-filters__voice-close"
-                  (click)="closeVoicePanel()"
-                  aria-label="Close voice transcription panel">
-            <mat-icon fontSet="material-symbols-outlined"
-                      inline>
-              close
-            </mat-icon>
-          </button>
+        <div>
+          <h3 class="property-filters__voice-title">
+            {{ isListening() ? 'Start speaking' : 'Voice search' }}
+          </h3>
+          <p class="property-filters__voice-copy">
+            {{ micError() }}
+          </p>
         </div>
 
-        <div class="property-filters__voice-wave"
-             aria-hidden="true"></div>
-
-        <p class="property-filters__voice-transcript">
-          {{ searchQuery() || 'Listening for your property search...' }}
-        </p>
+        <button type="button"
+                class="property-filters__voice-close"
+                (click)="closeVoicePanel()"
+                aria-label="Close voice transcription panel">
+          <mat-icon fontSet="material-symbols-outlined"
+                    inline>
+            close
+          </mat-icon>
+        </button>
       </div>
+
+      <div class="property-filters__voice-wave"
+           aria-hidden="true"></div>
+
+      <p class="property-filters__voice-transcript">
+        {{ searchQuery() || 'Try: "3 bedroom apartment in Downtown under PKR 200,000"' }}
+      </p>
+    </div>
       }
     </div>
 
