@@ -19,6 +19,7 @@ import {
   AppointmentBookingPayload,
   AppointmentOverlayData
 } from '../../../../core/models/appointment.models';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { ConversationService } from '../../services/conversation.service';
 import { CreateConversationDto } from '@/features/auth/models/conversation.model';
 import { ContactAgentFormData } from '@/shared/ui/contact-agent-form/contact-agent-form.component';
@@ -35,12 +36,14 @@ export class ListingDetailPageComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly listingsService = inject(ListingsService);
   private readonly conversationService = inject(ConversationService);
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly detail = signal<PropertyDetailViewModel | null>(null);
   readonly detailLoading = signal(false);
   readonly detailError = signal<string | null>(null);
 
   readonly overlayOpen = signal(false);
+  readonly resetInquiryForm = signal(0);
 
   readonly overlayData = computed((): AppointmentOverlayData | null => {
     const d = this.detail();
@@ -149,8 +152,18 @@ export class ListingDetailPageComponent {
     };
 
     this.conversationService.create(payload).subscribe({
-      error: (err) => console.error('Failed to submit inquiry', err),
-      complete: () => this.overlayOpen.set(false)
+      next: (res: any) => {
+        if (res?.success) {
+          this.snackBar.open(res.message ?? 'Inquiry sent successfully.', 'Close', { duration: 4000 });
+          this.overlayOpen.set(false);
+          this.resetInquiryForm.update(v => v + 1);
+        } else {
+          this.snackBar.open(res?.message ?? 'Failed to send inquiry. Please try again.', 'Close', { duration: 4000 });
+        }
+      },
+      error: (err) => {
+        this.snackBar.open(err?.error?.message ?? 'Failed to send inquiry. Please try again.', 'Close', { duration: 4000 });
+      }
     });
   }
 

@@ -4,7 +4,7 @@ import { Injectable, signal } from '@angular/core';
 export class AuthService {
   // TODO: Replace with real auth flow — set this after login API call
   private readonly token = signal<string | null>(
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQ5NzEyNjdjNjZlZTgwZGYxOGJhMTciLCJlbWFpbCI6ImFsaUBleGFtcGxlLmNvbSIsImlhdCI6MTc3NTg1Nzk2MiwiZXhwIjoxNzc2MTE3MTYyfQ.DdPilNsci0c42NgUfEArZlTPqyb1o0Qk45gEY7Z7Ois'
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWY1ZDdmZjVmNmI1M2E0Mzk0NDZhZWYiLCJpYXQiOjE3Nzg3NzYzNDQsImV4cCI6MTc3OTM4MTE0NH0.Wdgvu0CrOTi6kj2enTcuOBNrBm49XqpgtK15BhjHGbo'
   );
 
   getToken(): string | null {

@@ -37,6 +37,7 @@ import { AppointmentBookingPayload } from 'src/app/core/models/appointment.model
 })
 export class ListingDetailShellComponent {
   readonly vm = input.required<PropertyDetailViewModel>();
+  readonly resetInquiryForm = input(0);
 
   @Output() readonly back = new EventEmitter<void>();
   @Output() readonly share = new EventEmitter<void>();

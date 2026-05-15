@@ -4,6 +4,7 @@ import {
   EventEmitter,
   Output,
   computed,
+  effect,
   inject,
   input,
   signal
@@ -46,6 +47,7 @@ export class ContactAgentFormComponent {
   private readonly fb = inject(FormBuilder);
 
   readonly agent = input.required<PropertyAgent>();
+  readonly resetTrigger = input(0);
   readonly submitLabel = input('Request a tour');
   readonly secondary1 = input('Book appointment');
   readonly secondary2 = input('Ask a question');
@@ -87,6 +89,12 @@ export class ContactAgentFormComponent {
     phone: ['', [Validators.required, Validators.minLength(7)]],
     message: ['', [Validators.required, Validators.minLength(10)]]
   });
+
+  constructor() {
+    effect(() => {
+      if (this.resetTrigger() > 0) this.form.reset();
+    });
+  }
 
   ngOnInit(): void {
     this.form.patchValue({

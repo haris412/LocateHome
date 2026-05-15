@@ -10,6 +10,7 @@
 } @else if (detail(); as vm) {
   <app-listing-detail-shell
     [vm]="vm"
+    [resetInquiryForm]="resetInquiryForm()"
     (back)="onBack()"
     (share)="onShare()"
     (save)="onSave()"
@@ -22,6 +23,7 @@
     (nearbyFavoriteToggled)="onNearbyFavoriteToggled($event)"
   />
 }
+
 
 @if (overlayData(); as od) {
   <app-appointment-overlay
