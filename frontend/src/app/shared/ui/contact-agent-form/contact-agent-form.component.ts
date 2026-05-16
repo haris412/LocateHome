@@ -38,7 +38,6 @@ import { AppointmentOverlayService } from '../../services/appointment-overlay.se
 export class ContactAgentFormComponent {
   private readonly fb             = inject(FormBuilder);
   private readonly inquiryService = inject(InquiryService);
-
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
 
   // ── Inputs ───────────────────────────────────────────────────────────────
@@ -54,6 +53,9 @@ export class ContactAgentFormComponent {
   readonly listingAddress  = input('');
   readonly listingImageUrl = input('');
   readonly appointmentDateSlots = input<AppointmentDateSlots[]>([]);
+   readonly isSubmitting = this.inquiryService.isSubmitting;
+  readonly submitError  = this.inquiryService.submitError;
+  readonly inquiryId    = this.inquiryService.inquiryId;
 
   @Output() readonly submitted = new EventEmitter<{
     name: string;
