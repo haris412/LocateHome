@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { Router, RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './shared/ui/header/header.component';
 import { FooterSectionComponent } from './shared/ui/footer-section/footer-section.component';
+import { RootOverlayHostComponent } from './shared/ui/root-overlay-host/root-overlay-host.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, HeaderComponent, FooterSectionComponent],
+  imports: [RouterOutlet, HeaderComponent, FooterSectionComponent, RootOverlayHostComponent],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })

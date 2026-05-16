@@ -1,10 +1,13 @@
 <div class="location-search-field">
   <label class="location-search-field__label">
-    <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
     <span>{{ resolvedLabel() }}</span>
   </label>
 
   <mat-form-field appearance="outline" class="location-search-field__field" subscriptSizing="dynamic">
+    <mat-icon matPrefix fontSet="material-symbols-outlined" aria-hidden="true">
+      {{ icon() }}
+    </mat-icon>
+
     <input
       type="text"
       matInput
@@ -14,6 +17,11 @@
       [disabled]="isDisabled()"
       (input)="onInput($event)"
     />
+
+    <mat-icon matSuffix fontSet="material-symbols-outlined" aria-hidden="true">
+      {{ isDisabled() ? 'lock' : 'search' }}
+    </mat-icon>
+
     <mat-autocomplete
       #auto="matAutocomplete"
       [displayWith]="displayValue"

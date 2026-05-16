@@ -45,7 +45,7 @@ export class LocationSearchFieldComponent {
   readonly isDisabled = computed(() => this.isAreaMode() && !this.hasCity());
 
   readonly icon = computed(() => this.isAreaMode() ? 'pin_drop' : 'location_on');
-  readonly resolvedLabel       = computed(() => this.label()       || (this.isAreaMode() ? 'Area'        : 'City'));
+  readonly resolvedLabel       = computed(() => this.label()       || (this.isAreaMode() ? 'Area'        : ''));
   readonly resolvedPlaceholder = computed(() => this.placeholder() || (this.isAreaMode() ? 'Neighbourhood or road' : 'Search city'));
 
   private readonly query$ = new Subject<string>();

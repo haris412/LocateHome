@@ -21,12 +21,3 @@
     (nearbyFavoriteToggled)="onNearbyFavoriteToggled($event)"
   />
 }
-
-@if (overlayData(); as od) {
-  <app-appointment-overlay
-    [open]="overlayOpen()"
-    [data]="od"
-    (closed)="onOverlayClosed()"
-    (confirmed)="onAppointmentConfirmed($event)"
-  />
-}

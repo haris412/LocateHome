@@ -4,8 +4,7 @@ import {
   EventEmitter,
   Output,
   inject,
-  input,
-  signal
+  input
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -21,6 +20,7 @@ import {
 import { InquiryType } from '../../../core/models/inquiry.models';
 import { InquiryService } from '../../../core/services/inquiry.service';
 import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
+import { AppointmentOverlayService } from '../../services/appointment-overlay.service';
 
 @Component({
   selector: 'app-contact-agent-form',
@@ -29,8 +29,7 @@ import { AppointmentOverlayComponent } from '../../../features/listings/componen
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    InfoCardComponent,
-    AppointmentOverlayComponent
+    InfoCardComponent
   ],
   templateUrl: './contact-agent-form.component.html',
   styleUrl: './contact-agent-form.component.scss',
@@ -39,6 +38,8 @@ import { AppointmentOverlayComponent } from '../../../features/listings/componen
 export class ContactAgentFormComponent {
   private readonly fb             = inject(FormBuilder);
   private readonly inquiryService = inject(InquiryService);
+
+  private readonly appointmentOverlay = inject(AppointmentOverlayService);
 
   // ── Inputs ───────────────────────────────────────────────────────────────
 
@@ -54,37 +55,12 @@ export class ContactAgentFormComponent {
   readonly listingImageUrl = input('');
   readonly appointmentDateSlots = input<AppointmentDateSlots[]>([]);
 
-  // ── Inquiry service state ────────────────────────────────────────────────
-
-  readonly isSubmitting = this.inquiryService.isSubmitting;
-  readonly submitError  = this.inquiryService.submitError;
-  readonly inquiryId    = this.inquiryService.inquiryId;
-
-  // ── Appointment overlay state ────────────────────────────────────────────
-
-  readonly isAppointmentOpen = signal(false);
-
-  private readonly overlayInitials = signal({ name: '', email: '', phone: '' });
-
-  readonly appointmentOverlayData = (() => {
-    const compute = (): AppointmentOverlayData => ({
-      agentName:   this.agent().name,
-      agentUserId: this.agent().userId,
-      listing: {
-        propertyId: this.listingId(),
-        imageUrl:   this.listingImageUrl(),
-        price:      this.listingPrice(),
-        address:    this.listingAddress()
-      },
-      dateSlots:    this.appointmentDateSlots(),
-      initialName:  this.overlayInitials().name,
-      initialEmail: this.overlayInitials().email,
-      initialPhone: this.overlayInitials().phone
-    });
-    return compute;
-  })();
-
-  // ── Outputs ──────────────────────────────────────────────────────────────
+  @Output() readonly submitted = new EventEmitter<{
+    name: string;
+    email: string;
+    phone: string;
+    message: string;
+  }>();
 
   @Output() readonly appointmentBooked = new EventEmitter<AppointmentBookingPayload>();
 
@@ -118,17 +94,28 @@ export class ContactAgentFormComponent {
 
   openBookAppointmentOverlay(): void {
     if (!this.listingId()) return;
-    const { name, email, phone } = this.form.getRawValue();
-    this.overlayInitials.set({ name, email, phone });
-    this.isAppointmentOpen.set(true);
-  }
+    const v = this.form.getRawValue();
+    const data: AppointmentOverlayData = {
+      agentName: this.agent().name,
+      agentUserId: this.agent().userId,
+      listing: {
+        propertyId: this.listingId(),
+        imageUrl: this.listingImageUrl(),
+        price: this.listingPrice(),
+        address: this.listingAddress()
+      },
+      dateSlots: this.appointmentDateSlots(),
+      initialName: v.name,
+      initialEmail: v.email,
+      initialPhone: v.phone
+    };
 
-  closeBookAppointmentOverlay(): void {
-    this.isAppointmentOpen.set(false);
+    this.appointmentOverlay.open(data, {
+      onConfirmed: payload => this.handleAppointmentConfirmed(payload)
+    });
   }
 
   handleAppointmentConfirmed(payload: AppointmentBookingPayload): void {
     this.appointmentBooked.emit(payload);
-    this.isAppointmentOpen.set(false);
   }
 }
