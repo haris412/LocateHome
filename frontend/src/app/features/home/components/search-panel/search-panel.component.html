@@ -19,15 +19,15 @@
         <mat-form-field appearance="outline"
                         class="search-panel__field-control">
           <input matInput
-                 [formControl]="cityControl"
-                 [matAutocomplete]="cityAuto"
+                 [formControl]="locationControl"
+                 [matAutocomplete]="locationAuto"
                  placeholder="Search location, neighbourhood, or address"
                  autocomplete="off" />
-          <mat-autocomplete #cityAuto="matAutocomplete"
-                            [displayWith]="displayCity"
+          <mat-autocomplete #locationAuto="matAutocomplete"
+                            [displayWith]="displayLocation"
                             [autoActiveFirstOption]="true"
-                            (optionSelected)="onCityOptionSelected($event)">
-            @for (pred of citySuggestions(); track trackPrediction($index, pred)) {
+                            (optionSelected)="onLocationSelected($event)">
+            @for (pred of locationSuggestions(); track trackPrediction($index, pred)) {
             <mat-option [value]="pred">
               <span class="search-panel__place-main">{{ pred.structuredFormat.mainText.text }}</span>
               @if (pred.structuredFormat.secondaryText?.text) {
