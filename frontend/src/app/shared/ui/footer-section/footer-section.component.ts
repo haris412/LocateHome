@@ -1,10 +1,17 @@
-import { ChangeDetectionStrategy, Component, input, signal } from '@angular/core';
-import{RouterLink} from '@angular/router';
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { Params, RouterLink } from '@angular/router';
 
 export interface FooterLinkGroup {
   id: string;
   title: string;
-  links: { id: string; label: string; href: string }[];
+  links: FooterLink[];
+}
+
+export interface FooterLink {
+  id: string;
+  label: string;
+  href: string;
+  queryParams?: Params;
 }
 
 @Component({
@@ -20,9 +27,12 @@ export class FooterSectionComponent {
       id: '1',
       title: 'Explore',
       links: [
-        { id: 'a', label: 'Homes for sale', href: '/listings' },
-        { id: 'b', label: 'Homes for rent', href: '/listings' },
-        { id: 'c', label: 'Luxury homes', href: '/listings' }
+        { id: 'a', label: 'Homes for sale', href: '/listings', queryParams: { purpose: 'For Sale', page: 1 } },
+        { id: 'b', label: 'Homes for rent', href: '/listings', queryParams: { purpose: 'For Rent', page: 1 } },
+        { id: 'c', label: 'New projects', href: '/home' },
+        { id: 'd', label: 'Commercial', href: '/home' },
+        { id: 'e', label: 'Agents', href: '/agents' },
+        { id: 'f', label: 'Properties', href: '/listings' }
       ]
     },
     {
@@ -31,7 +41,9 @@ export class FooterSectionComponent {
       links: [
         { id: 'a', label: 'About us', href: '/home' },
         { id: 'b', label: 'Careers', href: '/home' },
-        { id: 'c', label: 'Press', href: '/home' }
+        { id: 'c', label: 'Our team', href: '/home' },
+        { id: 'd', label: 'Press', href: '/home' },
+        { id: 'e', label: 'Contact us', href: '/home' }
       ]
     },
     {
@@ -39,9 +51,26 @@ export class FooterSectionComponent {
       title: 'Support',
       links: [
         { id: 'a', label: 'Help center', href: '/home' },
-        { id: 'b', label: 'Privacy policy', href: '/home' },
-        { id: 'c', label: 'Terms', href: '/home' }
+        { id: 'b', label: 'Guides & resources', href: '/home' },
+        { id: 'c', label: 'Contact support', href: '/home' },
+        { id: 'd', label: 'Report an issue', href: '/home' }
+      ]
+    },
+    {
+      id: '4',
+      title: 'Legal',
+      links: [
+        { id: 'a', label: 'Privacy policy', href: '/home' },
+        { id: 'b', label: 'Terms of service', href: '/home' },
+        { id: 'c', label: 'Cookies policy', href: '/home' },
+        { id: 'd', label: 'Disclaimer', href: '/home' }
       ]
     }
+  ]);
+
+  readonly secondaryLinks = signal<FooterLink[]>([
+    { id: 'privacy', label: 'Privacy', href: '/home' },
+    { id: 'terms', label: 'Terms', href: '/home' },
+    { id: 'sitemap', label: 'Sitemap', href: '/home' }
   ]);
 }

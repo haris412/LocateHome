@@ -373,6 +373,23 @@ textarea,
   }
 }
 
+.listing-card-tooltip {
+  --bs-tooltip-bg: var(--surface-dark-muted);
+  --bs-tooltip-color: var(--surface);
+  --bs-tooltip-opacity: 1;
+  --bs-tooltip-border-radius: var(--radius-sm);
+  --bs-tooltip-padding-x: 0.7rem;
+  --bs-tooltip-padding-y: 0.45rem;
+  --bs-tooltip-max-width: 18rem;
+
+  .tooltip-inner {
+    border: 1px solid var(--surface-white-12);
+    box-shadow: 0 10px 24px var(--shadow-black-md);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-compact);
+  }
+}
+
 .mat-mdc-text-field-wrapper {
   background-color: var(--surface);
   border-radius: var(--radius-field) !important;

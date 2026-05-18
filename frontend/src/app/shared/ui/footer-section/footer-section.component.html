@@ -1,29 +1,58 @@
 <footer class="footer-section">
   <div class="footer-section__container">
-    <div class="row g-4">
-      <div class="col-12 col-lg-4">
-        <div class="footer-section__brand">
-          <div class="d-flex align-items-center gap-2">
-            <img src="/assets/icons/logo-green.svg" alt="EstatePortal Logo" class="footer-section__logo" />
-            <h3>EstatePortal</h3>
-          </div>
-          <p>A modern real estate experience with immersive video tours, verified agents and strong search tools.</p>
-        </div>
-      </div>
-      @for (group of footerGroups(); track group.id) {
-        <div class="col-6 col-md-4 col-lg-2">
-          <div class="footer-section__group">
-            <h4>{{ group.title }}</h4>
-            <ul>
+    <div class="footer-section__main">
+      <section class="footer-section__brand" aria-label="LocateHome">
+        <a routerLink="/home" class="footer-section__brand-link" aria-label="LocateHome home">
+          <img src="/assets/icons/logo-green.svg" alt="" class="footer-section__logo" />
+          <span class="footer-section__brand-name">LocateHome</span>
+        </a>
+
+        <p class="footer-section__description">
+          Helping you discover homes, connect with trusted agents, and explore property opportunities that fit your life.
+        </p>
+      </section>
+
+      <nav class="footer-section__nav" aria-label="Footer navigation">
+        @for (group of footerGroups(); track group.id) {
+          <section class="footer-section__group" [attr.aria-labelledby]="'footer-group-' + group.id">
+            <h2 class="footer-section__group-title" [id]="'footer-group-' + group.id">
+              {{ group.title }}
+            </h2>
+
+            <ul class="footer-section__list">
               @for (link of group.links; track link.id) {
-                <li>
-                  <a [routerLink]="link.href">{{ link.label }}</a>
+                <li class="footer-section__list-item">
+                  <a
+                    class="footer-section__link"
+                    [routerLink]="link.href"
+                    [queryParams]="link.queryParams"
+                  >
+                    {{ link.label }}
+                  </a>
                 </li>
               }
             </ul>
-          </div>
-        </div>
-      }
+          </section>
+        }
+      </nav>
+    </div>
+
+    <div class="footer-section__bottom">
+      <p class="footer-section__copyright">
+        © 2026 LocateHome. All rights reserved.
+      </p>
+
+      <nav class="footer-section__secondary-nav" aria-label="Footer legal links">
+        <ul class="footer-section__secondary-list">
+          @for (link of secondaryLinks(); track link.id) {
+            <li class="footer-section__secondary-item">
+              <a class="footer-section__link footer-section__link--secondary" [routerLink]="link.href">
+                {{ link.label }}
+              </a>
+            </li>
+          }
+        </ul>
+      </nav>
     </div>
   </div>
 </footer>
