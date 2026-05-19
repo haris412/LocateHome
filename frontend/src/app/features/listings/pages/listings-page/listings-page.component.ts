@@ -131,21 +131,7 @@ export class ListingsPageComponent {
     this.searchQuery.set(value);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {
-        page: 1,
-        limit: 20,
-        locationName: value.trim() || null,
-        purpose: null,
-        propertyType: null,
-        subType: null,
-        category: null,
-        subtype: null,
-        minPrice: null,
-        maxPrice: null,
-        sortBy: null,
-        sortOrder: null,
-        status: null
-      },
+      queryParams: { page: 1, locationName: value.trim() || null },
       queryParamsHandling: 'merge'
     });
   }
@@ -380,21 +366,6 @@ export class ListingsPageComponent {
     };
 
     const shared: FilterSelectConfig[] = [
-      {
-        id: 'province',
-        label: 'Province',
-        icon: 'location_on',
-        placeholder: 'Province',
-        value: 'any',
-        options: [
-          { id: 'any',                  label: 'Any' },
-          { id: 'punjab',               label: 'Punjab' },
-          { id: 'sindh',                label: 'Sindh' },
-          { id: 'khyber pakhtunkhwa',   label: 'Khyber Pakhtunkhwa' },
-          { id: 'balochistan',          label: 'Balochistan' },
-          { id: 'gilgit-baltistan',     label: 'Gilgit-Baltistan' }
-        ]
-      },
       {
         id: 'city',
         label: 'City',
