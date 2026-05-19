@@ -125,15 +125,6 @@ export class ListingDetailPageComponent {
     console.log('video selected', videoId);
   }
 
-  onInquirySubmitted(payload: {
-    name: string;
-    email: string;
-    phone: string;
-    message: string;
-  }): void {
-    console.log('inquiry submitted', payload);
-  }
-
   onNearbyFavoriteToggled(id: string): void {
     console.log('favorite toggled', id);
   }
