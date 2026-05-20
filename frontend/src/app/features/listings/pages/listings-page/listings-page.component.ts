@@ -131,22 +131,7 @@ export class ListingsPageComponent {
     this.searchQuery.set(value);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: {
-        page: 1,
-        limit: 20,
-        city: value.trim() || null,
-        neighborhood: null,
-        purpose: null,
-        propertyType: null,
-        subType: null,
-        category: null,
-        subtype: null,
-        minPrice: null,
-        maxPrice: null,
-        sortBy: null,
-        sortOrder: null,
-        status: null
-      },
+      queryParams: { page: 1, locationName: value.trim() || null },
       queryParamsHandling: 'merge'
     });
   }
@@ -209,9 +194,9 @@ export class ListingsPageComponent {
           this.selectedSort.set(this.fromSortParams(query.sortBy, query.sortOrder));
           this.selectedMode.set(query.purpose === 'For Rent' ? 'rent' : 'buy');
 
-          const city = params.get('city');
-          this.searchQuery.set(city ?? '');
-          this.selectedCityLabel.set(city || 'All locations');
+          const locationName = params.get('locationName');
+          this.searchQuery.set(locationName ?? '');
+          this.selectedCityLabel.set(locationName || 'All locations');
 
           return this.listingsService.getListings(query).pipe(
             catchError((err) => {
@@ -268,11 +253,7 @@ export class ListingsPageComponent {
       status: (params.get('status') as 'Draft' | 'Published' | null) ?? undefined,
       propertyType: propertyTypeTop,
       subType: subTypeApi,
-      city: params.get('city') ?? undefined,
-      neighborhood: (() => {
-        const a = params.get('neighborhood');
-        return a && a.trim() !== '' ? a.trim() : undefined;
-      })(),
+      locationName: params.get('locationName') ?? undefined,
       minPrice: this.toNumber(params.get('minPrice')),
       maxPrice: this.toNumber(params.get('maxPrice')),
       sortBy: params.get('sortBy') ?? 'createdAt',
@@ -297,13 +278,12 @@ export class ListingsPageComponent {
       if (cat) primary = cat;
     }
 
-    const areaParam = params.get('neighborhood') ?? '';
-    const cityParam = params.get('city') ?? '';
+    const locationName = params.get('locationName') ?? '';
     this.buyFields.update((fields) =>
-      this.patchCategoryTypeFields(fields, primary, subtype, areaParam, cityParam)
+      this.patchCategoryTypeFields(fields, primary, subtype, locationName)
     );
     this.rentFields.update((fields) =>
-      this.patchCategoryTypeFields(fields, primary, subtype, areaParam, cityParam)
+      this.patchCategoryTypeFields(fields, primary, subtype, locationName)
     );
   }
 
@@ -311,8 +291,7 @@ export class ListingsPageComponent {
     fields: FilterSelectConfig[],
     category: string,
     subtype: string,
-    areaParam: string,
-    cityParam: string = ''
+    locationName: string = ''
   ): FilterSelectConfig[] {
     const typeOpts = this.filtersCatalog.propertyTypeOptions();
     const catValue = typeOpts.some((o) => o.id === category) ? category : 'any';
@@ -326,11 +305,8 @@ export class ListingsPageComponent {
       if (field.id === 'subtype') {
         return { ...field, value: subtypeValue, options: subtypeOpts };
       }
-      if (field.id === 'area' && field.locationRole === 'area') {
-        return { ...field, value: areaParam || '' };
-      }
-      if (field.id === 'city' && field.locationRole === 'city') {
-        return { ...field, value: cityParam };
+      if (field.id === 'locationName') {
+        return { ...field, value: locationName };
       }
       return field;
     });
@@ -390,21 +366,6 @@ export class ListingsPageComponent {
     };
 
     const shared: FilterSelectConfig[] = [
-      {
-        id: 'province',
-        label: 'Province',
-        icon: 'location_on',
-        placeholder: 'Province',
-        value: 'any',
-        options: [
-          { id: 'any',                  label: 'Any' },
-          { id: 'punjab',               label: 'Punjab' },
-          { id: 'sindh',                label: 'Sindh' },
-          { id: 'khyber pakhtunkhwa',   label: 'Khyber Pakhtunkhwa' },
-          { id: 'balochistan',          label: 'Balochistan' },
-          { id: 'gilgit-baltistan',     label: 'Gilgit-Baltistan' }
-        ]
-      },
       {
         id: 'city',
         label: 'City',
@@ -499,8 +460,7 @@ export class ListingsPageComponent {
       page: 1,
       limit: 20,
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
-      city,
-      neighborhood: area,
+      locationName: city || area || null,
       propertyType: !primaryType || primaryType === 'any' ? null : primaryType,
       subType: !subtype || subtype === 'any' ? null : subtype,
       category: null,
