@@ -117,11 +117,7 @@ export class HomePageComponent {
   private buildListingsRouteQuery(
     payload: SearchPanelSearchPayload
   ): Record<string, string | number | null> {
-    const city = payload.city !== 'Any' ? payload.city : undefined;
-    const area =
-      payload.neighborhood && payload.neighborhood !== 'Any' && payload.neighborhood.trim() !== ''
-        ? payload.neighborhood.trim()
-        : undefined;
+    const locationName = payload.locationName?.trim() || undefined;
     const minPrice = payload.minPrice ?? undefined;
     const maxPrice = payload.maxPrice ?? undefined;
     const category =
@@ -133,8 +129,7 @@ export class HomePageComponent {
       page: 1,
       limit: 20,
       purpose: payload.mode === 'rent' ? 'For Rent' : 'For Sale',
-      city: city ?? null,
-      neighborhood: area ?? null,
+      locationName: locationName ?? null,
       propertyType: category ?? null,
       subType: subtype ?? null,
       category: null,

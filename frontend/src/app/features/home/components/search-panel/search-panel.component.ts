@@ -10,7 +10,7 @@ import {
 import { isPlatformBrowser } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, switchMap, tap } from 'rxjs/operators';
 import { of, startWith } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -42,8 +42,7 @@ export interface SearchPanelSearchPayload {
   primaryType: string;
   /** Subtype slug (kebab-case) or 'any' */
   subtype: string;
-  city: string;
-  neighborhood: string;
+  locationName: string;
   minPrice: number | null;
   maxPrice: number | null;
   bedrooms: string;
@@ -95,15 +94,10 @@ export class SearchPanelComponent {
 
   // ── Location state ──────────────────────────────────────────────────────
 
-  readonly province     = signal('any');
-  readonly city         = signal('Any');
-  readonly neighborhood = signal('Any');
+  readonly locationName = signal('');
 
-  readonly cityControl         = new FormControl<string | GooglePlacePrediction>('', { nonNullable: true });
-  readonly neighborhoodControl = new FormControl<string | GooglePlacePrediction>('', { nonNullable: true });
-
-  readonly citySuggestions         = signal<GooglePlacePrediction[]>([]);
-  readonly neighborhoodSuggestions = signal<GooglePlacePrediction[]>([]);
+  readonly locationControl = new FormControl<string | GooglePlacePrediction>('', { nonNullable: true });
+  readonly locationSuggestions = signal<GooglePlacePrediction[]>([]);
 
   // ── Filter state ────────────────────────────────────────────────────────
 
@@ -116,15 +110,6 @@ export class SearchPanelComponent {
   readonly size        = signal('1,000+ sqft');
 
   // ── Static options ──────────────────────────────────────────────────────
-
-  readonly provinceOptions = [
-    'Any',
-    'Punjab',
-    'Sindh',
-    'Khyber Pakhtunkhwa',
-    'Balochistan',
-    'Gilgit-Baltistan'
-  ];
 
   readonly propertyTypeOptions = this.filtersCatalog.propertyTypeOptions;
 
@@ -170,12 +155,7 @@ export class SearchPanelComponent {
 
   // ── Display helpers (passed to [displayWith]) ───────────────────────────
 
-  readonly displayCity = (v: GooglePlacePrediction | string | null): string => {
-    if (v == null || typeof v === 'string') return v ?? '';
-    return v.structuredFormat.mainText.text;
-  };
-
-  readonly displayArea = (v: GooglePlacePrediction | string | null): string => {
+  readonly displayLocation = (v: GooglePlacePrediction | string | null): string => {
     if (v == null || typeof v === 'string') return v ?? '';
     return v.structuredFormat.mainText.text;
   };
@@ -188,52 +168,28 @@ export class SearchPanelComponent {
     this.filtersCatalog.loadCatalog();
     this.filtersCatalog.loadPriceRanges();
     this.setupSpeechRecognition();
-    this.wireCityControl();
-    this.wireAreaControl();
+    this.wireLocationControl();
     this.detectUserCity();
   }
 
   // ── Wiring ───────────────────────────────────────────────────────────────
 
-  private wireCityControl(): void {
-    this.cityControl.valueChanges.pipe(
-      startWith(this.cityControl.value),
-      map(v => (typeof v === 'string' ? v : v?.structuredFormat.mainText.text ?? '')),
+  private wireLocationControl(): void {
+    this.locationControl.valueChanges.pipe(
+      startWith(this.locationControl.value),
+      map(v => (typeof v === 'string' ? v : v.structuredFormat.mainText.text)),
       debounceTime(300),
       distinctUntilChanged(),
+      tap(query => this.locationName.set(query.trim())),
       switchMap(query => {
         if (!query.trim()) {
-          this.city.set('Any');
-          this.citySuggestions.set([]);
-          this.neighborhoodControl.setValue('', { emitEvent: false });
-          this.neighborhood.set('Any');
-          this.neighborhoodSuggestions.set([]);
+          this.locationSuggestions.set([]);
           return of([]);
         }
         return this.locationCatalog.searchPlaces(query);
       }),
       takeUntilDestroyed()
-    ).subscribe(predictions => this.citySuggestions.set(predictions));
-  }
-
-  private wireAreaControl(): void {
-    this.neighborhoodControl.valueChanges.pipe(
-      startWith(this.neighborhoodControl.value),
-      map(v => (typeof v === 'string' ? v : v?.structuredFormat.mainText.text ?? '')),
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(query => {
-        if (!query.trim()) {
-          this.neighborhood.set('Any');
-          this.neighborhoodSuggestions.set([]);
-          return of([]);
-        }
-        // Prefix with selected city to get more relevant area results.
-        const cityName = this.city() !== 'Any' ? `${this.city()} ` : '';
-        return this.locationCatalog.searchPlaces(`${cityName}${query}`);
-      }),
-      takeUntilDestroyed()
-    ).subscribe(predictions => this.neighborhoodSuggestions.set(predictions));
+    ).subscribe(predictions => this.locationSuggestions.set(predictions));
   }
 
   // ── Event handlers ───────────────────────────────────────────────────────
@@ -262,21 +218,10 @@ export class SearchPanelComponent {
     }
   }
 
-  onCityOptionSelected(event: MatAutocompleteSelectedEvent): void {
+  onLocationSelected(event: MatAutocompleteSelectedEvent): void {
     const pred = event.option.value as GooglePlacePrediction;
     if (!pred?.placeId) return;
-    const { city } = this.locationCatalog.parsePlaceCityNeighborhood(pred);
-    this.city.set(city || 'Any');
-    this.neighborhoodControl.setValue('', { emitEvent: false });
-    this.neighborhood.set('Any');
-    this.neighborhoodSuggestions.set([]);
-  }
-
-  onAreaOptionSelected(event: MatAutocompleteSelectedEvent): void {
-    const pred = event.option.value as GooglePlacePrediction;
-    if (!pred?.placeId) return;
-    const name = pred.structuredFormat.mainText.text;
-    this.neighborhood.set(name || 'Any');
+    this.locationName.set(pred.structuredFormat.mainText.text);
   }
 
   onPriceRangeChange(range: PriceRange): void {
@@ -308,17 +253,16 @@ export class SearchPanelComponent {
 
   runSearch(): void {
     this.search.emit({
-      mode:        this.activeTab(),
-      keyword:     this.keyword(),
-      primaryType: this.primaryType(),
-      subtype:     this.subtype(),
-      city:         this.city(),
-      neighborhood: this.neighborhood(),
-      minPrice:    this.priceRange().min,
-      maxPrice:    this.priceRange().max,
-      bedrooms:    this.bedrooms(),
-      bathrooms:   this.bathrooms(),
-      size:        this.size()
+      mode:         this.activeTab(),
+      keyword:      this.keyword(),
+      primaryType:  this.primaryType(),
+      subtype:      this.subtype(),
+      locationName: this.locationName(),
+      minPrice:     this.priceRange().min,
+      maxPrice:     this.priceRange().max,
+      bedrooms:     this.bedrooms(),
+      bathrooms:    this.bathrooms(),
+      size:         this.size()
     });
   }
 
@@ -354,9 +298,8 @@ export class SearchPanelComponent {
         this.locationCatalog.reverseGeocode(coords.latitude, coords.longitude)
           .subscribe(cityName => {
             if (!cityName) return;
-            this.city.set(cityName);
-            this.cityControl.setValue(cityName, { emitEvent: false });
-            this.locationCatalog.setSelectedCityName(cityName);
+            this.locationName.set(cityName);
+            this.locationControl.setValue(cityName, { emitEvent: false });
           });
       },
       () => { /* permission denied or unavailable — stay silent */ }
@@ -376,14 +319,14 @@ export class SearchPanelComponent {
 
     this.micSupported.set(true);
 
-    const r = new Ctor();
-    r.continuous     = false;
-    r.interimResults = true;
-    r.lang           = 'en-US';
+    const recognition = new Ctor();
+    recognition.continuous     = false;
+    recognition.interimResults = true;
+    recognition.lang           = 'en-US';
 
-    r.onstart  = () => { this.isListening.set(true); this.micError.set(''); };
-    r.onend    = () => this.isListening.set(false);
-    r.onerror  = (e: SpeechRecognitionErrorLike) => {
+    recognition.onstart = () => { this.isListening.set(true); this.micError.set(''); };
+    recognition.onend   = () => this.isListening.set(false);
+    recognition.onerror = (e: SpeechRecognitionErrorLike) => {
       this.isListening.set(false);
       this.micError.set(
         e.error === 'not-allowed'
@@ -391,7 +334,7 @@ export class SearchPanelComponent {
           : 'Voice search could not be completed.'
       );
     };
-    r.onresult = (e: SpeechRecognitionEventLike) => {
+    recognition.onresult = (e: SpeechRecognitionEventLike) => {
       let transcript = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         transcript += e.results[i][0].transcript;
@@ -405,6 +348,6 @@ export class SearchPanelComponent {
       }
     };
 
-    this.recognition = r;
+    this.recognition = recognition;
   }
 }

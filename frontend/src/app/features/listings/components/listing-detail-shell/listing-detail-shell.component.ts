@@ -48,12 +48,6 @@ export class ListingDetailShellComponent {
   @Output() readonly viewAllVideos = new EventEmitter<void>();
   @Output() readonly videoSelected = new EventEmitter<string>();
   @Output() readonly nearbyCardClicked = new EventEmitter<string>();
-  @Output() readonly inquirySubmitted = new EventEmitter<{
-    name: string;
-    email: string;
-    phone: string;
-    message: string;
-  }>();
   @Output() readonly nearbyFavoriteToggled = new EventEmitter<string>();
   @Output() readonly appointmentBooked = new EventEmitter<AppointmentBookingPayload>();
 }

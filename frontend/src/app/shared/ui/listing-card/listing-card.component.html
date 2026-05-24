@@ -42,26 +42,37 @@
   </div>
 
   <div class="listing-card__body">
-    @if (!item().rent) {
-      <div class="listing-card__eyebrow">{{ item().price }}</div>
-    }
+    <div class="listing-card__content">
+      @if (!item().rent) {
+        <div class="listing-card__eyebrow">{{ item().price }}</div>
+      }
 
-    @if (item().rent) {
-      <div class="listing-card__rent">
-        {{ item().price }}
-        <span class="listing-card__rent-subtext">/mo</span>
-      </div>
-    }
+      @if (item().rent) {
+        <div class="listing-card__rent">
+          {{ item().price }}
+          <!-- <span class="listing-card__rent-subtext">/mo</span> -->
+        </div>
+      }
 
-    <h3 class="listing-card__title">{{ item().title }}</h3>
+      <h3 #titleTooltip
+          class="listing-card__title"
+          data-bs-toggle="tooltip"
+          [attr.data-bs-title]="item().title">
+        {{ item().title }}
+      </h3>
 
-    <p class="listing-card__address">
-      <mat-icon fontSet="material-symbols-outlined"
-                inline>
-        location_on
-      </mat-icon>
-      <span>{{ item().address }}</span>
-    </p>
+      <p class="listing-card__address">
+        <mat-icon fontSet="material-symbols-outlined"
+                  inline>
+          location_on
+        </mat-icon>
+        <span #addressTooltip
+              data-bs-toggle="tooltip"
+              [attr.data-bs-title]="item().address">
+          {{ item().address }}
+        </span>
+      </p>
+    </div>
 
     <div class="listing-card__divider"></div>
 

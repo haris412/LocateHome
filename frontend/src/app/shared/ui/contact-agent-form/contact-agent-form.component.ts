@@ -19,6 +19,9 @@ import {
   AppointmentDateSlots,
   AppointmentOverlayData
 } from '../../../core/models/appointment.models';
+import { InquiryType } from '../../../core/models/inquiry.models';
+import { InquiryService } from '../../../core/services/inquiry.service';
+import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
 import { AppointmentOverlayService } from '../../services/appointment-overlay.service';
 
 export interface ContactAgentFormData {
@@ -42,7 +45,8 @@ export interface ContactAgentFormData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ContactAgentFormComponent {
-  private readonly fb = inject(FormBuilder);
+  private readonly fb             = inject(FormBuilder);
+  private readonly inquiryService = inject(InquiryService);
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
 
   readonly agent = input.required<PropertyAgent>();
@@ -52,11 +56,14 @@ export class ContactAgentFormComponent {
   readonly secondary2 = input('Ask a question');
   readonly defaultMessage = input('');
 
-  readonly listingId = input('');
-  readonly listingPrice = input('');
-  readonly listingAddress = input('');
+  readonly listingId       = input('');
+  readonly listingPrice    = input('');
+  readonly listingAddress  = input('');
   readonly listingImageUrl = input('');
   readonly appointmentDateSlots = input<AppointmentDateSlots[]>([]);
+   readonly isSubmitting = this.inquiryService.isSubmitting;
+  readonly submitError  = this.inquiryService.submitError;
+  readonly inquiryId    = this.inquiryService.inquiryId;
 
   @Output() readonly submitted = new EventEmitter<{
     name: string;
@@ -67,10 +74,12 @@ export class ContactAgentFormComponent {
 
   @Output() readonly appointmentBooked = new EventEmitter<AppointmentBookingPayload>();
 
+  // ── Form ─────────────────────────────────────────────────────────────────
+
   readonly form = this.fb.nonNullable.group({
-    name: ['', [Validators.required, Validators.minLength(2)]],
-    email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.minLength(7)]],
+    name:    ['', [Validators.required, Validators.minLength(2)]],
+    email:   ['', [Validators.required, Validators.email]],
+    phone:   ['', [Validators.required, Validators.minLength(7)]],
     message: ['', [Validators.required, Validators.minLength(10)]]
   });
 
@@ -81,17 +90,22 @@ export class ContactAgentFormComponent {
   }
 
   ngOnInit(): void {
-    this.form.patchValue({
-      message: this.defaultMessage()
-    });
+    this.form.patchValue({ message: this.defaultMessage() });
   }
 
-  submit(): void {
+  // ── Actions ──────────────────────────────────────────────────────────────
+
+  submit(type: InquiryType = 'tour'): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    this.submitted.emit(this.form.getRawValue());
+
+    const { name, email, phone, message } = this.form.getRawValue();
+
+    this.inquiryService
+      .submit({ propertyId: this.listingId(), type, name, email, phone, message })
+      .subscribe({ next: () => this.form.reset() });
   }
 
   openBookAppointmentOverlay(): void {
