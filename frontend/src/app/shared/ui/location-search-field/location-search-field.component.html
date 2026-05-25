@@ -1,6 +1,6 @@
 <div class="location-search-field">
   <label class="location-search-field__label">
-    <span>{{ resolvedLabel() }}</span>
+    <span>{{ label() }}</span>
   </label>
 
   <mat-form-field appearance="outline" class="location-search-field__field" subscriptSizing="dynamic">
@@ -11,20 +11,19 @@
     <input
       type="text"
       matInput
-      [placeholder]="resolvedPlaceholder()"
+      [placeholder]="placeholder()"
       [matAutocomplete]="auto"
       [value]="draft()"
-      [disabled]="isDisabled()"
       (input)="onInput($event)"
     />
 
     <mat-icon matSuffix fontSet="material-symbols-outlined" aria-hidden="true">
-      {{ isDisabled() ? 'lock' : 'search' }}
+      search
     </mat-icon>
 
     <mat-autocomplete
       #auto="matAutocomplete"
-      [displayWith]="displayValue"
+      [displayWith]="toDisplayName"
       (optionSelected)="onOptionSelected($event)"
     >
       @for (pred of suggestions(); track pred.placeId) {

@@ -317,7 +317,6 @@ export class PropertyFiltersComponent {
     this.searchQuery.set(value);
     this.syncSearchFieldValue(value);
     this.searchQueryChange.emit(value);
-    this.emitFiltersChanged();
   }
 
   runSearch(): void {

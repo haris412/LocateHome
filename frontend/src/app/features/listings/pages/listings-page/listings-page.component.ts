@@ -354,7 +354,7 @@ export class ListingsPageComponent {
     const priceRent: FilterSelectConfig = {
       id: 'price',
       label: 'Monthly Rent',
-      icon: 'payments',
+      icon: 'monetization_on',
       placeholder: 'Monthly rent',
       value: 'any',
       options: [

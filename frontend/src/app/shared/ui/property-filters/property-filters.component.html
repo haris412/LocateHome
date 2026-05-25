@@ -48,7 +48,7 @@
                                        [label]="''"
                                        placeholder="Search location, neighbourhood, or address"
                                        [value]="searchQuery()"
-                                       (valueChanged)="updateSearch($event)" />
+                                       (searchCommitted)="updateSearch($event)" />
 
             @if (voiceEnabled()) {
             <button type="button"
