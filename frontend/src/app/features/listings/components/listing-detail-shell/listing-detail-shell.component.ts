@@ -36,7 +36,8 @@ import { AppointmentBookingPayload } from 'src/app/core/models/appointment.model
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListingDetailShellComponent {
-  readonly vm = input.required<PropertyDetailViewModel>();
+  readonly vm      = input.required<PropertyDetailViewModel>();
+  readonly isSaved = input<boolean>(false);
 
   @Output() readonly back = new EventEmitter<void>();
   @Output() readonly share = new EventEmitter<void>();

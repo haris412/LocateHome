@@ -58,6 +58,16 @@
         <app-agents-section [items]="agents()" />
       </div>
 
+      @if (savedProperties().length) {
+        <div class="home-page__section">
+          <app-listings-carousel-section
+            title="Saved Properties"
+            subtitle="Properties you saved for later."
+            [items]="savedProperties()"
+            (favoriteToggled)="onSavedFavoriteToggled($event)" />
+        </div>
+      }
+
       <div class="home-page__section">
         <app-listings-carousel-section title="Recently viewed properties"
                                        subtitle="Pick up where you left off and revisit homes, apartments and rentals you explored."
