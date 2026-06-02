@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal
 } from '@angular/core';
@@ -18,6 +19,8 @@ import {
   AppointmentOverlayData
 } from '../../../../core/models/appointment.models';
 import { AppointmentOverlayService } from '../../../../shared/services/appointment-overlay.service';
+import { SavedPropertiesService } from '../../../../core/services/saved-properties.service';
+import { ListingItem } from '../../../../core/models/listing.models';
 
 @Component({
   selector: 'app-listing-detail-page',
@@ -28,13 +31,17 @@ import { AppointmentOverlayService } from '../../../../shared/services/appointme
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListingDetailPageComponent {
-  private readonly route = inject(ActivatedRoute);
-  private readonly listingsService = inject(ListingsService);
+  private readonly route             = inject(ActivatedRoute);
+  private readonly listingsService   = inject(ListingsService);
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
+  private readonly savedService      = inject(SavedPropertiesService);
 
-  readonly detail = signal<PropertyDetailViewModel | null>(null);
+  readonly detail        = signal<PropertyDetailViewModel | null>(null);
   readonly detailLoading = signal(false);
-  readonly detailError = signal<string | null>(null);
+  readonly detailError   = signal<string | null>(null);
+
+  /** Reactively true when the current property is in the saved list */
+  readonly isSaved = computed(() => this.savedService.isSaved(this.detail()?.id ?? ''));
 
   private buildOverlayData(detail: PropertyDetailViewModel): AppointmentOverlayData {
     return {
@@ -97,7 +104,30 @@ export class ListingDetailPageComponent {
   }
 
   onSave(): void {
-    console.log('save');
+    const vm = this.detail();
+    if (!vm) return;
+    this.savedService.toggle(this.detailToListingItem(vm));
+  }
+
+  /**
+   * Converts a PropertyDetailViewModel (detail page shape) into the
+   * ListingItem shape used by cards and carousels for display.
+   */
+  private detailToListingItem(vm: PropertyDetailViewModel): ListingItem {
+    const stat = (label: string) => vm.stats.find(s => s.label === label)?.value ?? '';
+    return {
+      id:           vm.id,
+      title:        vm.listingTitle,
+      address:      vm.addressLine,
+      price:        vm.price,
+      badge:        vm.purpose,
+      badgeVariant: vm.purpose === 'For Rent' ? 'rent' : 'sale',
+      imageUrl:     vm.gallery.primaryImage,
+      beds:         Number(stat('Bedrooms')),
+      baths:        Number(stat('Bathrooms')),
+      area:         stat('Living area'),
+      rent:         vm.purpose === 'For Rent'
+    };
   }
 
   onScheduleVisit(): void {

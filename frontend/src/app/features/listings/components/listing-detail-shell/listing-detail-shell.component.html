@@ -31,10 +31,12 @@
 
       <button type="button"
               class="listing-detail-shell__utility-btn"
+              [class.listing-detail-shell__utility-btn--saved]="isSaved()"
               (click)="save.emit()">
-        <mat-icon fontSet="material-symbols-outlined"
-                  inline>favorite</mat-icon>
-        <span>{{ vm().saveLabel || 'Save' }}</span>
+        <mat-icon fontSet="material-symbols-outlined" inline>
+          {{ isSaved() ? 'favorite' : 'favorite_border' }}
+        </mat-icon>
+        <span>{{ isSaved() ? 'Saved' : (vm().saveLabel || 'Save') }}</span>
       </button>
     </div>
   </div>

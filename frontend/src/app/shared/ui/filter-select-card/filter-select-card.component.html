@@ -5,7 +5,7 @@
       [label]="config().label"
       [placeholder]="config().placeholder"
       [value]="config().value ?? ''"
-      (valueChanged)="onSelectionChange($event)"
+      (searchCommitted)="onSelectionChange($event)"
     />
   } @else {
     <label class="filter-select__label">

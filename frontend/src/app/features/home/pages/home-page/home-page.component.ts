@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { SavedPropertiesService } from '@/core/services/saved-properties.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import {
@@ -34,6 +35,10 @@ import { ValuationSectionComponent } from "../../components/valuation-section/va
 export class HomePageComponent {
   private readonly router        = inject(Router);
   private readonly agentsService = inject(AgentsService);
+  private readonly savedService  = inject(SavedPropertiesService);
+
+  /** Directly reads the service signal — no local copy, always in sync */
+  readonly savedProperties = this.savedService.savedListings;
   readonly heroStats = signal<StatPillItem[]>([
     { id: '1', label: 'Properties', value: '12k+' },
     { id: '2', label: 'Verified agents', value: '1.2k' },
@@ -131,9 +136,8 @@ export class HomePageComponent {
       purpose: payload.mode === 'rent' ? 'For Rent' : 'For Sale',
       locationName: locationName ?? null,
       propertyType: category ?? null,
-      subType: subtype ?? null,
+      subtype: subtype ?? null,
       category: null,
-      subtype: null,
       minPrice: minPrice ?? null,
       maxPrice: maxPrice ?? null,
       sortBy: 'createdAt',
@@ -148,6 +152,11 @@ export class HomePageComponent {
           : item
       )
     );
+  }
+
+  /** Heart click on a saved-properties card removes it from the saved list */
+  onSavedFavoriteToggled(id: string): void {
+    this.savedService.unsave(id);
   }
 
 }
