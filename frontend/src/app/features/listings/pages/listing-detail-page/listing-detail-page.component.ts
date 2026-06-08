@@ -20,6 +20,8 @@ import {
 } from '../../../../core/models/appointment.models';
 import { AppointmentOverlayService } from '../../../../shared/services/appointment-overlay.service';
 import { SavedPropertiesService } from '../../../../core/services/saved-properties.service';
+import { ShareService } from '../../../../core/services/share.service';
+import { RecentlyViewedService } from '../../../../core/services/recently-viewed.service';
 import { ListingItem } from '../../../../core/models/listing.models';
 
 @Component({
@@ -31,10 +33,12 @@ import { ListingItem } from '../../../../core/models/listing.models';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListingDetailPageComponent {
-  private readonly route             = inject(ActivatedRoute);
-  private readonly listingsService   = inject(ListingsService);
+  private readonly route              = inject(ActivatedRoute);
+  private readonly listingsService    = inject(ListingsService);
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
-  private readonly savedService      = inject(SavedPropertiesService);
+  private readonly savedService          = inject(SavedPropertiesService);
+  private readonly shareService          = inject(ShareService);
+  private readonly recentlyViewedService = inject(RecentlyViewedService);
 
   readonly detail        = signal<PropertyDetailViewModel | null>(null);
   readonly detailLoading = signal(false);
@@ -89,7 +93,10 @@ export class ListingDetailPageComponent {
       .subscribe(({ vm, err }) => {
         this.detail.set(vm);
         this.detailError.set(err);
-        if (!vm) {
+
+        if (vm) {
+          this.recentlyViewedService.add(this.detailToListingItem(vm));
+        } else {
           this.appointmentOverlay.close();
         }
       });
@@ -100,7 +107,9 @@ export class ListingDetailPageComponent {
   }
 
   onShare(): void {
-    console.log('share');
+    const detail = this.detail();
+    if (!detail) return;
+    this.shareService.sharePropertyOnWhatsApp(detail);
   }
 
   onSave(): void {
