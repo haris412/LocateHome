@@ -1,4 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { SavedPropertiesService } from '@/core/services/saved-properties.service';
+import { RecentlyViewedService } from '@/core/services/recently-viewed.service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import {
@@ -34,6 +36,11 @@ import { ValuationSectionComponent } from "../../components/valuation-section/va
 export class HomePageComponent {
   private readonly router        = inject(Router);
   private readonly agentsService = inject(AgentsService);
+  private readonly savedService          = inject(SavedPropertiesService);
+  private readonly recentlyViewedService = inject(RecentlyViewedService);
+
+  /** Directly reads the service signal — no local copy, always in sync */
+  readonly savedProperties = this.savedService.savedListings;
   readonly heroStats = signal<StatPillItem[]>([
     { id: '1', label: 'Properties', value: '12k+' },
     { id: '2', label: 'Verified agents', value: '1.2k' },
@@ -57,11 +64,7 @@ export class HomePageComponent {
 
   ]);
 
-  readonly recentListings = signal<ListingItem[]>([
-    { id: '7', title: 'Skyline Boulevard Apartment', address: '302 Green Boulevard, Seattle, WA', price: '$4,200', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-3.png', beds: 2, baths: 2, area: '950 sqft', favorite: false, rent: true },
-    { id: '8', title: 'Oakwood Family Residence', address: '22 Oakwood Drive, Austin, TX', price: '$945,000', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-4.png', beds: 4, baths: 2, area: '2,850 sqft', favorite: true },
-    { id: '9', title: 'Fifth Avenue Penthouse', address: '620 5th Ave, New York, NY', price: '$8,500', badge: 'Viewed', badgeVariant: 'viewed', imageUrl: 'assets/images/listings/featured-1.png', beds: 3, baths: 3, area: '2,300 sqft', favorite: false, rent: true },
-  ]);
+  readonly recentListings = this.recentlyViewedService.items;
   readonly trendItems = signal<TrendItem[]>([
     { id: '1', city: 'Seattle, WA', demand: 'Hot demand score', growth: '+18.4%', summary: 'Fast rising interest for modern homes and riverfront views.' },
     { id: '2', city: 'Austin, TX', demand: 'Strong buyer activity', growth: '+21.7%', summary: 'High intent across family homes and suburban communities.' },
@@ -131,9 +134,8 @@ export class HomePageComponent {
       purpose: payload.mode === 'rent' ? 'For Rent' : 'For Sale',
       locationName: locationName ?? null,
       propertyType: category ?? null,
-      subType: subtype ?? null,
+      subtype: subtype ?? null,
       category: null,
-      subtype: null,
       minPrice: minPrice ?? null,
       maxPrice: maxPrice ?? null,
       sortBy: 'createdAt',
@@ -148,6 +150,11 @@ export class HomePageComponent {
           : item
       )
     );
+  }
+
+  /** Heart click on a saved-properties card removes it from the saved list */
+  onSavedFavoriteToggled(id: string): void {
+    this.savedService.unsave(id);
   }
 
 }

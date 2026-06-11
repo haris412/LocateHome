@@ -26,8 +26,8 @@ export interface ListingsQueryParams {
   status?: ListingStatus;
   /** Top-level: homes | plots | commercial */
   propertyType?: string;
-  /** Subtype filter (API value, e.g. apartment, upper portion). */
-  subType?: string;
+  /** Subtype filter — must match the exact DB-stored name (e.g. "House", "Residential Plot"). */
+  subtype?: string;
   locationName?: string;
   minPrice?: number;
   maxPrice?: number;
@@ -157,7 +157,7 @@ export class ListingsService {
       ['purpose', params.purpose],
       ['status', params.status],
       ['propertyType', params.propertyType],
-      ['subType', params.subType],
+      ['subtype', params.subtype],
       ['locationName', params.locationName],
       ['minPrice', params.minPrice],
       ['maxPrice', params.maxPrice],

@@ -75,10 +75,10 @@ export class FiltersCatalogService {
 
   // ── Derived options for <mat-select> ─────────────────────────────────────
 
-  /** [Any, Homes, Plots, Commercial, …] */
+  /** [Any, Homes, Plots, Commercial, …] — id uses the DB-stored name, not the slug. */
   readonly propertyTypeOptions = computed<FilterOption[]>(() => [
     { id: 'any', label: 'Any' },
-    ...this.categories().map((c) => ({ id: c.slug, label: c.name }))
+    ...this.categories().map((c) => ({ id: c.name, label: c.name }))
   ]);
 
   // ── Static filter catalog ────────────────────────────────────────────────
@@ -140,13 +140,13 @@ export class FiltersCatalogService {
 
     if (!categorySlug || categorySlug === 'any') {
       const all = this.categories().flatMap((c) =>
-        c.subtypes.map((s) => ({ id: s.slug, label: s.name }))
+        c.subtypes.map((s) => ({ id: s.name, label: s.name }))
       );
       return [anyOpt, ...all];
     }
 
-    const category = this.categories().find((c) => c.slug === categorySlug);
-    const subtypes = category?.subtypes.map((s) => ({ id: s.slug, label: s.name })) ?? [];
+    const category = this.categories().find((c) => c.name === categorySlug);
+    const subtypes = category?.subtypes.map((s) => ({ id: s.name, label: s.name })) ?? [];
     return [anyOpt, ...subtypes];
   }
 
@@ -158,17 +158,17 @@ export class FiltersCatalogService {
     if (!subtypeSlug || subtypeSlug === 'any') return null;
 
     for (const category of this.categories()) {
-      if (category.subtypes.some((s) => s.slug === subtypeSlug)) {
-        return category.slug;
+      if (category.subtypes.some((s) => s.name === subtypeSlug)) {
+        return category.name;
       }
     }
     return null;
   }
 
-  /** Returns true if the slug matches a known top-level category. */
+  /** Returns true if the value matches a known top-level category name (e.g. "Homes", "Plots"). */
   isKnownCategorySlug(slug: string | null | undefined): boolean {
     if (!slug || slug === 'any') return false;
-    return this.categories().some((c) => c.slug === slug);
+    return this.categories().some((c) => c.name === slug);
   }
 
   /**
@@ -180,14 +180,14 @@ export class FiltersCatalogService {
     if (!value || value === 'any') return null;
 
     for (const cat of this.categories()) {
-      const bySlug = cat.subtypes.find((s) => s.slug === value);
-      if (bySlug) return bySlug.slug;
+      const byName = cat.subtypes.find((s) => s.name === value);
+      if (byName) return byName.name;
     }
 
     const lower = value.toLowerCase();
     for (const cat of this.categories()) {
-      const byName = cat.subtypes.find((s) => s.name.toLowerCase() === lower);
-      if (byName) return byName.slug;
+      const byNameInsensitive = cat.subtypes.find((s) => s.name.toLowerCase() === lower);
+      if (byNameInsensitive) return byNameInsensitive.name;
     }
 
     return null;

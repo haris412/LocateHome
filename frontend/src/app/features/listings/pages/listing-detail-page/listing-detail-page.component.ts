@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
   signal
 } from '@angular/core';
@@ -22,6 +23,10 @@ import { ConversationService } from '../../services/conversation.service';
 import { CreateConversationDto } from '@/features/auth/models/conversation.model';
 import { ContactAgentFormData } from '@/shared/ui/contact-agent-form/contact-agent-form.component';
 import { AppointmentOverlayService } from '../../../../shared/services/appointment-overlay.service';
+import { SavedPropertiesService } from '../../../../core/services/saved-properties.service';
+import { ShareService } from '../../../../core/services/share.service';
+import { RecentlyViewedService } from '../../../../core/services/recently-viewed.service';
+import { ListingItem } from '../../../../core/models/listing.models';
 
 @Component({
   selector: 'app-listing-detail-page',
@@ -36,12 +41,19 @@ export class ListingDetailPageComponent {
   private readonly listingsService = inject(ListingsService);
   private readonly conversationService = inject(ConversationService);
   private readonly snackBar = inject(MatSnackBar);
+  ;
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
+  private readonly savedService          = inject(SavedPropertiesService);
+  private readonly shareService          = inject(ShareService);
+  private readonly recentlyViewedService = inject(RecentlyViewedService);
 
-  readonly detail = signal<PropertyDetailViewModel | null>(null);
+  readonly detail        = signal<PropertyDetailViewModel | null>(null);
   readonly detailLoading = signal(false);
   readonly detailError = signal<string | null>(null);
   readonly resetInquiryForm = signal(0);
+
+  /** Reactively true when the current property is in the saved list */
+  readonly isSaved = computed(() => this.savedService.isSaved(this.detail()?.id ?? ''));
 
   private buildOverlayData(detail: PropertyDetailViewModel): AppointmentOverlayData {
     return {
@@ -89,7 +101,10 @@ export class ListingDetailPageComponent {
       .subscribe(({ vm, err }) => {
         this.detail.set(vm);
         this.detailError.set(err);
-        if (!vm) {
+
+        if (vm) {
+          this.recentlyViewedService.add(this.detailToListingItem(vm));
+        } else {
           this.appointmentOverlay.close();
         }
       });
@@ -100,11 +115,36 @@ export class ListingDetailPageComponent {
   }
 
   onShare(): void {
-    console.log('share');
+    const detail = this.detail();
+    if (!detail) return;
+    this.shareService.sharePropertyOnWhatsApp(detail);
   }
 
   onSave(): void {
-    console.log('save');
+    const vm = this.detail();
+    if (!vm) return;
+    this.savedService.toggle(this.detailToListingItem(vm));
+  }
+
+  /**
+   * Converts a PropertyDetailViewModel (detail page shape) into the
+   * ListingItem shape used by cards and carousels for display.
+   */
+  private detailToListingItem(vm: PropertyDetailViewModel): ListingItem {
+    const stat = (label: string) => vm.stats.find(s => s.label === label)?.value ?? '';
+    return {
+      id:           vm.id,
+      title:        vm.listingTitle,
+      address:      vm.addressLine,
+      price:        vm.price,
+      badge:        vm.purpose,
+      badgeVariant: vm.purpose === 'For Rent' ? 'rent' : 'sale',
+      imageUrl:     vm.gallery.primaryImage,
+      beds:         Number(stat('Bedrooms')),
+      baths:        Number(stat('Bathrooms')),
+      area:         stat('Living area'),
+      rent:         vm.purpose === 'For Rent'
+    };
   }
 
   onScheduleVisit(): void {

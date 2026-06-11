@@ -2,15 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   inject,
   input,
+  linkedSignal,
   output,
   signal
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, share, switchMap } from 'rxjs/operators';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -18,6 +18,35 @@ import { MatInputModule } from '@angular/material/input';
 
 import { GooglePlacePrediction } from '../../../core/models/google-places.models';
 import { LocationCatalogService } from '../../../core/services/location-catalog.service';
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const SUGGESTION_DEBOUNCE_MS = 300;
+const SEARCH_DEBOUNCE_MS     = 400;
+const MIN_QUERY_LENGTH       = 3;
+
+// ── Types ─────────────────────────────────────────────────────────────────────
+
+export type LocationSearchMode = 'city' | 'area';
+
+// ── Module-level helpers ──────────────────────────────────────────────────────
+
+const ICON_BY_MODE: Record<LocationSearchMode, string> = {
+  city: 'location_on',
+  area: 'pin_drop'
+};
+
+function passesLengthGate(query: string): boolean {
+  const len = query.trim().length;
+  return len === 0 || len >= MIN_QUERY_LENGTH;
+}
+
+function toDisplayName(value: GooglePlacePrediction | string | null | undefined): string {
+  if (value == null || typeof value === 'string') return value ?? '';
+  return value.structuredFormat.mainText.text;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 
 @Component({
   selector: 'app-location-search-field',
@@ -30,78 +59,73 @@ import { LocationCatalogService } from '../../../core/services/location-catalog.
 export class LocationSearchFieldComponent {
   private readonly catalog = inject(LocationCatalogService);
 
-  readonly mode        = input<'city' | 'area'>('city');
-  readonly label       = input<string>('');
-  readonly placeholder = input<string>('');
-  readonly value       = input<string>('');
+  // ── Inputs ───────────────────────────────────────────────────────────────────
 
-  readonly valueChanged = output<string>();
+  readonly mode        = input<LocationSearchMode>('city');
+  readonly label       = input('');
+  readonly placeholder = input('Search location');
+  readonly value       = input('');
+
+  // ── Outputs ──────────────────────────────────────────────────────────────────
+
+  readonly searchCommitted = output<string>();
+
+  // ── View state ───────────────────────────────────────────────────────────────
 
   readonly suggestions = signal<GooglePlacePrediction[]>([]);
-  readonly draft       = signal('');
 
-  readonly isAreaMode = computed(() => this.mode() === 'area');
-  readonly hasCity    = computed(() => this.catalog.selectedCityName() !== null);
-  readonly isDisabled = computed(() => this.isAreaMode() && !this.hasCity());
+  /** Mirrors the [value] input but can diverge while the user is mid-type. */
+  readonly draft = linkedSignal(() => this.value());
 
-  readonly icon = computed(() => this.isAreaMode() ? 'pin_drop' : 'location_on');
-  readonly resolvedLabel       = computed(() => this.label()       || (this.isAreaMode() ? 'Area'        : ''));
-  readonly resolvedPlaceholder = computed(() => this.placeholder() || (this.isAreaMode() ? 'Neighbourhood or road' : 'Search city'));
+  readonly icon = computed(() => ICON_BY_MODE[this.mode()]);
 
-  private readonly query$ = new Subject<string>();
+  // ── Template binding for mat-autocomplete [displayWith] ───────────────────────
+
+  readonly toDisplayName = toDisplayName;
+
+  // ── Private reactive pipeline ─────────────────────────────────────────────────
+
+  private readonly rawInput$ = new Subject<string>();
 
   constructor() {
-    effect(() => { this.draft.set(this.value()); });
+    /**
+     * Gate the raw stream once — both downstream pipes only see queries
+     * that are either empty (clear) or long enough to be meaningful.
+     */
+    const gatedInput$ = this.rawInput$.pipe(
+      filter(passesLengthGate),
+      share()
+    );
 
-    // Area mode: clear draft + suggestions when city changes.
-    effect(() => {
-      if (!this.isAreaMode()) return;
-      this.catalog.selectedCityName();
-      this.draft.set('');
-      this.suggestions.set([]);
-    }, { allowSignalWrites: true });
-
-    this.query$.pipe(
-      debounceTime(300),
+    // Autocomplete suggestions
+    gatedInput$.pipe(
+      debounceTime(SUGGESTION_DEBOUNCE_MS),
       distinctUntilChanged(),
-      switchMap(q => {
-        if (!q.trim()) return of([]);
-        const prefix = this.isAreaMode() ? (this.catalog.selectedCityName() ?? '') : '';
-        const fullQuery = prefix ? `${prefix} ${q}` : q;
-        return this.catalog.searchPlaces(fullQuery);
-      }),
+      switchMap(query => query.trim() ? this.catalog.searchPlaces(query) : of([])),
       takeUntilDestroyed()
-    ).subscribe(preds => this.suggestions.set(preds));
+    ).subscribe(predictions => this.suggestions.set(predictions));
+
+    // Committed search — navigates after the user pauses typing
+    gatedInput$.pipe(
+      debounceTime(SEARCH_DEBOUNCE_MS),
+      distinctUntilChanged(),
+      takeUntilDestroyed()
+    ).subscribe(query => this.searchCommitted.emit(query));
   }
 
-  displayValue = (v: GooglePlacePrediction | string | null | undefined): string => {
-    if (v == null || typeof v === 'string') return v ?? '';
-    return v.structuredFormat.mainText.text;
-  };
+  // ── Event handlers ────────────────────────────────────────────────────────────
 
   onInput(event: Event): void {
-    const v = (event.target as HTMLInputElement).value;
-    this.draft.set(v);
-    this.valueChanged.emit(v);
-    this.query$.next(v);
-    if (!v.trim()) {
-      this.suggestions.set([]);
-      if (!this.isAreaMode()) this.catalog.setSelectedCityName(null);
-    }
+    const rawValue = (event.target as HTMLInputElement).value;
+    this.draft.set(rawValue);
+    this.rawInput$.next(rawValue);
+    if (rawValue.trim().length < MIN_QUERY_LENGTH) this.suggestions.set([]);
   }
 
   onOptionSelected(event: MatAutocompleteSelectedEvent): void {
-    const pred = event.option.value as GooglePlacePrediction;
-    if (this.isAreaMode()) {
-      const name = pred.structuredFormat.mainText.text;
-      this.draft.set(name);
-      this.valueChanged.emit(name);
-    } else {
-      const { city } = this.catalog.parsePlaceCityNeighborhood(pred);
-      const name = city || pred.structuredFormat.mainText.text;
-      this.catalog.setSelectedCityName(name);
-      this.draft.set(name);
-      this.valueChanged.emit(name);
-    }
+    const prediction  = event.option.value as GooglePlacePrediction;
+    const displayName = prediction.structuredFormat.mainText.text;
+    this.draft.set(displayName);
+    this.searchCommitted.emit(displayName);
   }
 }

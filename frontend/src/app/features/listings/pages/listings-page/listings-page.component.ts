@@ -213,11 +213,11 @@ export class ListingsPageComponent {
   }
 
   private mapQueryParamsToRequest(params: import('@angular/router').ParamMap): ListingsQueryParams {
-    const subKey = params.get('subType') ?? params.get('subtype');
-    const rawTop = params.get('propertyType') ?? params.get('category');
+    const subKey    = params.get('subtype');
+    const rawTop    = params.get('propertyType') ?? params.get('category');
 
     let propertyTypeTop: string | undefined;
-    let subTypeApi: string | undefined;
+    let subtypeValue: string | undefined;
 
     const isCategory = (v: string | null | undefined) =>
       this.filtersCatalog.isKnownCategorySlug(v);
@@ -227,7 +227,7 @@ export class ListingsPageComponent {
     }
 
     if (subKey && subKey !== 'any') {
-      subTypeApi = subKey; // slug IS the api value in the new catalog
+      subtypeValue = subKey;
       if (!propertyTypeTop) {
         const grp = this.filtersCatalog.categoryForSubtypeSlug(subKey);
         if (grp) propertyTypeTop = grp;
@@ -235,12 +235,12 @@ export class ListingsPageComponent {
     }
 
     if (rawTop && rawTop !== 'any' && !isCategory(rawTop) && (!subKey || subKey === 'any')) {
-      const resolvedSlug = this.filtersCatalog.resolveSubtypeSlug(rawTop);
-      if (resolvedSlug) {
-        propertyTypeTop = this.filtersCatalog.categoryForSubtypeSlug(resolvedSlug) ?? undefined;
-        subTypeApi = resolvedSlug;
+      const resolvedName = this.filtersCatalog.resolveSubtypeSlug(rawTop);
+      if (resolvedName) {
+        propertyTypeTop = this.filtersCatalog.categoryForSubtypeSlug(resolvedName) ?? undefined;
+        subtypeValue    = resolvedName;
       } else {
-        subTypeApi = rawTop;
+        subtypeValue = rawTop;
       }
     }
 
@@ -252,7 +252,7 @@ export class ListingsPageComponent {
       purpose: (params.get('purpose') as 'For Sale' | 'For Rent' | null) ?? undefined,
       status: (params.get('status') as 'Draft' | 'Published' | null) ?? undefined,
       propertyType: propertyTypeTop,
-      subType: subTypeApi,
+      subtype: subtypeValue,
       locationName: params.get('locationName') ?? undefined,
       minPrice: this.toNumber(params.get('minPrice')),
       maxPrice: this.toNumber(params.get('maxPrice')),
@@ -263,7 +263,7 @@ export class ListingsPageComponent {
 
   private syncFilterFieldsFromParams(params: import('@angular/router').ParamMap): void {
     let primary = params.get('propertyType') ?? params.get('category') ?? 'any';
-    let subtype = params.get('subType') ?? params.get('subtype') ?? 'any';
+    let subtype = params.get('subtype') ?? 'any';
 
     if (primary !== 'any' && !this.filtersCatalog.isKnownCategorySlug(primary)) {
       const resolvedSlug = this.filtersCatalog.resolveSubtypeSlug(primary);
@@ -354,7 +354,7 @@ export class ListingsPageComponent {
     const priceRent: FilterSelectConfig = {
       id: 'price',
       label: 'Monthly Rent',
-      icon: 'payments',
+      icon: 'monetization_on',
       placeholder: 'Monthly rent',
       value: 'any',
       options: [
@@ -462,9 +462,8 @@ export class ListingsPageComponent {
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
       locationName: city || area || null,
       propertyType: !primaryType || primaryType === 'any' ? null : primaryType,
-      subType: !subtype || subtype === 'any' ? null : subtype,
+      subtype: !subtype || subtype === 'any' ? null : subtype,
       category: null,
-      subtype: null,
       minPrice: minPrice ?? null,
       maxPrice: maxPrice ?? null
     };
