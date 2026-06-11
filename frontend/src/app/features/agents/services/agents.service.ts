@@ -12,6 +12,10 @@ interface AgencyDto {
   logoUrl?: string;
 }
 
+interface AgenciesResponse {
+  data: { agencies: AgencyDto[] };
+}
+
 export interface AgentDto {
   _id: string;
   firstName: string;
@@ -26,12 +30,6 @@ export interface AgentDto {
   ratingCount?: number;
 }
 
-export interface FeaturedAgentDto extends AgentDto {
-  profileImageUrl: string;
-  rating: number;
-  ratingCount: number;
-}
-
 export interface AgentsResponse {
   data: { agents: AgentDto[] };
   page: number;
@@ -39,17 +37,12 @@ export interface AgentsResponse {
   total: number;
 }
 
-export interface FeaturedAgentsResponse {
-  success: boolean;
-  count: number;
-  data: { agents: FeaturedAgentDto[] };
-}
-
 export interface AgentsQueryParams {
   page?: number;
   limit?: number;
   name?: string;
   location?: string;
+  agencyName?: string;
   specialty?: string;
   minRating?: number;
   sortBy?: string;
@@ -65,12 +58,21 @@ export interface AgentsResult {
 
 @Injectable({ providedIn: 'root' })
 export class AgentsService {
-  private readonly http        = inject(HttpClient);
-  private readonly baseUrl     = `${environment.apiUrl}/api/users/agents`;
-  private readonly featuredUrl = `${environment.apiUrl}/api/users/agents/featured`;
+  private readonly http         = inject(HttpClient);
+  private readonly baseUrl      = `${environment.apiUrl}/api/agents/all`;
+  private readonly featuredUrl  = `${environment.apiUrl}/api/agents/featured`;
+  private readonly agenciesUrl  = `${environment.apiUrl}/api/agencies`;
+
+  getAgencies(): Observable<string[]> {
+    return this.http.get<AgenciesResponse>(this.agenciesUrl).pipe(
+      map(res => res.data.agencies.map(a => a.name).filter(Boolean)),
+      catchError(() => of([]))
+    );
+  }
 
   getFeaturedAgents(): Observable<AgentItem[]> {
-    return this.http.get<FeaturedAgentsResponse>(this.featuredUrl).pipe(
+    const params = new HttpParams().set('limit', '3');
+    return this.http.get<AgentsResponse>(this.featuredUrl, { params }).pipe(
       map(res => res.data.agents.map(a => this.toAgentItem(a))),
       catchError(() => of([]))
     );
@@ -102,14 +104,15 @@ export class AgentsService {
   private buildParams(params: AgentsQueryParams): HttpParams {
     let p = new HttpParams();
     const entries: [string, string | number | undefined][] = [
-      ['page',      params.page],
-      ['limit',     params.limit],
-      ['name',      params.name],
-      ['location',  params.location],
-      ['specialty', params.specialty],
-      ['minRating', params.minRating],
-      ['sortBy',    params.sortBy],
-      ['sortOrder', params.sortOrder]
+      ['page',       params.page],
+      ['limit',      params.limit],
+      ['name',       params.name],
+      ['location',   params.location],
+      ['agencyName', params.agencyName],
+      ['specialty',  params.specialty],
+      ['minRating',  params.minRating],
+      ['sortBy',     params.sortBy],
+      ['sortOrder',  params.sortOrder]
     ];
     for (const [key, value] of entries) {
       if (value !== undefined && value !== null && value !== '') {
