@@ -79,7 +79,7 @@ export class ContactAgentFormComponent {
   readonly form = this.fb.nonNullable.group({
     name:    ['', [Validators.required, Validators.minLength(2)]],
     email:   ['', [Validators.required, Validators.email]],
-    phone:   ['', [Validators.required, Validators.minLength(7)]],
+    phone:   ['', [Validators.required, Validators.minLength(10)]],
     message: ['', [Validators.required, Validators.minLength(10)]]
   });
 
