@@ -18,6 +18,10 @@ import {
   AppointmentBookingPayload,
   AppointmentOverlayData
 } from '../../../../core/models/appointment.models';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { ConversationService } from '../../services/conversation.service';
+import { CreateConversationDto } from '@/features/auth/models/conversation.model';
+import { ContactAgentFormData } from '@/shared/ui/contact-agent-form/contact-agent-form.component';
 import { AppointmentOverlayService } from '../../../../shared/services/appointment-overlay.service';
 import { SavedPropertiesService } from '../../../../core/services/saved-properties.service';
 import { ShareService } from '../../../../core/services/share.service';
@@ -33,8 +37,11 @@ import { ListingItem } from '../../../../core/models/listing.models';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ListingDetailPageComponent {
-  private readonly route              = inject(ActivatedRoute);
-  private readonly listingsService    = inject(ListingsService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly listingsService = inject(ListingsService);
+  private readonly conversationService = inject(ConversationService);
+  private readonly snackBar = inject(MatSnackBar);
+  ;
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
   private readonly savedService          = inject(SavedPropertiesService);
   private readonly shareService          = inject(ShareService);
@@ -42,7 +49,8 @@ export class ListingDetailPageComponent {
 
   readonly detail        = signal<PropertyDetailViewModel | null>(null);
   readonly detailLoading = signal(false);
-  readonly detailError   = signal<string | null>(null);
+  readonly detailError = signal<string | null>(null);
+  readonly resetInquiryForm = signal(0);
 
   /** Reactively true when the current property is in the saved list */
   readonly isSaved = computed(() => this.savedService.isSaved(this.detail()?.id ?? ''));
@@ -162,6 +170,35 @@ export class ListingDetailPageComponent {
 
   onVideoSelected(videoId: string): void {
     console.log('video selected', videoId);
+  }
+
+  onInquirySubmitted(inquiry: ContactAgentFormData): void {
+    console.log('inquiry submitted', inquiry);
+    let payload: CreateConversationDto = {
+      propertyId: this.detail()?.id ?? '',
+      propertyTitle: this.detail()?.listingTitle ?? '',
+      propertyPrice: this.detail()?.price ?? '',
+      recipientId: this.detail()?.agent.userId ?? '',
+      sellerName: this.detail()?.agent.name ?? '',
+      senderEmail: inquiry.email ?? '',
+      senderName: inquiry.name ?? '',
+      senderPhone: inquiry.phone ?? '',
+      message: inquiry.message ?? ''
+    };
+
+    this.conversationService.create(payload).subscribe({
+      next: (res: any) => {
+        if (res?.success) {
+          this.snackBar.open(res.message ?? 'Inquiry sent successfully.', 'Close', { duration: 4000 });
+          this.resetInquiryForm.update(v => v + 1);
+        } else {
+          this.snackBar.open(res?.message ?? 'Failed to send inquiry. Please try again.', 'Close', { duration: 4000 });
+        }
+      },
+      error: (err) => {
+        this.snackBar.open(err?.error?.message ?? 'Failed to send inquiry. Please try again.', 'Close', { duration: 4000 });
+      }
+    });
   }
 
   onNearbyFavoriteToggled(id: string): void {

@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
@@ -48,9 +48,6 @@ export interface ListingsResult {
 export class ListingsService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = `${environment.apiUrl}/api/properties`;
-  // TODO: Replace hardcoded token with real auth flow
-  // ⚠️ Token expires in 3 days — regenerate via POST /api/auth/login when it does
-  private readonly authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWQ5NzEyNjdjNjZlZTgwZGYxOGJhMTciLCJlbWFpbCI6ImFsaUBleGFtcGxlLmNvbSIsImlhdCI6MTc3NTg1Nzk2MiwiZXhwIjoxNzc2MTE3MTYyfQ.DdPilNsci0c42NgUfEArZlTPqyb1o0Qk45gEY7Z7Ois';
 
   /**
    * Same GET /api/properties page as `resolvePropertyMongoId`, plus owner `userId` for the
@@ -76,16 +73,13 @@ export class ListingsService {
   }
 
   private getDefaultPropertiesPage(): Observable<ListingsApiResponse> {
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.authToken}`
-    });
     const httpParams = new HttpParams()
       .set('page', '1')
       .set('limit', '20')
       .set('sortBy', 'createdAt')
       .set('sortOrder', 'desc');
 
-    return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams, headers });
+    return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams });
   }
 
   private ownerUserIdFromApiProperty(property: ListingsApiProperty): string | undefined {
@@ -107,11 +101,8 @@ export class ListingsService {
     if (!trimmed) {
       return of(null);
     }
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.authToken}`
-    });
     const url = `${this.baseUrl}/${encodeURIComponent(trimmed)}`;
-    return this.http.get<unknown>(url, { headers }).pipe(
+    return this.http.get<unknown>(url).pipe(
       map((body) => this.parseSinglePropertyResponse(body)),
       catchError(() => of(null))
     );
@@ -145,11 +136,8 @@ export class ListingsService {
 
   getListings(params: ListingsQueryParams = {}): Observable<ListingsResult> {
     const httpParams = this.buildHttpParams(params);
-    const headers = new HttpHeaders({
-      Authorization: `Bearer ${this.authToken}`
-    });
 
-    return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams, headers }).pipe(
+    return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams }).pipe(
       // Map API response shape into UI-friendly model
       map((response) => ({
         items: response.data.properties.map((property) => this.mapToListingItem(property)),

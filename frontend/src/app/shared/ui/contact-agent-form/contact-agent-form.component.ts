@@ -3,6 +3,8 @@ import {
   Component,
   EventEmitter,
   Output,
+  computed,
+  effect,
   inject,
   input
 } from '@angular/core';
@@ -22,6 +24,13 @@ import { InquiryService } from '../../../core/services/inquiry.service';
 import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
 import { AppointmentOverlayService } from '../../services/appointment-overlay.service';
 
+export interface ContactAgentFormData {
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+}
+
 @Component({
   selector: 'app-contact-agent-form',
   standalone: true,
@@ -40,12 +49,11 @@ export class ContactAgentFormComponent {
   private readonly inquiryService = inject(InquiryService);
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
 
-  // ── Inputs ───────────────────────────────────────────────────────────────
-
-  readonly agent        = input.required<PropertyAgent>();
-  readonly submitLabel  = input('Request a tour');
-  readonly secondary1   = input('Book appointment');
-  readonly secondary2   = input('Ask a question');
+  readonly agent = input.required<PropertyAgent>();
+  readonly resetTrigger = input(0);
+  readonly submitLabel = input('Request a tour');
+  readonly secondary1 = input('Book appointment');
+  readonly secondary2 = input('Ask a question');
   readonly defaultMessage = input('');
 
   readonly listingId       = input('');
@@ -71,9 +79,15 @@ export class ContactAgentFormComponent {
   readonly form = this.fb.nonNullable.group({
     name:    ['', [Validators.required, Validators.minLength(2)]],
     email:   ['', [Validators.required, Validators.email]],
-    phone:   ['', [Validators.required, Validators.minLength(7)]],
+    phone:   ['', [Validators.required, Validators.minLength(10)]],
     message: ['', [Validators.required, Validators.minLength(10)]]
   });
+
+  constructor() {
+    effect(() => {
+      if (this.resetTrigger() > 0) this.form.reset();
+    });
+  }
 
   ngOnInit(): void {
     this.form.patchValue({ message: this.defaultMessage() });

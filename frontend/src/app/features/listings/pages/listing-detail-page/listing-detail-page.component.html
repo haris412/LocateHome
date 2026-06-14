@@ -10,6 +10,7 @@
 } @else if (detail(); as vm) {
   <app-listing-detail-shell
     [vm]="vm"
+    [resetInquiryForm]="resetInquiryForm()"
     [isSaved]="isSaved()"
     (back)="onBack()"
     (share)="onShare()"

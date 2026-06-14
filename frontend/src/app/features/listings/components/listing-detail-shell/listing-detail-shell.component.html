@@ -135,6 +135,7 @@
     <div class="col-12 col-xl-4">
       <div class="listing-detail-shell__sidebar">
         <app-contact-agent-form [agent]="vm().agent"
+                                [resetTrigger]="resetInquiryForm()"
                                 [submitLabel]="vm().inquiry.submitLabel || 'Request a tour'"
                                 [secondary1]="vm().inquiry.secondary1 || 'Book appointment'"
                                 [secondary2]="vm().inquiry.secondary2 || 'Ask a question'"
