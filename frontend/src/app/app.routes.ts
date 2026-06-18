@@ -2,6 +2,8 @@ import { Routes } from '@angular/router';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { HomePageComponent } from './features/home/pages/home-page/home-page.component';
 import { AgentsPageComponent } from './features/agents/pages/agents-page/agents-page.component';
+import { ContactPageComponent } from './features/contact/pages/contact-page/contact-page.component';
+import { PrivacyPolicyPageComponent } from './features/privacy-policy/pages/privacy-policy-page/privacy-policy-page.component';
 
 export const appRoutes: Routes = [
   { path: 'home', component: HomePageComponent },
@@ -23,5 +25,13 @@ export const appRoutes: Routes = [
   {
     path: 'agents',
     component: AgentsPageComponent
+  },
+  {
+    path: 'contact',
+    component: ContactPageComponent
+  },
+  {
+    path: 'privacy-policy',
+    component: PrivacyPolicyPageComponent
   }
 ];
