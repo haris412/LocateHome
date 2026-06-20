@@ -4,6 +4,7 @@ import { HomePageComponent } from './features/home/pages/home-page/home-page.com
 import { AgentsPageComponent } from './features/agents/pages/agents-page/agents-page.component';
 import { ContactPageComponent } from './features/contact/pages/contact-page/contact-page.component';
 import { PrivacyPolicyPageComponent } from './features/privacy-policy/pages/privacy-policy-page/privacy-policy-page.component';
+import { ReportIssuePageComponent } from './features/report-issue/pages/report-issue-page/report-issue-page.component';
 
 export const appRoutes: Routes = [
   { path: 'home', component: HomePageComponent },
@@ -33,5 +34,9 @@ export const appRoutes: Routes = [
   {
     path: 'privacy-policy',
     component: PrivacyPolicyPageComponent
+  },
+  {
+    path: 'report-issue',
+    component: ReportIssuePageComponent
   }
 ];
