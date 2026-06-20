@@ -51,7 +51,7 @@ export class FooterSectionComponent {
       title: 'Support',
       links: [
         { id: 'a', label: 'Help center', href: '/home' },
-        { id: 'b', label: 'Guides & resources', href: '/home' },
+        { id: 'b', label: 'Guides & resources', href: '/guides' },
         { id: 'c', label: 'Contact Us', href: '/contact' },
         { id: 'd', label: 'Report an issue', href: '/report-issue' }
       ]

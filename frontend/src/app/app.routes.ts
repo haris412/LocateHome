@@ -5,6 +5,7 @@ import { AgentsPageComponent } from './features/agents/pages/agents-page/agents-
 import { ContactPageComponent } from './features/contact/pages/contact-page/contact-page.component';
 import { PrivacyPolicyPageComponent } from './features/privacy-policy/pages/privacy-policy-page/privacy-policy-page.component';
 import { ReportIssuePageComponent } from './features/report-issue/pages/report-issue-page/report-issue-page.component';
+import { GuidesPageComponent } from './features/guides/pages/guides-page/guides-page.component';
 
 export const appRoutes: Routes = [
   { path: 'home', component: HomePageComponent },
@@ -38,5 +39,9 @@ export const appRoutes: Routes = [
   {
     path: 'report-issue',
     component: ReportIssuePageComponent
+  },
+  {
+    path: 'guides',
+    component: GuidesPageComponent
   }
 ];
