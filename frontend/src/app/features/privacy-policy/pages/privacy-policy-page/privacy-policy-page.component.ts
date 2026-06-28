@@ -71,6 +71,6 @@ const POLICY_SECTIONS: PolicySection[] = [
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PrivacyPolicyPageComponent {
-  readonly lastUpdated  = LAST_UPDATED;
-  readonly sections     = POLICY_SECTIONS;
+  readonly lastUpdated = LAST_UPDATED;
+  readonly sections    = POLICY_SECTIONS;
 }
