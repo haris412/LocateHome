@@ -393,7 +393,7 @@ export class AppointmentOverlayComponent {
 
     const formValue = this.form.getRawValue();
     const userId = this.scheduleUserId()?.trim() || this.data().agentUserId?.trim();
-  let { phoneNumber } = this.form.getRawValue(); 
+    let { phoneNumber } = this.form.getRawValue(); 
       phoneNumber = phoneNumber?.replace(/\s+/g, '').replace(/-/g, '');
     const payload: AppointmentBookingPayload = {
       listingId: this.data().listing.propertyId,
