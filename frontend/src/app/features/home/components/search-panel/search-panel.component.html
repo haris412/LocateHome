@@ -27,50 +27,17 @@
                             [displayWith]="displayLocation"
                             [autoActiveFirstOption]="true"
                             (optionSelected)="onLocationSelected($event)">
-            @for (pred of locationSuggestions(); track trackPrediction($index, pred)) {
-            <mat-option [value]="pred">
-              <span class="search-panel__place-main">{{ pred.structuredFormat.mainText.text }}</span>
-              @if (pred.structuredFormat.secondaryText?.text) {
-              <span class="search-panel__place-secondary">{{ pred.structuredFormat.secondaryText!.text }}</span>
+            @for (loc of locationSuggestions(); track trackPrediction($index, loc)) {
+            <mat-option [value]="loc">
+              <span class="search-panel__place-main">{{ loc.structuredFormat.mainText.text }}</span>
+              @if (loc.structuredFormat.secondaryText?.text) {
+              <span class="search-panel__place-secondary">{{ loc.structuredFormat.secondaryText!.text }}</span>
               }
             </mat-option>
             }
           </mat-autocomplete>
         </mat-form-field>
       </div>
-
-      <!-- <div class="search-panel__price-field">
-        <span class="search-panel__price-label">Min price</span>
-        <mat-form-field appearance="outline"
-                        class="search-panel__field-control">
-          <mat-select [value]="priceRange().min"
-                      (selectionChange)="onMinPriceSelected($any($event.value))"
-                      aria-label="Minimum price">
-            <mat-option [value]="null">Any</mat-option>
-            @for (option of priceRangeOptions()?.min?.options ?? []; track option) {
-            <mat-option [value]="option">{{ formatPrice(option) }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div>
-
-      <span class="search-panel__price-separator"
-            aria-hidden="true">-</span>
-
-      <div class="search-panel__price-field">
-        <span class="search-panel__price-label">Max price</span>
-        <mat-form-field appearance="outline"
-                        class="search-panel__field-control">
-          <mat-select [value]="priceRange().max"
-                      (selectionChange)="onMaxPriceSelected($any($event.value))"
-                      aria-label="Maximum price">
-            <mat-option [value]="null">Any</mat-option>
-            @for (option of priceRangeOptions()?.max?.options ?? []; track option) {
-            <mat-option [value]="option">{{ formatPrice(option) }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-      </div> -->
 
       <div class="search-panel__actions">
         <button type="button"
@@ -139,23 +106,5 @@
       </p>
     </div>
     }
-
-    <!--
-      Intentionally hidden for the dark command-bar redesign.
-      Keep these bindings and controls for a future advanced-filter restore:
-      province, neighborhood/area autocomplete, primaryType, subtype,
-      app-price-range-field, bedrooms, bathrooms, size, quickChips,
-      showMoreFilters/toggleMoreFilters, and toggleChip.
-
-      Previous advanced controls:
-      - Province select: [value]="province()" (selectionChange)="province.set($any($event.value))"
-      - Area input: [formControl]="neighborhoodControl" (optionSelected)="onAreaOptionSelected($event)"
-      - Property type: [value]="primaryType()" (selectionChange)="onPrimaryTypeSelected($any($event.value))"
-      - Subtype: [value]="subtype()" (selectionChange)="onSubtypeSelected($any($event.value))"
-      - Price range: <app-price-range-field [mode]="priceRangeMode()" (rangeChange)="onPriceRangeChange($event)" />
-      - Bedrooms/bathrooms/size selects update bedrooms(), bathrooms(), and size()
-      - Quick chips call toggleChip(chip.id)
-      - More filters calls toggleMoreFilters()
-    -->
   </div>
 </section>

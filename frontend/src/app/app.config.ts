@@ -5,6 +5,7 @@ import { authInterceptor } from './core/interceptors/auth.interceptor';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { provideNativeDateAdapter } from '@angular/material/core';
+import { provideToastr } from 'ngx-toastr';
 
 import { appRoutes } from './app.routes';
 
@@ -21,6 +22,7 @@ export const appConfig: ApplicationConfig = {
 
     provideAnimationsAsync(),
     provideNativeDateAdapter(),
+    provideToastr(),
 
     // Tells Angular to reuse server-rendered HTML instead of re-rendering on the client.
     // withEventReplay() queues user interactions that happen before hydration completes.

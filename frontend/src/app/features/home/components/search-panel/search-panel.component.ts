@@ -30,36 +30,7 @@ import {
   SpeechRecognitionEventLike,
   SpeechRecognitionLike
 } from './speech-recognition.types';
-
-// ─── Public types ─────────────────────────────────────────────────────────────
-
-export type SearchMode = 'buy' | 'rent' | 'sell';
-
-export interface SearchPanelSearchPayload {
-  mode: SearchMode;
-  keyword: string;
-  /** Top-level property type slug: homes | plots | commercial | any */
-  primaryType: string;
-  /** Subtype slug (kebab-case) or 'any' */
-  subtype: string;
-  locationName: string;
-  minPrice: number | null;
-  maxPrice: number | null;
-  bedrooms: string;
-  bathrooms: string;
-  size: string;
-}
-
-// ─── Private types ────────────────────────────────────────────────────────────
-
-interface QuickChip {
-  id: string;
-  label: string;
-  icon?: string;
-  active?: boolean;
-}
-
-// ─── Component ────────────────────────────────────────────────────────────────
+import { SearchPayload, SearchMode } from '../../../../core/interfaces/search-payload.interface';
 
 @Component({
   selector: 'app-search-panel',
@@ -81,7 +52,7 @@ export class SearchPanelComponent {
   private readonly locationCatalog = inject(LocationCatalogService);
   private readonly filtersCatalog  = inject(FiltersCatalogService);
 
-  readonly search = output<SearchPanelSearchPayload>();
+  readonly search = output<SearchPayload>();
 
   // ── Tab / mode ──────────────────────────────────────────────────────────
 
@@ -120,19 +91,6 @@ export class SearchPanelComponent {
   readonly bedroomOptions  = ['Any', '1+', '2+', '3+', '4+'];
   readonly bathroomOptions = ['Any', '1+', '2+', '3+'];
   readonly sizeOptions     = ['Any', '500+ sqft', '1,000+ sqft', '2,000+ sqft'];
-
-  // ── Quick-filter chips ──────────────────────────────────────────────────
-
-  readonly quickChips = signal<QuickChip[]>([
-    { id: 'voice-enabled',     label: 'Voice enabled search', icon: 'graphic_eq', active: false },
-    { id: 'new-projects',      label: 'New projects',         icon: 'auto_awesome' },
-    { id: 'ready-to-move',     label: 'Ready to move' },
-    { id: 'pet-friendly',      label: 'Pet friendly' },
-    { id: 'parking',           label: 'Parking' },
-    { id: 'video-tours',       label: 'Video tours' },
-    { id: 'verified-listings', label: 'Verified listings' }
-  ]);
-
   readonly showMoreFilters = signal(false);
   readonly showVoicePanel = signal(false);
 
@@ -240,13 +198,6 @@ export class SearchPanelComponent {
     const symbol = this.filtersCatalog.priceRanges()?.symbol ?? 'PKR';
     return `${symbol} ${value.toLocaleString()}`;
   }
-
-  toggleChip(id: string): void {
-    this.quickChips.update(chips =>
-      chips.map(chip => chip.id === id ? { ...chip, active: !chip.active } : chip)
-    );
-  }
-
   toggleMoreFilters(): void {
     this.showMoreFilters.update(v => !v);
   }
@@ -342,9 +293,9 @@ export class SearchPanelComponent {
       const clean = transcript.trim();
       if (clean) {
         this.keyword.set(`"${clean}"`);
-        this.quickChips.update(chips =>
-          chips.map(c => c.id === 'voice-enabled' ? { ...c, active: true } : c)
-        );
+        // this.quickChips.update(chips =>
+        //   chips.map(c => c.id === 'voice-enabled' ? { ...c, active: true } : c)
+        // );
       }
     };
 

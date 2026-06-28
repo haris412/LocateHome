@@ -6,7 +6,7 @@ import {
 } from '../../../core/models/property-detail.vm';
 import { resolvePropertyImageUrlForDisplay } from './property-image-url.util';
 
-const DEFAULT_AGENT_IMAGE = 'assets/images/people/agent-1.png';
+const DEFAULT_AGENT_IMAGE = 'assets/svgs/agent_avatar.svg';
 
 function formatPrice(price: number, purpose: ListingPurpose): string {
   const formatted = new Intl.NumberFormat('en-US', {
@@ -120,10 +120,10 @@ export function mapApiPropertyToDetailView(property: ListingsApiProperty): Prope
     videos,
     agent: {
       name: property.contactName?.trim() || 'Property contact',
-      role: 'Listing agent',
+      role: 'Property agent',
       imageUrl: DEFAULT_AGENT_IMAGE,
       userId: ownerUserId(property),
-      blurb: 'Ask about terms, availability, move-in date or request an in-person or video tour.',
+      blurb: '',
       email: property.contactEmail,
       phone: property.contactPhoneNumber
     },

@@ -39,13 +39,17 @@
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="w-100">
+        <!-- <mat-form-field appearance="outline" class="w-100">
           <mat-label>Your phone</mat-label>
           <input matInput formControlName="phone" />
           @if (form.controls.phone.hasError('required') && form.controls.phone.touched) {
             <mat-error>Phone is required</mat-error>
           }
-        </mat-form-field>
+        </mat-form-field> -->
+        <!-- <div class="w-100"> -->
+          <ngx-material-intl-tel-input [preferredCountries]="['sa', 'us']" [enablePlaceholder]="true" [enableSearch]="true"
+            [mainLabel]="'Mobile number'" [fieldControlName]="'phoneNumber'" />
+        <!-- </div> -->
 
         <mat-form-field appearance="outline" class="w-100">
           <mat-label>Message</mat-label>
@@ -54,10 +58,6 @@
             <mat-error>Message is required</mat-error>
           }
         </mat-form-field>
-
-        @if (submitError()) {
-          <p class="agent-form__error">{{ submitError() }}</p>
-        }
 
         <button type="submit"
                 class="agent-form__primary-btn w-100"

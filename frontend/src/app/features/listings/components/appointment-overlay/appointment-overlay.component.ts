@@ -458,7 +458,7 @@ export class AppointmentOverlayComponent {
       .subscribe({
         next: () => {
           this.confirmLoading.set(false);
-          this.showBookingToast('Your appointment has been booked.', 6000);
+          this.showBookingToast('Appointment created successfully.', 6000);
           this.confirmed.emit(payload);
         },
         error: () => {

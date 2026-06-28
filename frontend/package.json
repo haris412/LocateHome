@@ -22,9 +22,11 @@
     "@angular/platform-server": "^20.3.17",
     "@angular/router": "^20.3.17",
     "@angular/ssr": "^20.3.19",
-    "country-state-city": "^3.2.1",
     "bootstrap": "^5.3.8",
+    "country-state-city": "^3.2.1",
     "express": "^4.22.1",
+    "ngx-material-intl-tel-input": "^20.1.2",
+    "ngx-toastr": "^20.0.5",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.1"
