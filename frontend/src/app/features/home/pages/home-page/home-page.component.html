@@ -33,27 +33,10 @@
                                        [items]="hotListings()"
                                        [smallContent]="true"
                                        (favoriteToggled)="onFavoriteToggled($event)" />
-        <!-- <div class="row g-4 align-items-start">
-          <div class="col-12 col-lg-4">
-            <app-trending-panel [items]="trendItems()" />
-          </div>
-
-          <div class="col-12 col-lg-8">
-          </div>
-        </div> -->
       </div>
-      <!-- <div class="home-page__section">
-        <app-categories-section
-          [items]="categories()"
-          (categoryCtaClicked)="onCategoryCtaClicked($event)"
-        />
-      </div> -->
       <div class="home-page__section">
         <app-valuation-section />
       </div>
-      <!-- <div class="home-page__section">
-        <app-testimonials-section [items]="testimonials()" />
-      </div> -->
       <div class="home-page__section">
         <app-agents-section [items]="agents()" />
       </div>
