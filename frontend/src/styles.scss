@@ -2,6 +2,10 @@
 @use "./styles/theme-colors" as theme;
 @import "ngx-toastr/toastr";
 
+.cdk-overlay-container {
+  z-index: 3000;
+}
+
 html {
   color-scheme: light dark;
 

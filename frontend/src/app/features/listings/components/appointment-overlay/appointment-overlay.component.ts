@@ -36,6 +36,9 @@ import {
   parseAppointmentsResponse,
   parseWeeklyAvailabilityResponse
 } from '../../utils/appointment-schedule.util';
+import { NgxMaterialIntlTelInputComponent } from 'ngx-material-intl-tel-input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-appointment-overlay',
@@ -48,7 +51,10 @@ import {
     MatNativeDateModule,
     MatInputModule,
     MatCalendar,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatAutocompleteModule,
+    MatSelectModule,
+    NgxMaterialIntlTelInputComponent
   ],
   templateUrl: './appointment-overlay.component.html',
   styleUrl: './appointment-overlay.component.scss',
@@ -116,7 +122,7 @@ export class AppointmentOverlayComponent {
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(2)]],
     email: ['', [Validators.required, Validators.email]],
-    phone: ['', [Validators.required, Validators.minLength(7)]]
+    phoneNumber: ['', [Validators.required, Validators.minLength(7)]]
   });
 
   readonly effectiveDateSlots = computed(() => {
@@ -195,7 +201,7 @@ export class AppointmentOverlayComponent {
       this.form.patchValue({
         name: this.data().initialName ?? '',
         email: this.data().initialEmail ?? '',
-        phone: this.data().initialPhone ?? ''
+        phoneNumber: this.data().initialPhone ?? ''
       });
 
       const candidatePropertyId = this.data().listing.propertyId?.trim() ?? '';
@@ -396,7 +402,7 @@ export class AppointmentOverlayComponent {
       slotLabel: slot.label,
       name: formValue.name,
       email: formValue.email,
-      phone: formValue.phone
+      phone: formValue.phoneNumber
     };
 
     if (!userId) {
@@ -444,7 +450,7 @@ export class AppointmentOverlayComponent {
             client: {
               name: formValue.name,
               email: formValue.email,
-              phone: formValue.phone
+              phone: formValue.phoneNumber
             },
             appointmentType: 'Property viewing'
           });

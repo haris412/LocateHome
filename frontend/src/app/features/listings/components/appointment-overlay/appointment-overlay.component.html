@@ -168,12 +168,14 @@
               </div>
 
               <div class="col-12 col-md-6">
-                <mat-form-field appearance="outline"
+                <!-- <mat-form-field appearance="outline"
                                 class="w-100">
                   <mat-label>Phone number</mat-label>
                   <input matInput
                          formControlName="phone" />
-                </mat-form-field>
+                </mat-form-field> -->
+          <ngx-material-intl-tel-input [preferredCountries]="['sa', 'us']" [enablePlaceholder]="true" [enableSearch]="true"
+            [mainLabel]="'Mobile number'" [fieldControlName]="'phoneNumber'" />
               </div>
             </form>
           </section>

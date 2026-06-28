@@ -24,7 +24,7 @@ import { NgxMaterialIntlTelInputComponent } from 'ngx-material-intl-tel-input';
 import { AppointmentOverlayService } from '../../services/appointment-overlay.service';
 import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
-import { catchError, finalize, of, throwError } from 'rxjs';
+import { catchError, finalize, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
 export interface ContactAgentFormData {
