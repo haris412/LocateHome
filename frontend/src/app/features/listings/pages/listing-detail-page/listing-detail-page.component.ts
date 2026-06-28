@@ -182,7 +182,7 @@ export class ListingDetailPageComponent {
       sellerName: this.detail()?.agent.name ?? '',
       senderEmail: inquiry.email ?? '',
       senderName: inquiry.name ?? '',
-      senderPhone: inquiry.phone ?? '',
+      senderPhone: inquiry.phoneNumber ?? '',
       message: inquiry.message ?? ''
     };
 

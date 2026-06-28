@@ -19,15 +19,6 @@ export interface CategoryItem {
   purpose?: CategoryPurpose;
 }
 
-export interface TestimonialItem {
-  id: string;
-  name: string;
-  role: string;
-  avatarUrl: string;
-  rating: string;
-  review: string;
-}
-
 export interface AgentItem {
   id: string;
   name: string;
@@ -43,9 +34,5 @@ export interface AgentItem {
   properties?: number
 }
 
-export interface StatPillItem {
-  id: string;
-  label: string;
-  value: string;
-}
+
 

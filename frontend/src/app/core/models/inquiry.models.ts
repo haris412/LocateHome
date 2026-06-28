@@ -5,7 +5,7 @@ export interface InquiryRequest {
   type:       InquiryType;
   name:       string;
   email:      string;
-  phone:      string;
+  phoneNumber:      string;
   message:    string;
 }
 

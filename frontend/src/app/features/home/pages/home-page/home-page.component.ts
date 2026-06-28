@@ -5,19 +5,17 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import {
   CategoryItem,
-  StatPillItem,
-  TestimonialItem,
   TrendItem
 } from '@/core/models/home.models';
 import { ListingItem } from '@/core/models/listing.models';
 import { AgentsService } from '../../../agents/services/agents.service';
-import { SearchPanelSearchPayload } from '../../components/search-panel/search-panel.component';
 import { HeroSectionComponent } from '../../components/hero-section/hero-section.component';
 import { SearchPanelComponent } from '../../components/search-panel/search-panel.component';
 import { ListingsCarouselSectionComponent } from '@/shared/ui/listings-carousel-section/listings-carousel-section.component';
 import { AgentsSectionComponent } from '../../components/agents-section/agents-section.component';
 import { AppPromoSectionComponent } from '../../components/app-promo-section/app-promo-section.component';
 import { ValuationSectionComponent } from "../../components/valuation-section/valuation-section.component";
+import { SearchPayload } from '@/core/interfaces/search-payload.interface';
 
 @Component({
   selector: 'app-home-page',
@@ -41,11 +39,6 @@ export class HomePageComponent {
 
   /** Directly reads the service signal — no local copy, always in sync */
   readonly savedProperties = this.savedService.savedListings;
-  readonly heroStats = signal<StatPillItem[]>([
-    { id: '1', label: 'Properties', value: '12k+' },
-    { id: '2', label: 'Verified agents', value: '1.2k' },
-    { id: '3', label: 'Tours watched', value: '85k+' }
-  ]);
 
   readonly featuredListings = signal<ListingItem[]>([
     { id: '1', title: 'Beverly Hills Mansion', address: '1241 Laurel Way, Beverly Hills, CA', price: '$2,850,000', badge: 'For Sale', badgeVariant: 'sale', imageUrl: 'assets/images/listings/featured-1.png', beds: 5, baths: 6, area: '8,400 sqft', favorite: false },
@@ -71,24 +64,10 @@ export class HomePageComponent {
     { id: '3', city: 'Miami, FL', demand: 'Rental demand', growth: '+11.2%', summary: 'Luxury coastal properties continue to attract attention.' }
   ]);
 
-  readonly categories = signal<CategoryItem[]>([
-    { id: '1', imgSrc: 'assets/images/home/buy-home.png', title: 'Buy a home', description: 'Browse verified listings with HD video tours, neighborhood insights and real-time market data.', meta: ['Market trends', 'Price history', 'Agent support'], ctaLabel: 'Start buying journey', purpose: 'For Sale' },
-    { id: '2', imgSrc: 'assets/images/home/rent-home.png', title: 'Rent a home', description: 'Find the best rentals with virtual showings, instant applications and secure online payments.', meta: ['Verified rentals', 'Flexible leases', 'No hidden fees'], ctaLabel: 'Explore rentals', purpose: 'For Rent' },
-    { id: '3', imgSrc: 'assets/images/home/sell-home.png', title: 'Sell a home', description: 'Showcase your property with immersive video tours, professional insights and smart pricing tools.', meta: ['Free valuation', 'Expert guidance', 'Wider reach'], ctaLabel: 'Start selling' }
-  ]);
-
-  readonly testimonials = signal<TestimonialItem[]>([
-    { id: '1', name: 'Emily Carter', role: 'Buyer in San Diego', avatarUrl: 'assets/images/people/testimonial-1.jpg', rating: '4.8', review: 'The video tours made it so much easier to shortlist homes before visiting in person.' },
-    { id: '2', name: 'James Hudson', role: 'Seller in Seattle', avatarUrl: 'assets/images/people/testimonial-2.jpg', rating: '5.0', review: 'I listed with live walkthroughs and the engagement was noticeably higher than other portals.' },
-    { id: '3', name: 'Sandra Parker', role: 'Renter in Austin', avatarUrl: 'assets/images/people/testimonial-3.jpg', rating: '4.9', review: 'The process felt modern, simple and transparent from first search to final move.' }
-  ]);
-
   readonly agents = toSignal(
     this.agentsService.getFeaturedAgents(),
     { initialValue: [] }
   );
-
-
 
   readonly appPromoBullets = signal<string[]>([
     'Voice-enabled property search',
@@ -97,7 +76,7 @@ export class HomePageComponent {
     'Saved homes sync across devices'
   ]);
 
-  onSearchRequested(payload: SearchPanelSearchPayload): void {
+  onSearchRequested(payload: SearchPayload): void {
     this.router.navigate(['/listings'], {
       queryParams: this.buildListingsRouteQuery(payload)
     });
@@ -118,7 +97,7 @@ export class HomePageComponent {
   }
 
   private buildListingsRouteQuery(
-    payload: SearchPanelSearchPayload
+    payload: SearchPayload
   ): Record<string, string | number | null> {
     const locationName = payload.locationName?.trim() || undefined;
     const minPrice = payload.minPrice ?? undefined;

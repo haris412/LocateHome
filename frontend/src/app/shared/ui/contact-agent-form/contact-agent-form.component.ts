@@ -3,7 +3,6 @@ import {
   Component,
   EventEmitter,
   Output,
-  computed,
   effect,
   inject,
   input
@@ -21,13 +20,17 @@ import {
 } from '../../../core/models/appointment.models';
 import { InquiryType } from '../../../core/models/inquiry.models';
 import { InquiryService } from '../../../core/services/inquiry.service';
-import { AppointmentOverlayComponent } from '../../../features/listings/components/appointment-overlay/appointment-overlay.component';
+import { NgxMaterialIntlTelInputComponent } from 'ngx-material-intl-tel-input';
 import { AppointmentOverlayService } from '../../services/appointment-overlay.service';
+import { MatSelectModule } from '@angular/material/select';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { catchError, finalize, throwError } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 export interface ContactAgentFormData {
   name: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   message: string;
 }
 
@@ -37,8 +40,12 @@ export interface ContactAgentFormData {
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
+    MatAutocompleteModule,
+    MatSelectModule,
     MatInputModule,
-    InfoCardComponent
+    InfoCardComponent,
+    NgxMaterialIntlTelInputComponent,
+    
   ],
   templateUrl: './contact-agent-form.component.html',
   styleUrl: './contact-agent-form.component.scss',
@@ -48,6 +55,7 @@ export class ContactAgentFormComponent {
   private readonly fb             = inject(FormBuilder);
   private readonly inquiryService = inject(InquiryService);
   private readonly appointmentOverlay = inject(AppointmentOverlayService);
+   private readonly toastr = inject(ToastrService);
 
   readonly agent = input.required<PropertyAgent>();
   readonly resetTrigger = input(0);
@@ -62,13 +70,12 @@ export class ContactAgentFormComponent {
   readonly listingImageUrl = input('');
   readonly appointmentDateSlots = input<AppointmentDateSlots[]>([]);
    readonly isSubmitting = this.inquiryService.isSubmitting;
-  readonly submitError  = this.inquiryService.submitError;
   readonly inquiryId    = this.inquiryService.inquiryId;
 
   @Output() readonly submitted = new EventEmitter<{
     name: string;
     email: string;
-    phone: string;
+    phoneNumber: string;
     message: string;
   }>();
 
@@ -79,7 +86,7 @@ export class ContactAgentFormComponent {
   readonly form = this.fb.nonNullable.group({
     name:    ['', [Validators.required, Validators.minLength(2)]],
     email:   ['', [Validators.required, Validators.email]],
-    phone:   ['', [Validators.required, Validators.minLength(10)]],
+    phoneNumber:   ['', [Validators.required]],
     message: ['', [Validators.required, Validators.minLength(10)]]
   });
 
@@ -100,12 +107,39 @@ export class ContactAgentFormComponent {
       this.form.markAllAsTouched();
       return;
     }
-
-    const { name, email, phone, message } = this.form.getRawValue();
-
+   
+    const { name, email, message } = this.form.getRawValue();
+    let { phoneNumber } = this.form.getRawValue(); 
+    phoneNumber = phoneNumber?.replace(/\s+/g, '').replace(/-/g, '');
     this.inquiryService
-      .submit({ propertyId: this.listingId(), type, name, email, phone, message })
-      .subscribe({ next: () => this.form.reset() });
+      .submit({
+        propertyId: this.listingId(),
+        type,
+        name,
+        email,
+        phoneNumber,
+        message,
+      })
+      .pipe(
+        catchError((err) => {
+          console.error(err);
+          this.toastr.error(
+            err?.error?.message ?? 'Failed to submit inquiry. Please try again.',
+          );
+          return throwError(() => err); // keep error flow intact
+        }),
+        finalize(()=> {
+          this.inquiryService.isSubmitting.set(false);
+        })
+      )
+      .subscribe((res) => {
+        if(res.success) { 
+          this.form.reset();
+          this.toastr.success(
+            res?.message ?? 'Request submitted successfully',
+          );
+        }
+  });
   }
 
   openBookAppointmentOverlay(): void {
@@ -123,7 +157,7 @@ export class ContactAgentFormComponent {
       dateSlots: this.appointmentDateSlots(),
       initialName: v.name,
       initialEmail: v.email,
-      initialPhone: v.phone
+      initialPhone: v.phoneNumber
     };
 
     this.appointmentOverlay.open(data, {
