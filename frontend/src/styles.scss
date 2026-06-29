@@ -1,6 +1,6 @@
 @use "@angular/material" as mat;
 @use "./styles/theme-colors" as theme;
-@import "ngx-toastr/toastr";
+@use "ngx-toastr/toastr";
 
 .cdk-overlay-container {
   z-index: 3000;
@@ -126,9 +126,14 @@ html {
 
   --mat-form-field-outlined-focus-outline-color: var(--primary);
   --mat-option-selected-state-label-text-color: var(--primary);
+  --mat-filled-tel-form-outline-color: var(--border-field);
   --mat-form-field-outlined-container-shape: var(--radius-field);
   --mat-button-filled-label-text-font: "Plus Jakarta Sans";
   --mat-button-outlined-container-shape: var(--radius-field);
+  --mat-filled-tel-form-container-shape: var(--radius-field);
+  --mat-filled-tel-form-focus-outline-color: var(--primary);
+  --mat-filled-tel-form-hover-background: var(--surface) !important;
+  
 
   /* Overlays */
   --overlay-backdrop: rgba(18, 24, 33, 0.58);
@@ -429,6 +434,14 @@ textarea,
   background: var(--primary-hover);
 }
 
+section .tel-form:has(.mat-form-field-appearance-fill).is-focused {
+  outline-width: 1px !important;
+}
+
+section .tel-form:has(.mat-form-field-appearance-fill):hover {
+  border: 1px solid var(--mat-form-field-outlined-hover-outline-color, var(--mat-sys-on-surface)) !important;
+}
+
 .text-muted-auth {
   color: var(--font-secondary);
 }
@@ -639,4 +652,7 @@ textarea,
       opacity: 0.8;
     }
   }
+}
+.mat-select-search-input {
+  background-color: white !important;
 }

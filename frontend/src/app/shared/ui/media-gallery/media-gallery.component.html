@@ -1,6 +1,8 @@
-<div class="media-gallery row g-3">
-  <div class="col-12"
-       [class.col-lg-8]="hasMultipleImages()">
+<div
+  class="media-gallery"
+  [class.media-gallery--multiple]="hasMultipleImages()"
+>
+  <div class="media-gallery__primary">
     <div
       class="media-gallery__tile media-gallery__tile--primary"
       (click)="openOverlay(0)"
@@ -40,7 +42,7 @@
   </div>
 
   @if (hasMultipleImages()) {
-    <div class="col-12 col-lg-4">
+    <div class="media-gallery__secondary">
       <div
         class="media-gallery__stack"
         [class.media-gallery__stack--single-secondary]="displayImages().length === 2"
