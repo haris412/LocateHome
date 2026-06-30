@@ -271,12 +271,12 @@ export class PropertyFiltersComponent {
       if (payload.id === 'subtype') {
         const sid = payload.value || 'any';
         if (sid !== 'any') {
-          const catSlug = this.filtersCatalog.categoryForSubtypeSlug(sid);
-          if (catSlug) {
+          const catId = this.filtersCatalog.categoryIdForSubtypeId(sid);
+          if (catId) {
             next = next.map((field) =>
-              field.id === 'primaryType' ? { ...field, value: catSlug } : field
+              field.id === 'primaryType' ? { ...field, value: catId } : field
             );
-            const opts = this.filtersCatalog.getSubtypeOptions(catSlug);
+            const opts = this.filtersCatalog.getSubtypeOptions(catId);
             next = next.map((field) =>
               field.id === 'subtype'
                 ? { ...field, options: opts, value: sid }

@@ -24,22 +24,32 @@ function ownerUserId(property: ListingsApiProperty): string | undefined {
   return undefined;
 }
 
+const FEATURE_SLUG_ICON: Record<string, string> = {
+  'wifi':              'wifi',
+  'swimming-pool':     'pool',
+  'gym':               'fitness_center',
+  'garage':            'garage',
+  'central-ac':        'ac_unit',
+  'balcony':           'balcony',
+  'security':          'shield',
+  'garden':            'yard',
+  'elevator':          'elevator',
+  'laundry-room':      'local_laundry_service',
+  'laundry':           'local_laundry_service',
+  'furnished':         'chair',
+  'pet-friendly':      'pets',
+  'backup-power':      'bolt',
+  'solar-panels':      'solar_power',
+  'store-room':        'inventory_2',
+  'servant-quarter':   'cottage',
+  'corner-plot':       'crop_square',
+};
+
 function amenityItems(property: ListingsApiProperty): PropertyAmenityItem[] {
-  const rows: Array<{ flag?: boolean; icon: string; label: string }> = [
-    { flag: property.hasWifi, icon: 'wifi', label: 'Wi‑Fi' },
-    { flag: property.hasSwimmingPool, icon: 'pool', label: 'Swimming pool' },
-    { flag: property.hasGym, icon: 'fitness_center', label: 'Gym' },
-    { flag: property.hasGarage, icon: 'garage', label: 'Garage' },
-    { flag: property.hasCentralAc, icon: 'ac_unit', label: 'Central AC' },
-    { flag: property.hasBalcony, icon: 'balcony', label: 'Balcony' },
-    { flag: property.hasSecurity, icon: 'shield', label: 'Security' },
-    { flag: property.hasGarden, icon: 'yard', label: 'Garden' },
-    { flag: property.hasElevator, icon: 'elevator', label: 'Elevator' },
-    { flag: property.hasLaundryRoom, icon: 'local_laundry_service', label: 'Laundry room' },
-    { flag: property.isFurnished, icon: 'chair', label: 'Furnished' },
-    { flag: property.isPetFriendly, icon: 'pets', label: 'Pet friendly' }
-  ];
-  return rows.filter((r) => r.flag).map(({ icon, label }) => ({ icon, label }));
+  return (property.featureIds ?? []).map(f => ({
+    icon: FEATURE_SLUG_ICON[f.slug] ?? 'check_circle',
+    label: f.name
+  }));
 }
 
 export function mapApiPropertyToDetailView(property: ListingsApiProperty): PropertyDetailViewModel {
@@ -78,8 +88,7 @@ export function mapApiPropertyToDetailView(property: ListingsApiProperty): Prope
     };
   }
 
-  const line2 = [property.neighborhood, property.city].filter(Boolean).join(' · ');
-  const breadcrumbLabel = line2 || property.listingTitle;
+  const breadcrumbLabel = property.listingTitle;
 
   return {
     id: property._id,

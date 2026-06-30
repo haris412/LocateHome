@@ -15,12 +15,28 @@ export interface ListingsApiPropertyOwnerRef {
   lastName?: string;
 }
 
+/** Feature/amenity from `featureIds[]` on GET /api/properties/:id */
+export interface ListingsApiFeature {
+  _id: string;
+  slug: string;
+  name: string;
+  position?: number;
+}
+
+/** Location hierarchy level (country=0, province=1, city=2, area/neighborhood=3) */
+export interface ListingsApiLocation {
+  level: number;
+  name: string;
+  id?: string;
+}
+
 export interface ListingsApiProperty {
   _id: string;
   purpose: ListingPurpose;
   propertyType: string;
-  /** Mongoose `subtype` */
+  propertyTypeId?: string;
   subtype?: string;
+  subtypeId?: string;
   listingTitle: string;
   propertyDescription?: string;
   price: number;
@@ -28,28 +44,22 @@ export interface ListingsApiProperty {
   areaUnit: string;
   numBedrooms: number;
   numBathrooms: number;
-  hasWifi?: boolean;
-  hasSwimmingPool?: boolean;
-  hasGym?: boolean;
-  hasGarage?: boolean;
-  hasCentralAc?: boolean;
-  hasBalcony?: boolean;
-  hasSecurity?: boolean;
-  hasGarden?: boolean;
-  hasElevator?: boolean;
-  hasLaundryRoom?: boolean;
-  isFurnished?: boolean;
-  isPetFriendly?: boolean;
+  numParkingSpaces?: number;
+  numFloors?: number;
+  featureIds?: ListingsApiFeature[];
   images: ListingsApiImage[];
   videoTourUrl?: string;
-  city: string;
-  neighborhood?: string;
+  location?: ListingsApiLocation[];
+  latitude?: number;
+  longitude?: number;
   fullAddress: string;
+  zipCode?: string;
   mapLink?: string;
   contactName: string;
   contactEmail: string;
   contactPhoneNumber: string;
   contactLocation?: string;
+  isFeatured?: boolean;
   /** Listing owner; string id or populated subdocument */
   userId?: string | ListingsApiPropertyOwnerRef;
   /** Optional stable CRM / frontend key */

@@ -171,8 +171,8 @@ export class SearchPanelComponent {
   onSubtypeSelected(value: string): void {
     this.subtype.set(value);
     if (value && value !== 'any') {
-      const categorySlug = this.filtersCatalog.categoryForSubtypeSlug(value);
-      if (categorySlug) this.primaryType.set(categorySlug);
+      const categoryId = this.filtersCatalog.categoryIdForSubtypeId(value);
+      if (categoryId) this.primaryType.set(categoryId);
     }
   }
 

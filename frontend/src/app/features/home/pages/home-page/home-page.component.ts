@@ -102,9 +102,9 @@ export class HomePageComponent {
     const locationName = payload.locationName?.trim() || undefined;
     const minPrice = payload.minPrice ?? undefined;
     const maxPrice = payload.maxPrice ?? undefined;
-    const category =
+    const propertyTypeId =
       payload.primaryType && payload.primaryType !== 'any' ? payload.primaryType : undefined;
-    const subtype =
+    const subtypeId =
       payload.subtype && payload.subtype !== 'any' ? payload.subtype : undefined;
 
     return {
@@ -112,9 +112,8 @@ export class HomePageComponent {
       limit: 20,
       purpose: payload.mode === 'rent' ? 'For Rent' : 'For Sale',
       locationName: locationName ?? null,
-      propertyType: category ?? null,
-      subtype: subtype ?? null,
-      category: null,
+      propertyTypeId: propertyTypeId ?? null,
+      subtypeId: subtypeId ?? null,
       minPrice: minPrice ?? null,
       maxPrice: maxPrice ?? null,
       sortBy: 'createdAt',

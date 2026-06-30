@@ -213,46 +213,13 @@ export class ListingsPageComponent {
   }
 
   private mapQueryParamsToRequest(params: import('@angular/router').ParamMap): ListingsQueryParams {
-    const subKey    = params.get('subtype');
-    const rawTop    = params.get('propertyType') ?? params.get('category');
-
-    let propertyTypeTop: string | undefined;
-    let subtypeValue: string | undefined;
-
-    const isCategory = (v: string | null | undefined) =>
-      this.filtersCatalog.isKnownCategorySlug(v);
-
-    if (isCategory(rawTop)) {
-      propertyTypeTop = rawTop!;
-    }
-
-    if (subKey && subKey !== 'any') {
-      subtypeValue = subKey;
-      if (!propertyTypeTop) {
-        const grp = this.filtersCatalog.categoryForSubtypeSlug(subKey);
-        if (grp) propertyTypeTop = grp;
-      }
-    }
-
-    if (rawTop && rawTop !== 'any' && !isCategory(rawTop) && (!subKey || subKey === 'any')) {
-      const resolvedName = this.filtersCatalog.resolveSubtypeSlug(rawTop);
-      if (resolvedName) {
-        propertyTypeTop = this.filtersCatalog.categoryForSubtypeSlug(resolvedName) ?? undefined;
-        subtypeValue    = resolvedName;
-      } else {
-        subtypeValue = rawTop;
-      }
-    }
-
-    if (propertyTypeTop === 'any') propertyTypeTop = undefined;
-
     return {
       page: this.toNumber(params.get('page')) ?? 1,
       limit: this.toNumber(params.get('limit')) ?? 20,
       purpose: (params.get('purpose') as 'For Sale' | 'For Rent' | null) ?? undefined,
       status: (params.get('status') as 'Draft' | 'Published' | null) ?? undefined,
-      propertyType: propertyTypeTop,
-      subtype: subtypeValue,
+      propertyTypeId: params.get('propertyTypeId') ?? undefined,
+      subtypeId: params.get('subtypeId') ?? undefined,
       locationName: params.get('locationName') ?? undefined,
       minPrice: this.toNumber(params.get('minPrice')),
       maxPrice: this.toNumber(params.get('maxPrice')),
@@ -262,23 +229,10 @@ export class ListingsPageComponent {
   }
 
   private syncFilterFieldsFromParams(params: import('@angular/router').ParamMap): void {
-    let primary = params.get('propertyType') ?? params.get('category') ?? 'any';
-    let subtype = params.get('subtype') ?? 'any';
-
-    if (primary !== 'any' && !this.filtersCatalog.isKnownCategorySlug(primary)) {
-      const resolvedSlug = this.filtersCatalog.resolveSubtypeSlug(primary);
-      if (resolvedSlug) {
-        if (subtype === 'any') subtype = resolvedSlug;
-        primary = this.filtersCatalog.categoryForSubtypeSlug(resolvedSlug) ?? 'any';
-      }
-    }
-
-    if (!this.filtersCatalog.isKnownCategorySlug(primary) && subtype !== 'any') {
-      const cat = this.filtersCatalog.categoryForSubtypeSlug(subtype);
-      if (cat) primary = cat;
-    }
-
+    const primary = params.get('propertyTypeId') ?? 'any';
+    const subtype = params.get('subtypeId') ?? 'any';
     const locationName = params.get('locationName') ?? '';
+
     this.buyFields.update((fields) =>
       this.patchCategoryTypeFields(fields, primary, subtype, locationName)
     );
@@ -461,9 +415,8 @@ export class ListingsPageComponent {
       limit: 20,
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
       locationName: city || area || null,
-      propertyType: !primaryType || primaryType === 'any' ? null : primaryType,
-      subtype: !subtype || subtype === 'any' ? null : subtype,
-      category: null,
+      propertyTypeId: !primaryType || primaryType === 'any' ? null : primaryType,
+      subtypeId: !subtype || subtype === 'any' ? null : subtype,
       minPrice: minPrice ?? null,
       maxPrice: maxPrice ?? null
     };
