@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { map, shareReplay, switchMap, tap } from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { map, switchMap, tap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
-import { AgentFilters } from '@/core/models/agent.model';
+import { AgentFilters, AgentItem } from '@/core/models/agent.model';
 import { AgentsService } from '../../services/agents.service';
 import { AgentsFiltersComponent } from '../../components/agents-filters/agents-filters.component';
 import { AgentsHeroComponent } from '../../components/agents-hero/agents-hero.component';
@@ -19,40 +21,64 @@ const PAGE_SIZE = 6;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AgentsPageComponent {
+  private readonly route         = inject(ActivatedRoute);
+  private readonly router        = inject(Router);
   private readonly agentsService = inject(AgentsService);
 
-  readonly page    = signal(1);
-  readonly loading = signal(false);
-  readonly filters = signal<AgentFilters>({ location: null, agency: null, rating: null });
+  readonly agents    = signal<AgentItem[]>([]);
+  readonly pageCount = signal(1);
+  readonly total     = signal(0);
+  readonly page      = signal(1);
+  readonly loading   = signal(false);
 
   protected readonly skeletons = new Array<null>(PAGE_SIZE).fill(null);
 
-  private readonly params = computed(() => ({
-    page:      this.page(),
-    limit:     PAGE_SIZE,
-    location:  this.filters().location  ?? undefined,
-    minRating: this.filters().rating    ?? undefined,
-  }));
+  constructor() {
+    this.route.queryParamMap
+      .pipe(
+        takeUntilDestroyed(),
+        tap(() => this.loading.set(true)),
+        switchMap((params) => {
+          const p = Number(params.get('page')) || 1;
+          this.page.set(p);
 
-  private readonly result$ = toObservable(this.params).pipe(
-    switchMap(params => {
-      this.loading.set(true);
-      return this.agentsService.getAgents(params);
-    }),
-    tap(() => this.loading.set(false)),
-    shareReplay(1)
-  );
-
-  readonly agents    = toSignal(this.result$.pipe(map(r => r.items)),      { initialValue: [] });
-  readonly pageCount = toSignal(this.result$.pipe(map(r => r.totalPages)), { initialValue: 1 });
-  readonly total     = toSignal(this.result$.pipe(map(r => r.total)),      { initialValue: 0 });
+          return this.agentsService.getAgents({
+            page:       p,
+            limit:      PAGE_SIZE,
+            location:   params.get('location')   ?? undefined,
+            agencyName: params.get('agencyName') ?? undefined,
+            minRating:  params.get('minRating')  ? Number(params.get('minRating')) : undefined,
+          }).pipe(
+            catchError(() => of({ items: [] as AgentItem[], page: 1, totalPages: 1, total: 0 }))
+          );
+        }),
+        tap(() => this.loading.set(false))
+      )
+      .subscribe((result) => {
+        this.agents.set(result.items);
+        this.pageCount.set(result.totalPages);
+        this.total.set(result.total);
+      });
+  }
 
   protected onFiltersChange(next: AgentFilters): void {
-    this.filters.set(next);
-    this.page.set(1);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: {
+        page:       1,
+        location:   next.location   || null,
+        agencyName: next.agency     || null,
+        minRating:  next.rating     || null,
+      },
+      queryParamsHandling: 'merge'
+    });
   }
 
   protected onPageChange(next: number): void {
-    this.page.set(next);
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: next },
+      queryParamsHandling: 'merge'
+    });
   }
 }

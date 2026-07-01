@@ -1,7 +1,7 @@
 <section class="agents-filter section-card">
-
   <div class="agents-filter__row">
 
+    <!-- Location — Google Places autocomplete -->
     <div class="agents-filter__mini-field">
       <span class="agents-filter__field-label">
         <span class="agents-filter__icon-box">
@@ -11,19 +11,38 @@
       </span>
 
       <mat-form-field appearance="outline" class="agents-filter__field-control">
-        <mat-select (selectionChange)="updateFilter('location', $event.value)">
-          <mat-option [value]="null">All locations</mat-option>
-
-          @for (loc of locations; track loc) {
-          <ng-container>
-            <mat-option [value]="loc">{{ loc }}</mat-option>
-          </ng-container>
+        <input
+          matInput
+          placeholder="Search city or area"
+          [formControl]="locationCtrl"
+          [matAutocomplete]="locationAuto"
+          autocomplete="off"
+        />
+        @if (locationCtrl.value) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="onLocationCleared()">
+            <mat-icon fontSet="material-symbols-outlined" inline>close</mat-icon>
+          </button>
+        }
+        <mat-autocomplete
+          #locationAuto="matAutocomplete"
+          [displayWith]="displayPlace"
+          (optionSelected)="onLocationSelected($event)"
+        >
+          @for (pred of suggestions(); track pred.placeId) {
+            <mat-option [value]="pred">
+              <span>{{ pred.structuredFormat.mainText.text }}</span>
+              @if (pred.structuredFormat.secondaryText?.text) {
+                <small class="agents-filter__place-sub">
+                  {{ pred.structuredFormat.secondaryText!.text }}
+                </small>
+              }
+            </mat-option>
           }
-
-        </mat-select>
+        </mat-autocomplete>
       </mat-form-field>
     </div>
 
+    <!-- Agency — dropdown from API -->
     <div class="agents-filter__mini-field">
       <span class="agents-filter__field-label">
         <span class="agents-filter__icon-box">
@@ -35,16 +54,14 @@
       <mat-form-field appearance="outline" class="agents-filter__field-control">
         <mat-select (selectionChange)="updateFilter('agency', $event.value)">
           <mat-option [value]="null">All agencies</mat-option>
-          @for (agency of agencies; track agency) {
-          <ng-container>
+          @for (agency of agencies(); track agency) {
             <mat-option [value]="agency">{{ agency }}</mat-option>
-          </ng-container>
           }
-
         </mat-select>
       </mat-form-field>
     </div>
 
+    <!-- Minimum rating -->
     <div class="agents-filter__mini-field">
       <span class="agents-filter__field-label">
         <span class="agents-filter__icon-box">
@@ -78,5 +95,4 @@
     </button>
 
   </div>
-
 </section>

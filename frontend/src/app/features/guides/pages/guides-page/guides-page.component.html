@@ -1,0 +1,29 @@
+<div class="guides-page container">
+
+  <div class="guides-page__header">
+    <h1 class="guides-page__title">Guides & Resources</h1>
+    <p class="guides-page__subtitle">
+      Practical guides to help you buy, rent, sell, and navigate property in Pakistan with confidence.
+    </p>
+  </div>
+
+  <div class="guides-page__grid">
+    @for (guide of guides; track guide.id) {
+      <article class="guide-card">
+        <div class="guide-card__icon">
+          <mat-icon fontSet="material-symbols-outlined">{{ guide.icon }}</mat-icon>
+        </div>
+
+        <h2 class="guide-card__title">{{ guide.title }}</h2>
+        <p class="guide-card__summary">{{ guide.summary }}</p>
+
+        <ul class="guide-card__tips">
+          @for (tip of guide.tips; track $index) {
+            <li class="guide-card__tip">{{ tip }}</li>
+          }
+        </ul>
+      </article>
+    }
+  </div>
+
+</div>
