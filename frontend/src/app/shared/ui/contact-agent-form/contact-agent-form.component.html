@@ -1,7 +1,10 @@
 <app-info-card>
   <div class="agent-form">
     <div class="agent-form__profile d-flex align-items-center gap-3">
-      <img class="agent-form__avatar" [src]="agent().imageUrl" [alt]="agent().name" />
+      <div class="agent-form__avatar">
+        <mat-icon fontSet="material-symbols-outlined" class="agent-form__icon" inline> person</mat-icon>
+      </div>
+      <!-- <img class="agent-form__avatar" [src]="agent().imageUrl" [alt]="agent().name" /> -->
 
       <div>
         <h3 class="agent-form__name mb-0">{{ agent().name }}</h3>

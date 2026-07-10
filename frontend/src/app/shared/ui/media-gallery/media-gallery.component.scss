@@ -1,4 +1,19 @@
 .media-gallery {
+  display: grid;
+  gap: 1rem;
+
+  @media (min-width: 992px) {
+    &--multiple {
+      grid-template-columns: minmax(0, 2fr) minmax(18rem, 1fr);
+      align-items: stretch;
+    }
+  }
+
+  &__primary,
+  &__secondary {
+    min-width: 0;
+  }
+
   &__tile {
     position: relative;
     overflow: hidden;
@@ -16,10 +31,10 @@
   }
 
   &__tile--primary {
-    min-height: 320px;
+    height: clamp(320px, 48vw, 440px);
 
     @media (min-width: 992px) {
-      min-height: 560px;
+      height: 560px;
     }
   }
 
@@ -29,7 +44,7 @@
 
     @media (min-width: 992px) {
       grid-template-rows: 1fr 1fr;
-      min-height: 560px;
+      height: 560px;
     }
 
     &--single-secondary {
@@ -40,10 +55,9 @@
   }
 
   &__tile--secondary {
-    min-height: 220px;
+    height: 220px;
 
     @media (min-width: 992px) {
-      min-height: 0;
       height: 100%;
     }
   }

@@ -26,6 +26,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { catchError, finalize, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { MatIcon } from "@angular/material/icon";
 
 export interface ContactAgentFormData {
   name: string;
@@ -45,8 +46,8 @@ export interface ContactAgentFormData {
     MatInputModule,
     InfoCardComponent,
     NgxMaterialIntlTelInputComponent,
-    
-  ],
+    MatIcon
+],
   templateUrl: './contact-agent-form.component.html',
   styleUrl: './contact-agent-form.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

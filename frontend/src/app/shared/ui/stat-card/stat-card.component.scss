@@ -10,6 +10,10 @@
   backdrop-filter: blur(10px);
   border: 1px solid var(--surface-white-12);
   color: var(--font-main);
+  &__icon {
+    font-size: 1.2rem;
+    color: var(--font-main);
+  }
 }
 
 .stat-value {

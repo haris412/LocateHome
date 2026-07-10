@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatIconModule } from '@angular/material/icon';
 import { Observable, Subscription, forkJoin, of, throwError } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
 
@@ -52,6 +53,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
     MatInputModule,
     MatCalendar,
     MatSnackBarModule,
+    MatIconModule,
     MatAutocompleteModule,
     MatSelectModule,
     NgxMaterialIntlTelInputComponent
@@ -393,7 +395,7 @@ export class AppointmentOverlayComponent {
 
     const formValue = this.form.getRawValue();
     const userId = this.scheduleUserId()?.trim() || this.data().agentUserId?.trim();
-  let { phoneNumber } = this.form.getRawValue(); 
+    let { phoneNumber } = this.form.getRawValue(); 
       phoneNumber = phoneNumber?.replace(/\s+/g, '').replace(/-/g, '');
     const payload: AppointmentBookingPayload = {
       listingId: this.data().listing.propertyId,

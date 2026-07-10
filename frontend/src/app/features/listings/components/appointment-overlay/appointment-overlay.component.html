@@ -14,7 +14,7 @@
               class="appointment-overlay__close"
               aria-label="Close booking overlay"
               (click)="close()">
-        ×
+        <mat-icon fontSet="material-symbols-outlined" inline>close</mat-icon>
       </button>
     </div>
 
@@ -149,6 +149,7 @@
             <form class="row g-3"
                   [formGroup]="form">
               <div class="col-12">
+                <p class="appointment-overlay__field-label">Name</p>
                 <mat-form-field appearance="outline"
                                 class="w-100">
                   <mat-label>Name</mat-label>
@@ -158,6 +159,7 @@
               </div>
 
               <div class="col-12 col-md-6">
+                <p class="appointment-overlay__field-label">Email</p>
                 <mat-form-field appearance="outline"
                                 class="w-100">
                   <mat-label>Email</mat-label>
