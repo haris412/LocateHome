@@ -77,6 +77,7 @@ export class HomePageComponent {
   ]);
 
   onSearchRequested(payload: SearchPayload): void {
+    console.log(payload);
     this.router.navigate(['/listings'], {
       queryParams: this.buildListingsRouteQuery(payload)
     });
@@ -115,6 +116,7 @@ export class HomePageComponent {
       propertyType: category ?? null,
       subtype: subtype ?? null,
       category: null,
+      placeId: payload.placeId ?? null,
       minPrice: minPrice ?? null,
       maxPrice: maxPrice ?? null,
       sortBy: 'createdAt',

@@ -147,7 +147,11 @@ export class SearchPanelComponent {
         return this.locationCatalog.searchPlaces(query);
       }),
       takeUntilDestroyed()
-    ).subscribe(predictions => this.locationSuggestions.set(predictions));
+    ).subscribe(predictions => {
+      console.log(this.locationControl.value);
+      this.locationSuggestions.set(predictions)
+      console.log('Predictions:', predictions);
+    });
   }
 
   // ── Event handlers ───────────────────────────────────────────────────────
@@ -211,10 +215,14 @@ export class SearchPanelComponent {
       locationName: this.locationName(),
       minPrice:     this.priceRange().min,
       maxPrice:     this.priceRange().max,
+      placeId:       this.locationControl.value && typeof this.locationControl.value !== 'string'
+        ? this.locationControl.value.placeId
+        : null,
       bedrooms:     this.bedrooms(),
       bathrooms:    this.bathrooms(),
       size:         this.size()
     });
+    console.log(this.search);
   }
 
   // ── Voice search ─────────────────────────────────────────────────────────

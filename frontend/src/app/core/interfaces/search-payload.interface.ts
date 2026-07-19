@@ -10,6 +10,7 @@ export interface SearchPayload {
   maxPrice: number | null;
   bedrooms: string;
   bathrooms: string;
+  placeId:string | null;
   size: string;
 }
 

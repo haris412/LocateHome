@@ -29,6 +29,7 @@ export interface ListingsQueryParams {
   /** Subtype filter — must match the exact DB-stored name (e.g. "House", "Residential Plot"). */
   subtype?: string;
   locationName?: string;
+  placeId?:string;
   minPrice?: number;
   maxPrice?: number;
   sortBy?: string;
@@ -156,6 +157,7 @@ export class ListingsService {
       ['limit', params.limit],
       ['purpose', params.purpose],
       ['status', params.status],
+      ['placeId', params.placeId],
       ['propertyType', params.propertyType],
       ['subtype', params.subtype],
       ['locationName', params.locationName],

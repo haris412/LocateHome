@@ -197,7 +197,7 @@ export class ListingsPageComponent {
           const locationName = params.get('locationName');
           this.searchQuery.set(locationName ?? '');
           this.selectedCityLabel.set(locationName || 'All locations');
-
+          console.log('Query params changed:', query);
           return this.listingsService.getListings(query).pipe(
             catchError((err) => {
               console.error('Failed to load listings', err);
@@ -215,6 +215,7 @@ export class ListingsPageComponent {
   private mapQueryParamsToRequest(params: import('@angular/router').ParamMap): ListingsQueryParams {
     const subKey    = params.get('subtype');
     const rawTop    = params.get('propertyType') ?? params.get('category');
+    const placeId    = params.get('placeId');
 
     let propertyTypeTop: string | undefined;
     let subtypeValue: string | undefined;
@@ -253,6 +254,7 @@ export class ListingsPageComponent {
       status: (params.get('status') as 'Draft' | 'Published' | null) ?? undefined,
       propertyType: propertyTypeTop,
       subtype: subtypeValue,
+      placeId: placeId ?? undefined,
       locationName: params.get('locationName') ?? undefined,
       minPrice: this.toNumber(params.get('minPrice')),
       maxPrice: this.toNumber(params.get('maxPrice')),

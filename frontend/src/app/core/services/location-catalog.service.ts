@@ -42,7 +42,7 @@ export class LocationCatalogService {
 
     return this.http.post<GooglePlacesAutocompleteResponse>(
       PLACES_AUTOCOMPLETE_URL,
-      { input: query, includedRegionCodes: [this.countryCode] },
+      { input: query },
       { headers: { 'X-Goog-Api-Key': this.apiKey } }
     ).pipe(
       map(res => res.suggestions?.map(s => s.placePrediction) ?? []),
