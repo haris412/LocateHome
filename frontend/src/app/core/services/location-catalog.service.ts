@@ -5,12 +5,11 @@ import { catchError, map } from 'rxjs/operators';
 
 import {
   GoogleGeocodeResponse,
-  GooglePlacePrediction,
-  GooglePlacesAutocompleteResponse
+  GooglePlacePrediction
 } from '../models/google-places.models';
 import { environment } from '../../../environments/environment';
 
-const PLACES_AUTOCOMPLETE_URL  = 'https://places.googleapis.com/v1/places:autocomplete';
+// const PLACES_AUTOCOMPLETE_URL  = 'https://places.googleapis.com/v1/places:autocomplete';
 const GEOCODE_URL              = 'https://maps.googleapis.com/maps/api/geocode/json';
 const CITY_GEOCODE_TYPES       = new Set(['locality', 'administrative_area_level_2']);
 
@@ -37,15 +36,28 @@ export class LocationCatalogService {
     this.selectedProvince.set(province?.toLowerCase().trim() || 'any');
   }
 
+  // Direct call to Google Places API — replaced by backend proxy below (see searchPlaces).
+  // searchPlaces(query: string): Observable<GooglePlacePrediction[]> {
+  //   if (!query.trim()) return of([]);
+  //
+  //   return this.http.post<GooglePlacesAutocompleteResponse>(
+  //     PLACES_AUTOCOMPLETE_URL,
+  //     { input: query },
+  //     { headers: { 'X-Goog-Api-Key': this.apiKey } }
+  //   ).pipe(
+  //     map(res => res.suggestions?.map(s => s.placePrediction) ?? []),
+  //     catchError(() => of([]))
+  //   );
+  // }
+
   searchPlaces(query: string): Observable<GooglePlacePrediction[]> {
     if (!query.trim()) return of([]);
 
-    return this.http.post<GooglePlacesAutocompleteResponse>(
-      PLACES_AUTOCOMPLETE_URL,
-      { input: query },
-      { headers: { 'X-Goog-Api-Key': this.apiKey } }
+    return this.http.post<{ data: { suggestions: GooglePlacePrediction[] } }>(
+      `${environment.apiUrl}/api/places/autocomplete`,
+      { input: query }
     ).pipe(
-      map(res => res.suggestions?.map(s => s.placePrediction) ?? []),
+      map(res => res?.data.suggestions ?? []),
       catchError(() => of([]))
     );
   }

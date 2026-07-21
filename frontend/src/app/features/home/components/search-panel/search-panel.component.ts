@@ -148,7 +148,6 @@ export class SearchPanelComponent {
       }),
       takeUntilDestroyed()
     ).subscribe(predictions => {
-      console.log(this.locationControl.value);
       this.locationSuggestions.set(predictions)
       console.log('Predictions:', predictions);
     });
