@@ -40,8 +40,8 @@ export class FooterSectionComponent {
       title: 'Company',
       links: [
         { id: 'a', label: 'About us', href: '/home' },
-        { id: 'b', label: 'Careers', href: '/home' },
-        { id: 'c', label: 'Our team', href: '/home' },
+        // { id: 'b', label: 'Careers', href: '/home' },
+        // { id: 'c', label: 'Our team', href: '/home' },
         { id: 'd', label: 'Press', href: '/home' },
         { id: 'e', label: 'Contact us', href: '/home' }
       ]
@@ -63,7 +63,7 @@ export class FooterSectionComponent {
         { id: 'a', label: 'Privacy policy', href: '/privacy-policy' },
         { id: 'b', label: 'Terms of service', href: '/home' },
         { id: 'c', label: 'Cookies policy', href: '/home' },
-        { id: 'd', label: 'Disclaimer', href: '/home' }
+        // { id: 'd', label: 'Disclaimer', href: '/home' }
       ]
     }
   ]);
@@ -71,6 +71,6 @@ export class FooterSectionComponent {
   readonly secondaryLinks = signal<FooterLink[]>([
     { id: 'privacy', label: 'Privacy', href: '/privacy-policy' },
     { id: 'terms', label: 'Terms', href: '/home' },
-    { id: 'sitemap', label: 'Sitemap', href: '/home' }
+    // { id: 'sitemap', label: 'Sitemap', href: '/home' }
   ]);
 }
