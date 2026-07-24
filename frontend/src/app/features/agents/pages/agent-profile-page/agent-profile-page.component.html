@@ -1,0 +1,18 @@
+@if (loading()) {
+  <div class="agent-profile-page__state container" role="status">
+    <div class="agent-profile-page__spinner" aria-hidden="true"></div>
+    <p>Loading agent profile…</p>
+  </div>
+} @else if (error(); as message) {
+  <div class="agent-profile-page__state container">
+    <div class="agent-profile-page__error-icon" aria-hidden="true">!</div>
+    <p>{{ message }}</p>
+    <button type="button" (click)="onBack()">Go back</button>
+  </div>
+} @else if (agent(); as profile) {
+  <app-agent-profile-shell
+    [agent]="profile"
+    [listings]="listings()"
+    (back)="onBack()"
+    (listingSelected)="onListingSelected($event)" />
+}

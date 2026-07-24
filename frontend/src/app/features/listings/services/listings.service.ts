@@ -34,6 +34,8 @@ export interface ListingsQueryParams {
   maxPrice?: number;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  /** Listing owner/agent id, used by agent profiles. */
+  userId?: string;
 }
 
 export interface ListingsResult {
@@ -140,12 +142,20 @@ export class ListingsService {
 
     return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams }).pipe(
       // Map API response shape into UI-friendly model
-      map((response) => ({
-        items: response.data.properties.map((property) => this.mapToListingItem(property)),
-        page: response.page,
-        totalPages: response.totalPages,
-        total: response.total
-      }))
+      map((response) => {
+        const properties = params.userId
+          ? response.data.properties.filter(
+              (property) => this.ownerUserIdFromApiProperty(property) === params.userId
+            )
+          : response.data.properties;
+
+        return {
+          items: properties.map((property) => this.mapToListingItem(property)),
+          page: response.page,
+          totalPages: params.userId ? 1 : response.totalPages,
+          total: params.userId ? properties.length : response.total
+        };
+      })
     );
   }
 
@@ -164,7 +174,8 @@ export class ListingsService {
       ['minPrice', params.minPrice],
       ['maxPrice', params.maxPrice],
       ['sortBy', params.sortBy],
-      ['sortOrder', params.sortOrder]
+      ['sortOrder', params.sortOrder],
+      ['userId', params.userId]
     ];
 
     for (const [key, value] of entries) {

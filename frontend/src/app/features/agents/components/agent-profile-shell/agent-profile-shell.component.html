@@ -1,0 +1,214 @@
+@let profile = agent();
+
+<div class="agent-profile-shell container py-3 py-lg-4">
+  <div class="agent-profile-shell__topbar">
+    <button type="button" class="agent-profile-shell__back-link" (click)="back.emit()">
+      <mat-icon fontSet="material-symbols-outlined" inline>arrow_back</mat-icon>
+      <span>Back to agents</span>
+    </button>
+
+    <a class="agent-profile-shell__utility-link" routerLink="/report-issue">
+      <mat-icon fontSet="material-symbols-outlined" inline>flag</mat-icon>
+      <span>Report profile</span>
+    </a>
+  </div>
+
+  <section class="agent-profile-shell__hero" [attr.aria-labelledby]="'profile-name-' + profile.id">
+    <img
+      class="agent-profile-shell__avatar"
+      [src]="profile.avatarUrl || 'assets/svgs/agent_avatar.svg'"
+      [alt]="'Portrait of ' + profile.name"
+    />
+
+    <div class="agent-profile-shell__identity">
+      <div class="agent-profile-shell__eyebrow-row">
+        <span class="agent-profile-shell__role">Real Estate Agent</span>
+        @if (profile.meta?.verified) {
+          <span class="agent-profile-shell__verified">
+            <mat-icon fontSet="material-symbols-outlined" inline>verified</mat-icon>
+            Verified
+          </span>
+        }
+      </div>
+
+      <h1 class="agent-profile-shell__name" [id]="'profile-name-' + profile.id">
+        {{ profile.name }}
+      </h1>
+
+      @if (profile.agencyName) {
+        <p class="agent-profile-shell__agency">{{ profile.agencyName }}</p>
+      }
+
+      <div class="agent-profile-shell__summary">
+        @if (profile.contact?.location) {
+          <span>
+            <mat-icon fontSet="material-symbols-outlined" inline>location_on</mat-icon>
+            {{ profile.contact?.location }}
+          </span>
+        }
+        @if (profile.stats.rating != null) {
+          <span>
+            <mat-icon fontSet="material-symbols-outlined" inline>star</mat-icon>
+            {{ profile.stats.rating }}
+            @if (profile.stats.ratingCount != null) {
+              ({{ profile.stats.ratingCount }} reviews)
+            }
+          </span>
+        }
+      </div>
+    </div>
+
+    <div class="agent-profile-shell__hero-actions">
+      @if (profile.contact?.phone) {
+        <a class="agent-profile-shell__primary-action" [href]="'tel:' + profile.contact?.phone">
+          <mat-icon fontSet="material-symbols-outlined" inline>call</mat-icon>
+          <span>Call agent</span>
+        </a>
+      }
+      @if (profile.contact?.email) {
+        <a class="agent-profile-shell__secondary-action" [href]="'mailto:' + profile.contact?.email">
+          <mat-icon fontSet="material-symbols-outlined" inline>mail</mat-icon>
+          <span>Email</span>
+        </a>
+      }
+    </div>
+  </section>
+
+  <div class="row g-2 mt-2 mt-lg-3">
+    <div class="col-12 col-md-4">
+      <app-stat-card
+        [value]="profile.stats.publishedListings != null ? profile.stats.publishedListings.toString() : '—'"
+        label="Published listings"
+        icon="home_work" />
+    </div>
+    <div class="col-12 col-md-4">
+      <app-stat-card
+        [value]="profile.stats.rating != null ? profile.stats.rating.toString() : '—'"
+        label="Average rating"
+        icon="star" />
+    </div>
+    <div class="col-12 col-md-4">
+      <app-stat-card
+        [value]="profile.stats.ratingCount != null ? profile.stats.ratingCount.toString() : '—'"
+        label="Client reviews"
+        icon="reviews" />
+    </div>
+  </div>
+
+  <div class="row g-3 g-xl-4 mt-2 mt-lg-3">
+    <div class="col-12 col-xl-8">
+      <div class="agent-profile-shell__main-stack">
+        <section>
+          <app-info-card>
+            <app-section-heading title="About this agent" />
+            <p class="agent-profile-shell__about">
+              @if (profile.meta?.description) {
+                {{ profile.meta?.description }}
+              } @else {
+                {{ profile.name }} is a real estate professional
+                @if (profile.agencyName) { with {{ profile.agencyName }} }
+                @if (profile.contact?.location) { serving clients in {{ profile.contact?.location }} }.
+              }
+            </p>
+
+            @if (profile.meta?.tags?.length) {
+              <div class="agent-profile-shell__specialties">
+                <h3>Specialties</h3>
+                <div class="agent-profile-shell__chips">
+                  @for (tag of profile.meta?.tags ?? []; track tag) {
+                    <span>{{ tag }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </app-info-card>
+        </section>
+
+        <section>
+          <app-info-card>
+            <app-section-heading
+              title="Active listings"
+              [subtitle]="listings().length ? 'Properties currently represented by this agent.' : ''" />
+
+            @if (listings().length) {
+              <div class="agent-profile-shell__listings-grid">
+                @for (listing of listings(); track listing.id) {
+                  <app-listing-card
+                    [item]="listing"
+                    (cardClicked)="listingSelected.emit($event)" />
+                }
+              </div>
+            } @else {
+              <div class="agent-profile-shell__empty-listings">
+                <mat-icon fontSet="material-symbols-outlined">home_work</mat-icon>
+                <div>
+                  <h3>No active listings</h3>
+                  <p>This agent does not have any published properties available right now.</p>
+                </div>
+              </div>
+            }
+          </app-info-card>
+        </section>
+      </div>
+    </div>
+
+    <aside class="col-12 col-xl-4">
+      <div class="agent-profile-shell__sidebar">
+        <app-info-card>
+          <app-section-heading title="Professional information" />
+
+          <dl class="agent-profile-shell__details">
+            @if (profile.agencyName) {
+              <div>
+                <dt>Agency</dt>
+                <dd>{{ profile.agencyName }}</dd>
+              </div>
+            }
+            @if (profile.contact?.location) {
+              <div>
+                <dt>Service area</dt>
+                <dd>{{ profile.contact?.location }}</dd>
+              </div>
+            }
+            @if (profile.meta?.experienceYears != null) {
+              <div>
+                <dt>Experience</dt>
+                <dd>{{ profile.meta?.experienceYears }} years</dd>
+              </div>
+            }
+            @if (profile.meta?.priceRange) {
+              <div>
+                <dt>Price range</dt>
+                <dd>{{ profile.meta?.priceRange }}</dd>
+              </div>
+            }
+            @if (profile.meta?.languages?.length) {
+              <div>
+                <dt>Languages</dt>
+                <dd>{{ profile.meta?.languages?.join(', ') }}</dd>
+              </div>
+            }
+            @if (profile.meta?.licenseNumber) {
+              <div>
+                <dt>License</dt>
+                <dd>{{ profile.meta?.licenseNumber }}</dd>
+              </div>
+            }
+            @if (profile.contact?.phone) {
+              <div>
+                <dt>Phone</dt>
+                <dd><a [href]="'tel:' + profile.contact?.phone">{{ profile.contact?.phone }}</a></dd>
+              </div>
+            }
+            @if (profile.contact?.email) {
+              <div>
+                <dt>Email</dt>
+                <dd><a [href]="'mailto:' + profile.contact?.email">{{ profile.contact?.email }}</a></dd>
+              </div>
+            }
+          </dl>
+        </app-info-card>
+      </div>
+    </aside>
+  </div>
+</div>

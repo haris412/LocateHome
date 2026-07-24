@@ -12,6 +12,7 @@ export interface AgentItem {
 
   contact?: {
     phone?: string;
+    email?: string;
     location?: string;
   };
 
@@ -19,6 +20,10 @@ export interface AgentItem {
     priceRange?: string;
     tags?: string[];
     description?: string;
+    experienceYears?: number;
+    languages?: string[];
+    licenseNumber?: string;
+    verified?: boolean;
   };
 }
 

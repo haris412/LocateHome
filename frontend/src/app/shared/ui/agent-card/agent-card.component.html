@@ -79,10 +79,10 @@
   </div>
 
   <div class="agent-card__actions">
-    <button type="button" class="agent-card__btn agent-card__btn--primary">
+    <a class="agent-card__btn agent-card__btn--primary" [routerLink]="['/agents', agent.id]">
       <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">person</mat-icon>
       <span>View Profile</span>
-    </button>
+    </a>
 
     <button type="button" class="agent-card__btn">
       <mat-icon fontSet="material-symbols-outlined" aria-hidden="true">calendar_month</mat-icon>

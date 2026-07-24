@@ -25,6 +25,12 @@ export const appRoutes: Routes = [
         .then(m => m.LISTINGS_ROUTES)
   },
   {
+    path: 'agents/:id',
+    loadComponent: () =>
+      import('./features/agents/pages/agent-profile-page/agent-profile-page.component')
+        .then(m => m.AgentProfilePageComponent)
+  },
+  {
     path: 'agents',
     component: AgentsPageComponent
   },

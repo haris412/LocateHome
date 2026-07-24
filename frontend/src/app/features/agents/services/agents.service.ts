@@ -23,11 +23,20 @@ export interface AgentDto {
   displayName?: string;
   profileImageUrl?: string;
   phoneNumber?: string;
+  email?: string;
   location?: string;
   agency?: AgencyDto;
   publishedListings: number;
   rating?: number;
   ratingCount?: number;
+  description?: string;
+  bio?: string;
+  specialties?: string[];
+  priceRange?: string;
+  experienceYears?: number;
+  languages?: string[];
+  licenseNumber?: string;
+  isVerified?: boolean;
 }
 
 export interface AgentsResponse {
@@ -93,11 +102,14 @@ export class AgentsService {
   }
 
   getAgentById(id: string): Observable<AgentItem | null> {
-    if (!id.trim()) return of(null);
-    const url = `${this.baseUrl}/${encodeURIComponent(id.trim())}`;
-    return this.http.get<{ data: AgentDto }>(url).pipe(
-      map(res => this.toAgentItem(res.data)),
-      catchError(() => of(null))
+    const trimmed = id.trim();
+    if (!trimmed) return of(null);
+
+    // The public API exposes agents as a paginated collection but does not
+    // currently expose a public /:id detail route. Resolve the routed card id
+    // from a sufficiently large collection page instead.
+    return this.getAgents({ page: 1, limit: 100 }).pipe(
+      map((result) => result.items.find((agent) => agent.id === trimmed) ?? null)
     );
   }
 
@@ -135,7 +147,17 @@ export class AgentsService {
       },
       contact: {
         phone:    a.phoneNumber,
+        email:    a.email,
         location: a.location
+      },
+      meta: {
+        description:     a.description ?? a.bio,
+        tags:            a.specialties,
+        priceRange:      a.priceRange,
+        experienceYears: a.experienceYears,
+        languages:       a.languages,
+        licenseNumber:   a.licenseNumber,
+        verified:        a.isVerified
       }
     };
   }
