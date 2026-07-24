@@ -6,12 +6,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
-import { debounceTime, distinctUntilChanged, of, switchMap } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, of, switchMap, tap } from 'rxjs';
 
 import { AgentFilters } from '@/core/models/agent.model';
 import { GooglePlacePrediction } from '@/core/models/google-places.models';
 import { AgentsService } from '../../services/agents.service';
 import { LocationCatalogService } from '@/core/services/location-catalog.service';
+import { FilterShellComponent } from '../../../../shared/ui/filter-shell/filter-shell.component';
 
 @Component({
   selector: 'app-agents-filters',
@@ -22,7 +23,8 @@ import { LocationCatalogService } from '@/core/services/location-catalog.service
     MatInputModule,
     MatAutocompleteModule,
     MatSelectModule,
-    MatIconModule
+    MatIconModule,
+    FilterShellComponent
   ],
   templateUrl: './agents-filters.component.html',
   styleUrl: './agents-filters.component.scss',
@@ -39,7 +41,7 @@ export class AgentsFiltersComponent {
   readonly suggestions = signal<GooglePlacePrediction[]>([]);
   readonly ratings     = [4, 4.5, 4.7, 4.8];
 
-  readonly locationCtrl = new FormControl('');
+  readonly locationCtrl = new FormControl<string | GooglePlacePrediction>('', { nonNullable: true });
 
   constructor() {
     // Load agencies from API once
@@ -50,9 +52,18 @@ export class AgentsFiltersComponent {
 
     // Autocomplete: call Google Places as user types
     this.locationCtrl.valueChanges.pipe(
-      debounceTime(300),
+      map((value) => typeof value === 'string' ? value.trim() : null),
+      debounceTime(200),
+      filter((query): query is string => query !== null),
       distinctUntilChanged(),
-      switchMap((q) => (q && q.trim() ? this.locationCatalog.searchPlaces(q) : of([]))),
+      tap((query) => {
+        const location = query || null;
+        if (this.filters().location !== location) {
+          this.filters.update((current) => ({ ...current, location }));
+          this.emitFilters();
+        }
+      }),
+      switchMap((query) => query ? this.locationCatalog.searchPlaces(query) : of([])),
       takeUntilDestroyed()
     ).subscribe((preds) => this.suggestions.set(preds));
   }
@@ -62,12 +73,14 @@ export class AgentsFiltersComponent {
     const { city } = this.locationCatalog.parsePlaceCityNeighborhood(pred);
     this.locationCtrl.setValue(city, { emitEvent: false });
     this.filters.update((f) => ({ ...f, location: city || null }));
+    this.emitFilters();
   }
 
   onLocationCleared(): void {
     this.locationCtrl.setValue('');
     this.suggestions.set([]);
     this.filters.update((f) => ({ ...f, location: null }));
+    this.emitFilters();
   }
 
   displayPlace = (pred: GooglePlacePrediction | string | null): string => {
@@ -78,9 +91,10 @@ export class AgentsFiltersComponent {
 
   updateFilter(key: keyof AgentFilters, value: string | number | null): void {
     this.filters.update((f) => ({ ...f, [key]: value }));
+    this.emitFilters();
   }
 
-  applyFilters(): void {
+  private emitFilters(): void {
     this.filtersChange.emit(this.filters());
   }
 }

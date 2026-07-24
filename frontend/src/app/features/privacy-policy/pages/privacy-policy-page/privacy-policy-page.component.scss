@@ -1,51 +1,71 @@
 .privacy-policy {
-  max-width: 780px;
-  padding: 3rem 1rem 5rem;
-
-  &__header {
-    margin-bottom: 2.5rem;
-    border-bottom: 1px solid #e5e7eb;
-    padding-bottom: 2rem;
-  }
-
-  &__title {
-    font-size: 2.25rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-  }
-
-  &__meta {
-    color: #6b7280;
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
+  &__body {
+    padding: 2.75rem;
   }
 
   &__intro {
-    color: #374151;
-    font-size: 1rem;
-    line-height: 1.7;
-    margin: 0;
+    margin-bottom: 2.5rem;
+    padding: 1.25rem 1.5rem;
+    border-left: 4px solid var(--primary);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    color: var(--font-main);
+    background: var(--primary-soft);
+    font-size: var(--font-size-body-lg);
+  }
+
+  &__sections {
+    display: flex;
+    flex-direction: column;
   }
 
   &__section {
-    margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: 2.25rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1.75rem 0;
+    border-top: 1px solid var(--border-soft);
+
+    &:first-child {
+      padding-top: 0;
+      border-top: 0;
+    }
+
+    &:last-child { padding-bottom: 0; }
+  }
+
+  &__section-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-md);
+    color: var(--primary);
+    background: var(--primary-soft);
+    font-size: var(--font-size-caption);
+    font-weight: var(--font-weight-bold);
   }
 
   &__section-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 0.75rem;
-    color: #111827;
+    margin: 0.3rem 0 0.75rem;
+    font-size: var(--font-size-h4);
   }
 
   &__paragraph {
-    color: #4b5563;
-    font-size: 0.9375rem;
-    line-height: 1.75;
-    margin-bottom: 0.75rem;
+    font-size: var(--font-size-body-sm);
 
-    &:last-child {
-      margin-bottom: 0;
+    & + & { margin-top: 0.75rem; }
+  }
+}
+
+@media (max-width: 575.98px) {
+  .privacy-policy {
+    &__body { padding: 1.5rem; }
+    &__intro { padding: 1rem; }
+
+    &__section {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
     }
   }
 }

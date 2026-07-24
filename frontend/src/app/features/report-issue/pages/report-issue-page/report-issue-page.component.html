@@ -1,17 +1,16 @@
-<div class="report-issue container">
+<app-content-page-shell
+  title="Report an Issue"
+  subtitle="Help us keep LocateHome safe and accurate. We review every report and will get back to you within 48 hours if you provide your email."
+  eyebrow="Trust & safety"
+  icon="report"
+  width="narrow">
+  <section class="report-issue__card section-card" aria-label="Issue report form">
+    <div class="report-issue__card-heading">
+      <h2>Tell us what happened</h2>
+      <p>Include as much detail as possible so our team can review the issue quickly.</p>
+    </div>
 
-  <div class="report-issue__header">
-    <h1 class="report-issue__title">Report an Issue</h1>
-    <p class="report-issue__subtitle">
-      Help us keep LocateHome safe and accurate. We review every report
-      and will get back to you within 48 hours if you provide your email.
-    </p>
-  </div>
-
-  <div class="report-issue__card">
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-
-      <!-- Issue Type -->
       <mat-form-field appearance="outline" class="report-issue__field">
         <mat-label>Issue Type</mat-label>
         <mat-select formControlName="issueType">
@@ -24,7 +23,6 @@
         }
       </mat-form-field>
 
-      <!-- Description -->
       <mat-form-field appearance="outline" class="report-issue__field">
         <mat-label>Description</mat-label>
         <textarea
@@ -39,13 +37,16 @@
         }
       </mat-form-field>
 
-      <!-- Reporter Name (optional) -->
+      <div class="report-issue__optional-divider">
+        <span>Follow-up details</span>
+        <small>Optional</small>
+      </div>
+
       <mat-form-field appearance="outline" class="report-issue__field">
         <mat-label>Your Name <span class="report-issue__optional">(optional)</span></mat-label>
         <input matInput formControlName="reporterName" placeholder="John Doe" autocomplete="name" />
       </mat-form-field>
 
-      <!-- Reporter Email (optional) -->
       <mat-form-field appearance="outline" class="report-issue__field">
         <mat-label>Your Email <span class="report-issue__optional">(optional)</span></mat-label>
         <input matInput formControlName="reporterEmail" placeholder="john@example.com" type="email" autocomplete="email" />
@@ -55,7 +56,6 @@
         }
       </mat-form-field>
 
-      <!-- Server errors -->
       @if (serverErrors().length) {
         <ul class="report-issue__errors">
           @for (error of serverErrors(); track error) {
@@ -64,9 +64,8 @@
         </ul>
       }
 
-      <!-- Success message -->
       @if (successMessage()) {
-        <div class="report-issue__success">
+        <div class="report-issue__success" role="status">
           <mat-icon fontSet="material-symbols-outlined">check_circle</mat-icon>
           <span>{{ successMessage() }}</span>
         </div>
@@ -75,8 +74,6 @@
       <button type="submit" class="report-issue__submit" [disabled]="isSubmitting()">
         {{ isSubmitting() ? 'Submitting…' : 'Submit Report' }}
       </button>
-
     </form>
-  </div>
-
-</div>
+  </section>
+</app-content-page-shell>

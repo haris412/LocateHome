@@ -1,12 +1,9 @@
-<div class="guides-page container">
-
-  <div class="guides-page__header">
-    <h1 class="guides-page__title">Guides & Resources</h1>
-    <p class="guides-page__subtitle">
-      Practical guides to help you buy, rent, sell, and navigate property in Pakistan with confidence.
-    </p>
-  </div>
-
+<app-content-page-shell
+  title="Guides & Resources"
+  subtitle="Practical guides to help you buy, rent, sell, and navigate property in Pakistan with confidence."
+  eyebrow="Property knowledge"
+  icon="menu_book"
+  width="wide">
   <div class="guides-page__grid">
     @for (guide of guides; track guide.id) {
       <article class="guide-card">
@@ -25,5 +22,4 @@
       </article>
     }
   </div>
-
-</div>
+</app-content-page-shell>

@@ -1,62 +1,72 @@
 .hero {
   width: 100%;
-  padding: 100px 0 120px;
-  margin: 0;
-  border-radius: 0;
-  background: linear-gradient(
-    135deg,
-    var(--gradient-primary-start),
-    var(--gradient-primary-end)
-  );
-  color: white;
+  padding: 4.5rem 0 5.5rem;
+  color: var(--surface);
+  background:
+    var(--gradient-radial-overlay),
+    var(--gradient-radial-overlay-2),
+    linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
 }
 
 .hero-content {
-  max-width: 640px;
+  max-width: 760px;
 }
 
 .hero-badge {
-  background: var(--surface-white-15);
-  padding: 6px 14px;
-  border-radius: var(--radius-pill);
-  font-size: var(--font-size-body-sm);
+  display: inline-block;
+  margin-bottom: 0.5rem;
+  color: var(--surface-white-82);
+  font-size: var(--font-size-overline);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.12em;
+  line-height: var(--line-height-compact);
+  text-transform: uppercase;
 }
 
 h1 {
+  margin: 0;
+  color: var(--surface);
   font-size: var(--font-size-display);
-  font-weight: 700;
-  margin-top: 1rem;
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-heading);
 }
 
 p {
-  opacity: 0.9;
-  margin-top: 0.5rem;
+  max-width: 680px;
+  margin-top: 0.75rem;
+  color: var(--surface-white-88);
+  font-size: var(--font-size-body-lg);
 }
 
 .tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 1.5rem;
+  gap: 0.65rem;
+  margin-top: 1rem;
 
   span {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background: var(--surface-white-15);
-    border: 1px solid var(--surface-white-25);
-    padding: 6px 14px;
+    display: inline-flex;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--surface-white-20);
     border-radius: var(--radius-pill);
-    font-size: var(--font-size-body-sm);
-    color: white;
+    color: var(--surface-white-82);
+    background: var(--surface-white-10);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-compact);
+    backdrop-filter: blur(12px);
   }
 }
 
-@media (max-width: 768px) {
-  h1 {
-    font-size: var(--font-size-h3);
+@media (max-width: 767.98px) {
+  .hero {
+    padding: 3rem 0 4rem;
   }
 
-  .hero {
-    padding: 70px 0 90px;
+  h1 {
+    font-size: var(--font-size-h2);
+  }
+
+  p {
+    font-size: var(--font-size-body);
   }
 }

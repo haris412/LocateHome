@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { ContentPageShellComponent } from '../../../../shared/ui/content-page-shell/content-page-shell.component';
 
 interface GuideCard {
   id:      string;
@@ -99,7 +100,7 @@ const GUIDE_CARDS: GuideCard[] = [
 @Component({
   selector: 'app-guides-page',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, ContentPageShellComponent],
   templateUrl: './guides-page.component.html',
   styleUrl: './guides-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

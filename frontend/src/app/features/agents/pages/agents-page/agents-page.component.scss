@@ -1,50 +1,69 @@
 .agents-page {
+  min-height: 100%;
+  padding-bottom: 3rem;
   background: var(--surface-page);
 }
 
 .filters-wrapper {
-  margin-top: -40px;
   position: relative;
   z-index: 2;
+  margin-top: 2rem;
 }
 
 .agents-section {
-  margin-top: 2rem;
-  margin-bottom: 3rem;
+  margin-top: 2.5rem;
 }
 
 .section-header {
   h2 {
-    font-weight: 600;
     color: var(--font-main);
+    font-size: var(--font-size-h3);
+    font-weight: var(--font-weight-heavy);
   }
 
   p {
+    margin-top: 0.5rem;
     color: var(--font-secondary);
-    margin-bottom: 0;
+    line-height: var(--line-height-compact);
   }
 }
 
 .agent-card-skeleton {
-  height: 290px;
-  border-radius: var(--radius-lg);
+  height: 24rem;
+  overflow: hidden;
+  border: 1px solid var(--border-field);
+  border-radius: var(--radius-md);
   background: linear-gradient(
     90deg,
-    var(--surface-muted, #f0f0f0) 25%,
-    var(--surface, #fff) 50%,
-    var(--surface-muted, #f0f0f0) 75%
+    var(--surface-muted) 25%,
+    var(--surface) 50%,
+    var(--surface-muted) 75%
   );
   background-size: 200% 100%;
+  box-shadow: 0 3px 8px var(--shadow-ink-sm);
   animation: skeleton-shimmer 1.4s ease-in-out infinite;
 }
 
 @keyframes skeleton-shimmer {
-  0%   { background-position: 200% 0; }
+  0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
 
 .agents-empty {
+  margin-top: 1.5rem;
   padding: 3rem 1rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
   text-align: center;
-  color: var(--font-secondary);
+}
+
+@media (max-width: 767.98px) {
+  .filters-wrapper {
+    margin-top: 1.5rem;
+  }
+
+  .agents-section {
+    margin-top: 2rem;
+  }
 }

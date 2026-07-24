@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ContentPageShellComponent } from '../../../../shared/ui/content-page-shell/content-page-shell.component';
 
 interface PolicySection {
   title:      string;
@@ -66,6 +67,7 @@ const POLICY_SECTIONS: PolicySection[] = [
 @Component({
   selector: 'app-privacy-policy-page',
   standalone: true,
+  imports: [ContentPageShellComponent],
   templateUrl: './privacy-policy-page.component.html',
   styleUrl: './privacy-policy-page.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush

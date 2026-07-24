@@ -1,0 +1,34 @@
+<main class="content-page-shell">
+  <header class="content-page-shell__hero">
+    <div
+      class="content-page-shell__container container"
+      [class.content-page-shell__container--narrow]="width() === 'narrow'"
+      [class.content-page-shell__container--wide]="width() === 'wide'">
+      <div class="content-page-shell__heading">
+        @if (icon()) {
+          <span class="content-page-shell__icon" aria-hidden="true">
+            <mat-icon fontSet="material-symbols-outlined">{{ icon() }}</mat-icon>
+          </span>
+        }
+
+        <div class="content-page-shell__copy">
+          @if (eyebrow()) {
+            <p class="content-page-shell__eyebrow">{{ eyebrow() }}</p>
+          }
+          <h1 class="content-page-shell__title">{{ title() }}</h1>
+          <p class="content-page-shell__subtitle">{{ subtitle() }}</p>
+          @if (meta()) {
+            <p class="content-page-shell__meta">{{ meta() }}</p>
+          }
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div
+    class="content-page-shell__container content-page-shell__body container"
+    [class.content-page-shell__container--narrow]="width() === 'narrow'"
+    [class.content-page-shell__container--wide]="width() === 'wide'">
+    <ng-content />
+  </div>
+</main>

@@ -24,6 +24,7 @@ import {
   ReportIssueService,
   ReportErrorResponse
 } from '../../../../core/services/report-issue.service';
+import { ContentPageShellComponent } from '../../../../shared/ui/content-page-shell/content-page-shell.component';
 
 const ISSUE_TYPE_OPTIONS = [
   { value: 'listing'   as IssueType, label: 'Incorrect Listing' },
@@ -51,7 +52,8 @@ function optionalEmailValidator(control: AbstractControl): ValidationErrors | nu
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatIconModule
+    MatIconModule,
+    ContentPageShellComponent
   ],
   templateUrl: './report-issue-page.component.html',
   styleUrl: './report-issue-page.component.scss',

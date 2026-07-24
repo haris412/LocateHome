@@ -1,0 +1,118 @@
+:host {
+  display: block;
+}
+
+.content-page-shell {
+  min-height: 100%;
+  padding-bottom: 5rem;
+  background: var(--surface-page);
+
+  &__hero {
+    padding: 4.5rem 0 5.5rem;
+    color: var(--surface);
+    background:
+      var(--gradient-radial-overlay),
+      var(--gradient-radial-overlay-2),
+      linear-gradient(135deg, var(--gradient-primary-start), var(--gradient-primary-end));
+  }
+
+  &__container {
+    width: min(100%, 960px);
+
+    &--narrow { width: min(100%, 760px); }
+    &--wide { width: min(100%, 1200px); }
+  }
+
+  &__heading {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.25rem;
+    max-width: 760px;
+  }
+
+  &__icon {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 3.5rem;
+    height: 3.5rem;
+    border: 1px solid var(--surface-white-25);
+    border-radius: var(--radius-lg);
+    color: var(--surface);
+    background: var(--surface-white-15);
+    backdrop-filter: blur(12px);
+
+    mat-icon {
+      width: 1.75rem;
+      height: 1.75rem;
+      font-size: 1.75rem;
+    }
+  }
+
+  &__eyebrow {
+    margin-bottom: 0.5rem;
+    color: var(--surface-white-82);
+    font-size: var(--font-size-overline);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0.12em;
+    line-height: var(--line-height-compact);
+    text-transform: uppercase;
+  }
+
+  &__title {
+    color: var(--surface);
+    font-size: var(--font-size-display);
+  }
+
+  &__subtitle {
+    max-width: 680px;
+    margin-top: 0.75rem;
+    color: var(--surface-white-88);
+    font-size: var(--font-size-body-lg);
+  }
+
+  &__meta {
+    display: inline-flex;
+    margin-top: 1rem;
+    padding: 0.35rem 0.75rem;
+    border: 1px solid var(--surface-white-20);
+    border-radius: var(--radius-pill);
+    color: var(--surface-white-82);
+    background: var(--surface-white-10);
+    font-size: var(--font-size-caption);
+    line-height: var(--line-height-compact);
+  }
+
+  &__body {
+    position: relative;
+    margin-top: -2rem;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .content-page-shell {
+    padding-bottom: 3rem;
+
+    &__hero { padding: 3rem 0 4rem; }
+    &__heading { gap: 1rem; }
+
+    &__icon {
+      width: 3rem;
+      height: 3rem;
+
+      mat-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+        font-size: 1.5rem;
+      }
+    }
+
+    &__title { font-size: var(--font-size-h2); }
+    &__subtitle { font-size: var(--font-size-body); }
+  }
+}
+
+@media (max-width: 479.98px) {
+  .content-page-shell__icon { display: none; }
+}

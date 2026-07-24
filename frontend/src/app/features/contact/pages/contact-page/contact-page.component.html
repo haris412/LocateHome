@@ -1,14 +1,16 @@
-<div class="contact-page container">
-  <div class="contact-page__header">
-    <h1 class="contact-page__title">Contact Us</h1>
-    <p class="contact-page__subtitle">
-      Have a question or need help? Send us a message and we'll get back to you shortly.
-    </p>
-  </div>
+<app-content-page-shell
+  title="Contact Us"
+  subtitle="Have a question or need help? Send us a message and we'll get back to you shortly."
+  eyebrow="We're here to help"
+  icon="forum"
+  width="narrow">
+  <section class="contact-page__card section-card" aria-label="Contact form">
+    <div class="contact-page__card-heading">
+      <h2>Send us a message</h2>
+      <p>Share a few details and our team will respond as soon as possible.</p>
+    </div>
 
-  <div class="contact-page__card">
     <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
-
       <mat-form-field appearance="outline" class="contact-page__field">
         <mat-label>Name</mat-label>
         <input matInput formControlName="name" placeholder="John Doe" autocomplete="name" />
@@ -53,7 +55,7 @@
       }
 
       @if (successMessage()) {
-        <div class="contact-page__success">
+        <div class="contact-page__success" role="status">
           <mat-icon fontSet="material-symbols-outlined">check_circle</mat-icon>
           <span>{{ successMessage() }}</span>
         </div>
@@ -64,7 +66,6 @@
               [disabled]="isSubmitting()">
         {{ isSubmitting() ? 'Sending…' : 'Send Message' }}
       </button>
-
     </form>
-  </div>
-</div>
+  </section>
+</app-content-page-shell>
