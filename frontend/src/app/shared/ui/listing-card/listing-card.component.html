@@ -15,6 +15,7 @@
     @if (item().badge) {
     <span class="listing-card__badge"
           [class.listing-card__badge--featured]="item().badgeVariant === 'featured'"
+          [class.listing-card__badge--hot]="item().badgeVariant === 'hot'"
           [class.listing-card__badge--viewed]="item().badgeVariant === 'viewed'"
           [class.listing-card__badge--new]="item().badgeVariant === 'new'"
           [class.listing-card__badge--verified]="item().badgeVariant === 'verified'">

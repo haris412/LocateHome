@@ -63,6 +63,12 @@
       color: var(--status-highlight-text);
     }
 
+    &--hot {
+      background: var(--primary);
+      color: var(--surface);
+      border-color: color-mix(in srgb, var(--primary) 74%, var(--surface) 26%);
+    }
+
     &--new {
       background: color-mix(
         in srgb,

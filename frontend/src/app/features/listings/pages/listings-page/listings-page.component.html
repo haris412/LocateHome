@@ -31,4 +31,14 @@
                      [viewMode]="selectedView()"
                      (cardClicked)="openListingDetail($event)"
                      (favoriteToggled)="onFavoriteToggled($event)" />
+
+  @if (pageCount() > 1) {
+    <div class="listings-page__pagination">
+      <app-pagination
+        [page]="page()"
+        [pageCount]="pageCount()"
+        (pageChange)="onPageChange($event)"
+        ariaLabel="Listings pagination" />
+    </div>
+  }
 </section>

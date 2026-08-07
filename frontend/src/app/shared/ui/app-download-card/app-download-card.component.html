@@ -1,76 +1,68 @@
-<section class="app-download-card">
-  <div class="row align-items-center g-4 g-xl-5">
-    <div class="col-12 col-lg-7">
-      <div class="app-download-card__content">
-        <div class="app-download-card__pills">
-          <span class="app-download-card__pill">
-            <mat-icon fontSet="material-symbols-outlined" inline>
-              smartphone
+<section class="app-download-card" aria-labelledby="app-download-title">
+  <div class="app-download-card__content">
+    <p class="app-download-card__eyebrow">Mobile app</p>
+
+    <h2 id="app-download-title" class="app-download-card__title">
+      {{ title() }}
+    </h2>
+
+    <p class="app-download-card__brand">LocateHome</p>
+
+    <p class="app-download-card__description">
+      {{ description() }}
+    </p>
+
+    <ul class="app-download-card__features">
+      @for (bullet of bullets(); track bullet; let featureIndex = $index) {
+        <li class="app-download-card__feature">
+          <span class="app-download-card__feature-icon" aria-hidden="true">
+            <mat-icon fontSet="material-symbols-outlined">
+              {{ featureIcons[featureIndex] || 'check_circle' }}
             </mat-icon>
-            <span>Property app</span>
           </span>
-        </div>
-
-        <h2 class="app-download-card__title">{{ title() }}</h2>
-
-        <p class="app-download-card__description">
-          {{ description() }}
-        </p>
-
-        <ul class="app-download-card__bullets">
-          @for (bullet of bullets(); track bullet) {
-            <li class="app-download-card__bullet">
-              <span class="app-download-card__bullet-icon">
-                <mat-icon fontSet="material-symbols-outlined" inline>
-                  radio_button_checked
-                </mat-icon>
-              </span>
-              <span>{{ bullet }}</span>
-            </li>
+          <h3>{{ bullet }}</h3>
+          @if (featureDescriptions()[featureIndex]) {
+            <p>{{ featureDescriptions()[featureIndex] }}</p>
           }
-        </ul>
+        </li>
+      }
+    </ul>
 
-        <div class="app-download-card__actions">
-          <a
-            href="https://apps.apple.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="app-download-card__btn app-download-card__btn--primary"
-          >
-            <mat-icon fontSet="material-symbols-outlined" inline>
-              download
-            </mat-icon>
-            <span>Download on the App Store</span>
-          </a>
-
-          <a
-            href="https://play.google.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="app-download-card__btn app-download-card__btn--secondary"
-          >
-            <mat-icon fontSet="material-symbols-outlined" inline>
-              play_arrow
-            </mat-icon>
-            <span>Get it on Google Play</span>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <div class="col-12 col-lg-5">
-      <div class="app-download-card__phone-wrap">
+    <div class="app-download-card__actions" aria-label="Download the LocateHome mobile app">
+      <a
+        href="https://apps.apple.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="app-download-card__store-link"
+        aria-label="Download LocateHome on the App Store"
+      >
         <img
-          class="app-download-card__phone"
-          [src]="phoneImageUrl()"
-          [alt]="title()"
+          src="assets/images/home/app-store-placeholder.svg"
+          alt="Download on the App Store"
         />
+      </a>
 
-        <div class="app-download-card__phone-note">
-          <small>Valuation update</small>
-          <strong>New estimate ready</strong>
-        </div>
-      </div>
+      <a
+        href="https://play.google.com/store"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="app-download-card__store-link"
+        aria-label="Get LocateHome on Google Play"
+      >
+        <img
+          src="assets/images/home/google-play-placeholder.svg"
+          alt="Get it on Google Play"
+        />
+      </a>
     </div>
+  </div>
+
+  <div class="app-download-card__visual" aria-hidden="true">
+    <div class="app-download-card__visual-glow"></div>
+    <img
+      class="app-download-card__phones"
+      [src]="phoneImageUrl()"
+      alt=""
+    />
   </div>
 </section>

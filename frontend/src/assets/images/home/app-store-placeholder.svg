@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="180" height="54" viewBox="0 0 180 54" role="img" aria-labelledby="title">
+  <title id="title">Download on the App Store</title>
+  <rect width="180" height="54" rx="9" fill="#121821"/>
+  <circle cx="27" cy="27" r="14" fill="#FFFFFF"/>
+  <path d="M22 34l5-15 5 15m-8.3-5h6.6" fill="none" stroke="#121821" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="49" y="20" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="9">Download on the</text>
+  <text x="49" y="38" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="18" font-weight="700">App Store</text>
+</svg>

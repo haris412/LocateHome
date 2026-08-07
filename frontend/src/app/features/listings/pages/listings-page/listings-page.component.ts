@@ -14,6 +14,9 @@ import {
   PropertyFiltersComponent
 } from '../../../../shared/ui/property-filters/property-filters.component';
 import { ListingsQueryParams, ListingsService } from '../../services/listings.service';
+import { PaginationComponent } from '../../../../shared/ui/pagination/pagination.component';
+
+const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-listings-page',
@@ -21,7 +24,8 @@ import { ListingsQueryParams, ListingsService } from '../../services/listings.se
   imports: [
     ListingsResultsHeaderComponent,
     ListingsGridComponent,
-    PropertyFiltersComponent
+    PropertyFiltersComponent,
+    PaginationComponent
   ],
   templateUrl: './listings-page.component.html',
   styleUrl: './listings-page.component.scss',
@@ -107,6 +111,8 @@ export class ListingsPageComponent {
     
   ]);
   readonly totalResults = signal(0);
+  readonly page = signal(1);
+  readonly pageCount = signal(1);
   readonly selectedCityLabel = signal('All locations');
 
   readonly sortOptions = signal<SortOption[]>([
@@ -131,7 +137,7 @@ export class ListingsPageComponent {
     this.searchQuery.set(value);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { page: 1, locationName: value.trim() || null },
+      queryParams: { page: 1, limit: PAGE_SIZE, locationName: value.trim() || null },
       queryParamsHandling: 'merge'
     });
   }
@@ -141,7 +147,7 @@ export class ListingsPageComponent {
     const sort = this.toSortParams(value);
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: sort,
+      queryParams: { ...sort, page: 1, limit: PAGE_SIZE },
       queryParamsHandling: 'merge'
     });
   }
@@ -191,6 +197,7 @@ export class ListingsPageComponent {
         switchMap((params) => {
           this.syncFilterFieldsFromParams(params);
           const query = this.mapQueryParamsToRequest(params);
+          this.page.set(query.page ?? 1);
           this.selectedSort.set(this.fromSortParams(query.sortBy, query.sortOrder));
           this.selectedMode.set(query.purpose === 'For Rent' ? 'rent' : 'buy');
 
@@ -209,6 +216,8 @@ export class ListingsPageComponent {
       .subscribe((result) => {
         this.listings.set(result.items);
         this.totalResults.set(result.total);
+        this.page.set(result.page);
+        this.pageCount.set(Math.max(1, result.totalPages));
       });
   }
 
@@ -248,8 +257,8 @@ export class ListingsPageComponent {
     if (propertyTypeTop === 'any') propertyTypeTop = undefined;
 
     return {
-      page: this.toNumber(params.get('page')) ?? 1,
-      limit: this.toNumber(params.get('limit')) ?? 20,
+      page: Math.max(1, Math.floor(this.toNumber(params.get('page')) ?? 1)),
+      limit: PAGE_SIZE,
       purpose: (params.get('purpose') as 'For Sale' | 'For Rent' | null) ?? undefined,
       status: (params.get('status') as 'Draft' | 'Published' | null) ?? undefined,
       propertyType: propertyTypeTop,
@@ -442,6 +451,14 @@ export class ListingsPageComponent {
     this.filtersChanged$.next(payload);
   }
 
+  onPageChange(next: number): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: next, limit: PAGE_SIZE },
+      queryParamsHandling: 'merge'
+    });
+  }
+
   private applyFiltersToQuery(payload: PropertyFilterPayload): void {
     const fieldValue = (id: string): string | null => {
       const field = payload.fields.find((item) => item.id === id);
@@ -460,7 +477,7 @@ export class ListingsPageComponent {
 
     const queryParams: Record<string, string | number | null> = {
       page: 1,
-      limit: 20,
+      limit: PAGE_SIZE,
       purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
       locationName: city || area || null,
       propertyType: !primaryType || primaryType === 'any' ? null : primaryType,

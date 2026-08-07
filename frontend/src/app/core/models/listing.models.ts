@@ -50,6 +50,7 @@ export interface ListingsApiProperty {
   contactEmail: string;
   contactPhoneNumber: string;
   contactLocation?: string;
+  isFeatured?: boolean;
   /** Listing owner; string id or populated subdocument */
   userId?: string | ListingsApiPropertyOwnerRef;
   /** Optional stable CRM / frontend key */
@@ -74,6 +75,7 @@ export type ListingBadgeVariant =
   | 'sale'
   | 'rent'
   | 'featured'
+  | 'hot'
   | 'viewed'
   | 'new'
   | 'verified';

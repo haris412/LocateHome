@@ -86,12 +86,27 @@ export class ListingDetailPageComponent {
             return of({ vm: null as PropertyDetailViewModel | null, err: 'Missing listing id.' });
           }
           return this.listingsService.getPropertyById(id).pipe(
-            map(api => {
-              const vm = api ? mapApiPropertyToDetailView(api) : null;
-              return {
-                vm,
-                err: vm ? null : ('Could not load this property.' as string | null)
-              };
+            switchMap(api => {
+              if (!api) {
+                return of({
+                  vm: null as PropertyDetailViewModel | null,
+                  err: 'Could not load this property.' as string | null
+                });
+              }
+
+              const vm = mapApiPropertyToDetailView(api);
+              return this.listingsService.getSimilarListings(api).pipe(
+                map(items => ({
+                  vm: {
+                    ...vm,
+                    nearby: {
+                      title: 'Similar Properties',
+                      items
+                    }
+                  },
+                  err: null as string | null
+                }))
+              );
             }),
             tap(() => this.detailLoading.set(false))
           );

@@ -12,5 +12,8 @@ export class AppDownloadCardComponent {
   readonly title = input.required<string>();
   readonly description = input.required<string>();
   readonly bullets = input.required<readonly string[]>();
+  readonly featureDescriptions = input<readonly string[]>([]);
   readonly phoneImageUrl = input.required<string>();
+
+  readonly featureIcons = ['search', 'favorite', 'forum', 'notifications'] as const;
 }

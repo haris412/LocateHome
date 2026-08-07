@@ -159,6 +159,28 @@ export class ListingsService {
     );
   }
 
+  getSimilarListings(
+    property: ListingsApiProperty,
+    limit = 8
+  ): Observable<ListingItem[]> {
+    return this.getListings({
+      page: 1,
+      limit: limit + 1,
+      purpose: property.purpose,
+      status: 'Published',
+      subtype: property.subtype || undefined,
+      sortBy: 'createdAt',
+      sortOrder: 'desc'
+    }).pipe(
+      map((result) =>
+        result.items
+          .filter((item) => item.id !== property._id)
+          .slice(0, limit)
+      ),
+      catchError(() => of([]))
+    );
+  }
+
   private buildHttpParams(params: ListingsQueryParams): HttpParams {
     let httpParams = new HttpParams();
 
@@ -192,19 +214,37 @@ export class ListingsService {
       property.images.find((img) => img.isThumbnail) ??
       property.images.sort((a, b) => a.orderIndex - b.orderIndex)[0];
 
+    const badge = this.getPromotionalBadge(property);
+
     return {
       id: property._id,
       title: property.listingTitle,
       address: property.fullAddress,
       price: this.formatPrice(property.price, property.purpose),
-      badge: property.purpose,
-      badgeVariant: property.purpose === 'For Rent' ? 'rent' : 'sale',
+      badge: badge?.label,
+      badgeVariant: badge?.variant,
       imageUrl: resolvePropertyImageUrlForDisplay(thumbnail?.url ?? ''),
       beds: property.numBedrooms,
       baths: property.numBathrooms,
       area: `${property.areaSize} ${property.areaUnit}`,
       rent: property.purpose === 'For Rent'
     };
+  }
+
+  private getPromotionalBadge(
+    property: ListingsApiProperty
+  ): { label: string; variant: 'featured' | 'hot' } | undefined {
+    if (property.isFeatured) {
+      return { label: 'Featured', variant: 'featured' };
+    }
+
+    const publishedAt = Date.parse(property.createdAt);
+    const hotWindowMs = 14 * 24 * 60 * 60 * 1000;
+    if (Number.isFinite(publishedAt) && Date.now() - publishedAt <= hotWindowMs) {
+      return { label: 'Hot', variant: 'hot' };
+    }
+
+    return undefined;
   }
 
   private formatPrice(price: number, purpose: ListingPurpose): string {

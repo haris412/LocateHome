@@ -150,16 +150,15 @@
     </div>
   </div>
 
-  <!-- Nearby -->
+  <!-- Similar properties -->
   @if (vm().nearby?.items?.length) {
   <div class="row g-3 g-xl-4 mt-2 mt-lg-3">
     <div class="col-12">
       <app-listings-carousel-section [items]="vm().nearby?.items"
-                                     [title]="vm().nearby?.title || 'Featured properties nearby'"
-                                     [isFeatured]="true"
-                                     [scrollSnap]="false"
+                                     [title]="vm().nearby?.title || 'Similar Properties'"
                                      variant="standalone"
-                                     (cardClicked)="nearbyCardClicked.emit($event)"  />
+                                     (cardClicked)="nearbyCardClicked.emit($event)"
+                                     (favoriteToggled)="nearbyFavoriteToggled.emit($event)" />
     </div>
   </div>
 
