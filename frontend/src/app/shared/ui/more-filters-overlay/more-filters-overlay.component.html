@@ -1,0 +1,145 @@
+<div id="more-filters-overlay"
+     class="more-filters-overlay"
+     (click)="onBackdropClick($event)">
+  <aside class="more-filters-overlay__drawer"
+         role="dialog"
+         aria-modal="true"
+         aria-labelledby="more-filters-title"
+         [formGroup]="form">
+    <header class="more-filters-overlay__header">
+      <h2 id="more-filters-title">More Filters</h2>
+      <button type="button"
+              mat-icon-button
+              class="more-filters-overlay__close"
+              (click)="close()"
+              aria-label="Close more filters">
+        <mat-icon fontSet="material-symbols-outlined">close</mat-icon>
+      </button>
+    </header>
+
+    <div class="more-filters-overlay__clear-row">
+      <button type="button" mat-button (click)="reset()">Clear all</button>
+    </div>
+
+    <div class="more-filters-overlay__body">
+      <section class="more-filters-overlay__section">
+        <h3>Price Range</h3>
+        <div class="more-filters-overlay__range more-filters-overlay__range--price">
+          <mat-form-field appearance="outline" class="listing-page-fields" subscriptSizing="dynamic">
+            <mat-label>Currency</mat-label>
+            <mat-select formControlName="currency">
+              <mat-option value="PKR">PKR</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" class="listing-page-fields" subscriptSizing="dynamic">
+            <mat-label>Min price</mat-label>
+            <input matInput inputmode="numeric" formControlName="minPrice" />
+          </mat-form-field>
+          <span aria-hidden="true">–</span>
+          <mat-form-field appearance="outline" class="listing-page-fields" subscriptSizing="dynamic">
+            <mat-label>Max price</mat-label>
+            <input matInput inputmode="numeric" formControlName="maxPrice" />
+          </mat-form-field>
+        </div>
+        @if (priceError()) {
+          <p class="more-filters-overlay__error" role="alert">{{ priceError() }}</p>
+        }
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <h3>Area (Marla/Kanal)</h3>
+        <div class="more-filters-overlay__range">
+          <mat-form-field appearance="outline" class="listing-page-fields" subscriptSizing="dynamic">
+            <mat-label>Min area</mat-label>
+            <input matInput inputmode="decimal" formControlName="minArea" />
+          </mat-form-field>
+          <span aria-hidden="true">–</span>
+          <mat-form-field appearance="outline" class="listing-page-fields" subscriptSizing="dynamic">
+            <mat-label>Max area</mat-label>
+            <input matInput inputmode="decimal" formControlName="maxArea" />
+          </mat-form-field>
+        </div>
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <h3>Bathrooms</h3>
+        <mat-button-toggle-group class="more-filters-overlay__toggle-grid more-filters-overlay__toggle-grid--five"
+                                 formControlName="bathrooms" aria-label="Bathrooms">
+          @for (option of ['any', '1', '2', '3', '4']; track option) {
+            <mat-button-toggle [value]="option">{{ option === 'any' ? 'Any' : option + '+' }}</mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <h3>Purpose</h3>
+        <mat-button-toggle-group class="more-filters-overlay__toggle-grid more-filters-overlay__toggle-grid--three"
+                                 formControlName="purpose" aria-label="Purpose">
+          <mat-button-toggle value="any">Any</mat-button-toggle>
+          <mat-button-toggle value="buy">For Sale</mat-button-toggle>
+          <mat-button-toggle value="rent">For Rent</mat-button-toggle>
+        </mat-button-toggle-group>
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <h3>Furnishing</h3>
+        <mat-button-toggle-group class="more-filters-overlay__toggle-grid more-filters-overlay__toggle-grid--four"
+                                 formControlName="furnishing" aria-label="Furnishing">
+          @for (option of ['Any', 'Furnished', 'Semi Furnished', 'Unfurnished']; track option) {
+            <mat-button-toggle [value]="option.toLowerCase()">{{ option }}</mat-button-toggle>
+          }
+        </mat-button-toggle-group>
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <mat-form-field appearance="outline" class="listing-page-fields" subscriptSizing="dynamic">
+          <mat-label>Amenities</mat-label>
+          <mat-select formControlName="amenity">
+            <mat-option value="">Any amenity</mat-option>
+            <mat-option value="Parking">Parking</mat-option>
+            <mat-option value="Utilities included">Utilities included</mat-option>
+            <mat-option value="Pet friendly">Pet friendly</mat-option>
+            <mat-option value="Garden">Garden</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <mat-form-field appearance="outline" class="listing-page-fields" subscriptSizing="dynamic">
+          <mat-label>Property Features</mat-label>
+          <mat-select formControlName="feature">
+            <mat-option value="">Any feature</mat-option>
+            <mat-option value="Open house">Open house</mat-option>
+            <mat-option value="New projects">New projects</mat-option>
+            <mat-option value="Ready to move">Ready to move</mat-option>
+            <mat-option value="Video tours">Video tours</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <h3>Additional filters</h3>
+        <app-filter-chip-group [items]="chips()" (toggled)="toggleChip($event)" />
+      </section>
+
+      <section class="more-filters-overlay__section">
+        <h3>More Options</h3>
+        <mat-checkbox formControlName="verifiedOnly">Verified properties only</mat-checkbox>
+        <mat-checkbox formControlName="withPhotos">With photos</mat-checkbox>
+      </section>
+    </div>
+
+    <footer class="more-filters-overlay__footer">
+      <button type="button"
+              mat-stroked-button
+              class="more-filters-overlay__reset"
+              (click)="reset()">Reset</button>
+      <button type="button"
+              mat-flat-button
+              class="more-filters-overlay__apply"
+              (click)="apply()">
+        Apply Filters <span class="more-filters-overlay__count">{{ filterCount() }}</span>
+      </button>
+    </footer>
+  </aside>
+</div>

@@ -65,10 +65,17 @@ export class LocationSearchFieldComponent {
   readonly label       = input('');
   readonly placeholder = input('Search location');
   readonly value       = input('');
+  readonly prefixIcon  = input<string | null>(null);
+  readonly voiceAction = input(false);
+  readonly voiceDisabled = input(false);
+  readonly voiceActive = input(false);
+  readonly voiceExpanded = input(false);
+  readonly listingPageField = input(false);
 
   // ── Outputs ──────────────────────────────────────────────────────────────────
 
   readonly searchCommitted = output<string>();
+  readonly voiceTriggered = output<void>();
 
   // ── View state ───────────────────────────────────────────────────────────────
 
@@ -78,6 +85,7 @@ export class LocationSearchFieldComponent {
   readonly draft = linkedSignal(() => this.value());
 
   readonly icon = computed(() => ICON_BY_MODE[this.mode()]);
+  readonly leadingIcon = computed(() => this.prefixIcon() ?? this.icon());
 
   // ── Template binding for mat-autocomplete [displayWith] ───────────────────────
 

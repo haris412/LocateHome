@@ -6,3 +6,10 @@
     (confirmed)="confirmAppointment($event)"
   />
 }
+
+@if (moreFiltersState().isOpen && moreFiltersData(); as data) {
+  <app-more-filters-overlay
+    [data]="data"
+    (closed)="closeMoreFiltersOverlay()"
+    (applied)="applyMoreFilters($event)" />
+}

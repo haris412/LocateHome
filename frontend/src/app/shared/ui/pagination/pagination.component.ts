@@ -15,8 +15,8 @@ export class PaginationComponent {
 
   readonly pageChange = output<number>();
 
-  readonly safePage = computed(() => clamp(this.page(), 1, Math.max(1, this.pageCount())));
-  readonly safeCount = computed(() => Math.max(1, this.pageCount()));
+  readonly safeCount = computed(() => positiveInteger(this.pageCount()));
+  readonly safePage = computed(() => clamp(positiveInteger(this.page()), 1, this.safeCount()));
 
   readonly canPrev = computed(() => this.safePage() > 1);
   readonly canNext = computed(() => this.safePage() < this.safeCount());
@@ -64,6 +64,10 @@ export class PaginationComponent {
 
 function clamp(v: number, min: number, max: number): number {
   return Math.min(Math.max(v, min), max);
+}
+
+function positiveInteger(value: number, fallback = 1): number {
+  return Number.isFinite(value) ? Math.max(1, Math.floor(value)) : fallback;
 }
 
 function range(start: number, end: number): number[] {

@@ -18,6 +18,36 @@
     width: 100%;
   }
 
+  &__voice {
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-inline-end: 0.25rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: transparent;
+    color: var(--font-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &:hover:not(:disabled),
+    &:focus-visible,
+    &--active {
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+
   .mat-icon {
     color: var(--font-secondary);
     font-size: var(--font-size-h5);

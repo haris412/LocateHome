@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  DestroyRef,
   EventEmitter,
   Output,
   PLATFORM_ID,
@@ -11,6 +12,7 @@ import {
   signal
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { LocationCatalogService } from '../../../core/services/location-catalog.service';
 
@@ -18,9 +20,13 @@ import {
   FilterChipItem,
   FilterMode,
   FilterSelectConfig,
-  FilterTabItem
+  FilterTabItem,
+  EMPTY_MORE_FILTERS,
+  MoreFiltersFormValue,
+  MoreFiltersOverlayResult
 } from '../../../core/models/filter.models';
 import { FiltersCatalogService } from '../../../core/services/filters-catalog.service';
+import { MoreFiltersOverlayService } from '../../services/more-filters-overlay.service';
 
 import { FilterShellComponent } from '../filter-shell/filter-shell.component';
 import { FilterSelectComponent } from '../filter-select-card/filter-select-card.component';
@@ -32,6 +38,23 @@ export interface PropertyFilterPayload {
   query: string;
   fields: FilterSelectConfig[];
   chips: FilterChipItem[];
+  manualMinPrice?: number;
+  manualMaxPrice?: number;
+  purposeOverride?: 'For Sale' | 'For Rent' | null;
+}
+
+interface AppliedDrawerChip {
+  id:
+    | 'minArea'
+    | 'bathrooms'
+    | 'purpose'
+    | 'furnishing'
+    | 'amenity'
+    | 'feature'
+    | 'priceRange'
+    | 'verifiedOnly'
+    | 'withPhotos';
+  label: string;
 }
 
 interface SpeechRecognitionConstructor {
@@ -72,6 +95,7 @@ interface SpeechRecognitionEventLike {
   selector: 'app-property-filters',
   standalone: true,
   imports: [
+    MatButtonModule,
     MatIconModule,
     FilterShellComponent,
     SegmentedTabsComponent,
@@ -100,8 +124,10 @@ export class PropertyFiltersComponent {
     return selectedOption?.label || field.placeholder || 'Select';
   }
   private readonly platformId      = inject(PLATFORM_ID);
+  private readonly destroyRef      = inject(DestroyRef);
   private readonly filtersCatalog  = inject(FiltersCatalogService);
   private readonly locationCatalog = inject(LocationCatalogService);
+  private readonly moreFiltersOverlay = inject(MoreFiltersOverlayService);
 
   readonly variant = input<'hero' | 'toolbar'>('hero');
   readonly initialMode = input<FilterMode>('buy');
@@ -120,6 +146,7 @@ export class PropertyFiltersComponent {
   readonly mode = signal<FilterMode>('buy');
   readonly showMoreFilters = signal(false);
   readonly searchQuery = signal('');
+  readonly appliedDrawerFilters = signal<MoreFiltersFormValue>({ ...EMPTY_MORE_FILTERS });
 
   readonly localBuyFields = signal<FilterSelectConfig[]>([]);
   readonly localRentFields = signal<FilterSelectConfig[]>([]);
@@ -151,8 +178,60 @@ export class PropertyFiltersComponent {
     this.activeFields().find((field) => field.id === 'price') ?? null
   );
 
-  readonly minPriceField = computed(() => this.priceSlotField('Min Price'));
-  readonly maxPriceField = computed(() => this.priceSlotField('Max Price'));
+  readonly propertyTypeField = computed(() =>
+    this.activeFields().find((field) => field.id === 'primaryType') ?? null
+  );
+
+  readonly bedsField = computed(() =>
+    this.activeFields().find((field) => field.id === 'beds') ?? null
+  );
+
+  readonly selectedMoreFilters = computed(() =>
+    this.activeChips().filter((chip) => chip.selected)
+  );
+
+  readonly appliedDrawerChips = computed<AppliedDrawerChip[]>(() => {
+    const filters = this.appliedDrawerFilters();
+    const chips: AppliedDrawerChip[] = [];
+
+    if (filters.minPrice || filters.maxPrice) {
+      const minimum = filters.minPrice ? `PKR ${this.formatCompactNumber(filters.minPrice)}` : 'Any';
+      const maximum = filters.maxPrice ? `PKR ${this.formatCompactNumber(filters.maxPrice)}` : 'Any';
+      chips.push({ id: 'priceRange', label: `Price: ${minimum} – ${maximum}` });
+    }
+    if (filters.minArea || filters.maxArea) {
+      chips.push({
+        id: 'minArea',
+        label: `Area: ${filters.minArea || 'Any'} – ${filters.maxArea || 'Any'}`
+      });
+    }
+    if (filters.bathrooms !== 'any') {
+      chips.push({ id: 'bathrooms', label: `${filters.bathrooms}+ Bathrooms` });
+    }
+    if (filters.purpose !== 'any') {
+      const label = filters.purpose === 'buy' ? 'For Sale' : 'For Rent';
+      chips.push({ id: 'purpose', label });
+    }
+    if (filters.furnishing !== 'any') {
+      chips.push({ id: 'furnishing', label: filters.furnishing });
+    }
+    if (filters.amenity) chips.push({ id: 'amenity', label: filters.amenity });
+    if (filters.feature) chips.push({ id: 'feature', label: filters.feature });
+    if (filters.verifiedOnly) chips.push({ id: 'verifiedOnly', label: 'Verified properties only' });
+    if (filters.withPhotos) chips.push({ id: 'withPhotos', label: 'With photos' });
+
+    return chips;
+  });
+
+  readonly moreFiltersCount = computed(
+    () => this.selectedMoreFilters().length + this.appliedDrawerChips().length
+  );
+
+  readonly isMoreFiltersOpen = computed(() =>
+    this.variant() === 'toolbar'
+      ? this.moreFiltersOverlay.state().isOpen
+      : this.showMoreFilters()
+  );
 
   readonly advancedFields = computed(() =>
     this.activeFields().filter(
@@ -224,6 +303,12 @@ export class PropertyFiltersComponent {
       );
     });
 
+    this.destroyRef.onDestroy(() => {
+      if (this.variant() === 'toolbar' && this.moreFiltersOverlay.state().isOpen) {
+        this.moreFiltersOverlay.close();
+      }
+    });
+
     this.setupSpeechRecognition();
   }
 
@@ -233,15 +318,37 @@ export class PropertyFiltersComponent {
     }
 
     this.mode.set(mode);
+    this.appliedDrawerFilters.update((filters) => ({ ...filters, purpose: 'any' }));
     this.emitFiltersChanged();
   }
 
-  toggleMoreFilters(): void {
+  toggleMoreFilters(event?: Event): void {
     if (!this.showMoreFiltersToggle()) {
       return;
     }
 
-    this.showMoreFilters.update((value) => !value);
+    event?.stopPropagation();
+
+    if (this.variant() !== 'toolbar') {
+      this.showMoreFilters.update((isOpen) => !isOpen);
+      return;
+    }
+
+    if (this.moreFiltersOverlay.state().isOpen) {
+      this.moreFiltersOverlay.close();
+      return;
+    }
+
+    this.moreFiltersOverlay.open(
+      {
+        filters: { ...this.appliedDrawerFilters() },
+        chips: this.activeChips().map((chip) => ({ ...chip })),
+        selectedChipIds: this.selectedMoreFilters().map((chip) => chip.id)
+      },
+      {
+        onApplied: (result) => this.applyMoreFiltersResult(result)
+      }
+    );
   }
 
   updateField(payload: { id: string; value: string | null }): void {
@@ -296,6 +403,14 @@ export class PropertyFiltersComponent {
       );
     }
 
+    if (payload.id === 'price') {
+      this.appliedDrawerFilters.update((filters) => ({
+        ...filters,
+        minPrice: '',
+        maxPrice: ''
+      }));
+    }
+
     this.emitFiltersChanged();
   }
 
@@ -310,6 +425,28 @@ export class PropertyFiltersComponent {
       )
     );
 
+    this.emitFiltersChanged();
+  }
+
+  clearMoreFilters(): void {
+    const clearSelections = (chips: FilterChipItem[]) =>
+      chips.map((chip) => ({ ...chip, selected: false }));
+    this.localBuyChips.update(clearSelections);
+    this.localRentChips.update(clearSelections);
+    this.appliedDrawerFilters.set({ ...EMPTY_MORE_FILTERS });
+    this.emitFiltersChanged();
+  }
+
+  removeAppliedDrawerFilter(id: AppliedDrawerChip['id']): void {
+    this.appliedDrawerFilters.update((filters) => {
+      if (id === 'priceRange') return { ...filters, minPrice: '', maxPrice: '' };
+      if (id === 'minArea') return { ...filters, minArea: '', maxArea: '' };
+      if (id === 'verifiedOnly' || id === 'withPhotos') return { ...filters, [id]: false };
+      return {
+        ...filters,
+        [id]: id === 'bathrooms' || id === 'furnishing' || id === 'purpose' ? 'any' : ''
+      };
+    });
     this.emitFiltersChanged();
   }
 
@@ -352,20 +489,6 @@ export class PropertyFiltersComponent {
     this.showVoicePanel.set(false);
   }
 
-  private priceSlotField(label: string): FilterSelectConfig | null {
-    const field = this.priceField();
-
-    if (!field) {
-      return null;
-    }
-
-    return {
-      ...field,
-      label,
-      placeholder: 'Any'
-    };
-  }
-
   private syncSearchFieldValue(value: string): void {
     const syncFields = (fields: FilterSelectConfig[]) =>
       fields.map((field) =>
@@ -382,13 +505,50 @@ export class PropertyFiltersComponent {
     this.filtersChanged.emit(this.buildPayload());
   }
 
+  private applyMoreFiltersResult(result: MoreFiltersOverlayResult): void {
+    const filters = result.filters;
+
+    if (filters.purpose === 'buy' || filters.purpose === 'rent') {
+      this.mode.set(filters.purpose);
+    }
+
+    this.appliedDrawerFilters.set({ ...filters });
+    const selected = new Set(result.selectedChipIds);
+    const store = this.mode() === 'buy' ? this.localBuyChips : this.localRentChips;
+    store.update((chips) =>
+      chips.map((chip) => ({ ...chip, selected: selected.has(chip.id) }))
+    );
+    this.emitFiltersChanged();
+  }
+
   private buildPayload(): PropertyFilterPayload {
+    const drawer = this.appliedDrawerFilters();
     return {
       mode: this.mode(),
       query: this.searchQuery(),
       fields: this.activeFields(),
-      chips: this.activeChips().filter((chip) => chip.selected)
+      chips: this.activeChips().filter((chip) => chip.selected),
+      manualMinPrice: this.parseOptionalNumber(drawer.minPrice),
+      manualMaxPrice: this.parseOptionalNumber(drawer.maxPrice),
+      purposeOverride:
+        drawer.purpose === 'buy'
+          ? 'For Sale'
+          : drawer.purpose === 'rent'
+            ? 'For Rent'
+            : undefined
     };
+  }
+
+  private parseOptionalNumber(value: string): number | undefined {
+    const normalized = value.replace(/,/g, '').trim();
+    if (!normalized) return undefined;
+    const parsed = Number(normalized);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+  }
+
+  private formatCompactNumber(value: string): string {
+    const parsed = this.parseOptionalNumber(value);
+    return parsed === undefined ? value : new Intl.NumberFormat('en-US').format(parsed);
   }
 
   private setupSpeechRecognition(): void {

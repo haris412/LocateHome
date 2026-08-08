@@ -17,6 +17,19 @@ html {
       ),
       typography: "Plus Jakarta Sans",
       density: 0,
+    ),
+    $overrides: (
+      primary: #124076,
+      secondary: #5c6370,
+      on-secondary: #ffffff,
+      secondary-container: #cfd5de,
+      on-secondary-container: #4b5563,
+      tertiary: #1c5390,
+      on-tertiary: #ffffff,
+      tertiary-container: #dbe6f3,
+      on-tertiary-container: #0b294e,
+      surface-container: #f4f6f9,
+      on-surface: #374151,
     )
   );
 }
@@ -377,7 +390,7 @@ textarea,
   border-radius: var(--radius-lg);
 }
 
-.sort-select {
+.sort-select, .listing-page-fields {
   .mat-mdc-form-field-subscript-wrapper {
     display: none;
   }

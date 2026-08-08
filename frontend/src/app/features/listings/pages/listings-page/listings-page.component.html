@@ -1,4 +1,4 @@
-<section class="listings-page container">
+<section class="listings-page">
   <!-- <div class="listings-page__hero">
     <h1 class="listings-page__title">Find your next property</h1>
 
@@ -32,13 +32,11 @@
                      (cardClicked)="openListingDetail($event)"
                      (favoriteToggled)="onFavoriteToggled($event)" />
 
-  @if (pageCount() > 1) {
-    <div class="listings-page__pagination">
-      <app-pagination
-        [page]="page()"
-        [pageCount]="pageCount()"
-        (pageChange)="onPageChange($event)"
-        ariaLabel="Listings pagination" />
-    </div>
-  }
+  <div class="listings-page__pagination">
+    <app-pagination
+      [page]="page()"
+      [pageCount]="pageCount()"
+      (pageChange)="onPageChange($event)"
+      ariaLabel="Listings pagination" />
+  </div>
 </section>

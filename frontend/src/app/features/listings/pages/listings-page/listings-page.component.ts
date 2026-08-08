@@ -214,10 +214,18 @@ export class ListingsPageComponent {
         })
       )
       .subscribe((result) => {
+        const responseTotal = Number.isFinite(result.total)
+          ? Math.max(0, Math.floor(result.total))
+          : result.items.length;
+        const viablePageCount = Math.max(1, Math.ceil(responseTotal / PAGE_SIZE));
+        const responsePage = Number.isFinite(result.page)
+          ? Math.max(1, Math.floor(result.page))
+          : 1;
+
         this.listings.set(result.items);
-        this.totalResults.set(result.total);
-        this.page.set(result.page);
-        this.pageCount.set(Math.max(1, result.totalPages));
+        this.totalResults.set(responseTotal);
+        this.pageCount.set(viablePageCount);
+        this.page.set(Math.min(responsePage, viablePageCount));
       });
   }
 
@@ -350,7 +358,7 @@ export class ListingsPageComponent {
 
     const priceBuy: FilterSelectConfig = {
       id: 'price',
-      label: 'Price Range',
+      label: 'Price',
       icon: 'monetization_on',
       placeholder: 'Price range',
       value: 'any',
@@ -364,7 +372,7 @@ export class ListingsPageComponent {
 
     const priceRent: FilterSelectConfig = {
       id: 'price',
-      label: 'Monthly Rent',
+      label: 'Rent',
       icon: 'monetization_on',
       placeholder: 'Monthly rent',
       value: 'any',
@@ -473,12 +481,22 @@ export class ListingsPageComponent {
       areaRaw && typeof areaRaw === 'string' && areaRaw.trim() !== '' ? areaRaw.trim() : null;
     const city = fieldValue('city')?.trim() || null;
 
-    const { minPrice, maxPrice } = this.mapPriceRange(price, payload.mode);
+    const presetPrice = this.mapPriceRange(price, payload.mode);
+    const hasManualPrice =
+      payload.manualMinPrice !== undefined || payload.manualMaxPrice !== undefined;
+    const minPrice = hasManualPrice ? payload.manualMinPrice : presetPrice.minPrice;
+    const maxPrice = hasManualPrice ? payload.manualMaxPrice : presetPrice.maxPrice;
+    const purpose =
+      payload.purposeOverride !== undefined
+        ? payload.purposeOverride
+        : payload.mode === 'buy'
+          ? 'For Sale'
+          : 'For Rent';
 
     const queryParams: Record<string, string | number | null> = {
       page: 1,
       limit: PAGE_SIZE,
-      purpose: payload.mode === 'buy' ? 'For Sale' : 'For Rent',
+      purpose,
       locationName: city || area || null,
       propertyType: !primaryType || primaryType === 'any' ? null : primaryType,
       subtype: !subtype || subtype === 'any' ? null : subtype,

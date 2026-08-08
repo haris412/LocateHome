@@ -20,6 +20,7 @@ import { LocationSearchFieldComponent } from '../location-search-field/location-
 })
 export class FilterSelectComponent {
   readonly config = input.required<FilterSelectConfig>();
+  readonly listingPageField = input(false);
   readonly valueChanged = output<{ id: string; value: string | null }>();
 
   onSelectionChange(value: string | null): void {

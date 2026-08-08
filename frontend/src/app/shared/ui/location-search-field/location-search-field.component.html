@@ -3,9 +3,12 @@
     <span>{{ label() }}</span>
   </label>
 
-  <mat-form-field appearance="outline" class="location-search-field__field" subscriptSizing="dynamic">
+  <mat-form-field appearance="outline"
+                  class="location-search-field__field"
+                  [class.listing-page-fields]="listingPageField()"
+                  subscriptSizing="dynamic">
     <mat-icon matPrefix fontSet="material-symbols-outlined" aria-hidden="true">
-      {{ icon() }}
+      {{ leadingIcon() }}
     </mat-icon>
 
     <input
@@ -17,9 +20,26 @@
       (input)="onInput($event)"
     />
 
-    <mat-icon matSuffix fontSet="material-symbols-outlined" aria-hidden="true">
-      search
-    </mat-icon>
+    @if (voiceAction()) {
+      <button
+        type="button"
+        matSuffix
+        class="location-search-field__voice"
+        [class.location-search-field__voice--active]="voiceActive()"
+        [disabled]="voiceDisabled()"
+        (click)="voiceTriggered.emit()"
+        [attr.aria-label]="voiceActive() ? 'Stop voice search' : 'Start voice search'"
+        [attr.aria-expanded]="voiceExpanded()"
+        aria-controls="property-filters-voice-panel">
+        <mat-icon fontSet="material-symbols-outlined">
+          {{ voiceActive() ? 'graphic_eq' : 'mic' }}
+        </mat-icon>
+      </button>
+    } @else {
+      <mat-icon matSuffix fontSet="material-symbols-outlined" aria-hidden="true">
+        search
+      </mat-icon>
+    }
 
     <mat-autocomplete
       #auto="matAutocomplete"
