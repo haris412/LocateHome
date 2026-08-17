@@ -67,6 +67,10 @@ export interface ListingsApiResponse {
   page: number;
   totalPages: number;
   data: {
+    count:number;
+    page:number;
+    totalPages:number;
+    total:number;
     properties: ListingsApiProperty[];
   };
 }

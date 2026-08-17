@@ -68,48 +68,7 @@ export class ListingsPageComponent {
     { id: 'parking', label: 'Parking' }
   ]);
 
-  readonly listings = signal<ListingItem[]>([
-    {
-      id: '1',
-      title: 'Skyline Marina Apartment',
-      address: 'Dubai Marina, Dubai',
-      price: '$945,000',
-      badge: 'For Sale',
-      badgeVariant: 'sale',
-      imageUrl: 'assets/images/listings/featured-1.png',
-      beds: 2,
-      baths: 2,
-      area: '1,240 sqft',
-      favorite: false
-    },
-    {
-      id: '2',
-      title: 'Palm View Residence',
-      address: 'Palm Jumeirah, Dubai',
-      price: '$1,850,000',
-      badge: 'Featured',
-      badgeVariant: 'featured',
-      imageUrl: 'assets/images/listings/featured-2.png',
-      beds: 3,
-      baths: 3,
-      area: '2,140 sqft',
-      favorite: true
-    },
-    {
-      id: '1',
-      title: 'Skyline Marina Apartment',
-      address: 'Dubai Marina, Dubai',
-      price: '$945,000',
-      badge: 'For Sale',
-      badgeVariant: 'sale',
-      imageUrl: 'assets/images/listings/featured-1.png',
-      beds: 2,
-      baths: 2,
-      area: '1,240 sqft',
-      favorite: false
-    },
-    
-  ]);
+  readonly listings = signal<ListingItem[]>([]);
   readonly totalResults = signal(0);
   readonly page = signal(1);
   readonly pageCount = signal(1);
@@ -214,10 +173,13 @@ export class ListingsPageComponent {
         })
       )
       .subscribe((result) => {
+        debugger;
         const responseTotal = Number.isFinite(result.total)
           ? Math.max(0, Math.floor(result.total))
           : result.items.length;
-        const viablePageCount = Math.max(1, Math.ceil(responseTotal / PAGE_SIZE));
+        const viablePageCount = Number.isFinite(result.totalPages) && result.totalPages > 0
+          ? Math.floor(result.totalPages)
+          : Math.max(1, Math.ceil(responseTotal / PAGE_SIZE));
         const responsePage = Number.isFinite(result.page)
           ? Math.max(1, Math.floor(result.page))
           : 1;

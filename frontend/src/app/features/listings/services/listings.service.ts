@@ -151,9 +151,9 @@ export class ListingsService {
 
         return {
           items: properties.map((property) => this.mapToListingItem(property)),
-          page: response.page,
-          totalPages: params.userId ? 1 : response.totalPages,
-          total: params.userId ? properties.length : response.total
+          page: response.data.page,
+          totalPages: response.data.totalPages ?? response.data.totalPages,
+          total: response.data.total
         };
       })
     );
