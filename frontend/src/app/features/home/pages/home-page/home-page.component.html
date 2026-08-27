@@ -14,6 +14,18 @@
         <app-valuation-section />
       </div>
 
+      @if (hotListings().length) {
+        <div class="home-page__section">
+          <app-listings-carousel-section
+            title="Hot in this area"
+            subtitle="Most viewed listings nearby — the lead card rotates so more homes get seen."
+            [items]="hotListings()"
+            [isHot]="true"
+            [browseQueryParams]="hotBrowseQuery()"
+          />
+        </div>
+      }
+
       <div class="home-page__section">
         <app-agents-section [items]="agents()" />
       </div>

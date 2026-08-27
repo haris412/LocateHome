@@ -7,6 +7,7 @@ import {
   HostListener,
   Output,
   computed,
+  effect,
   inject,
   input,
   signal,
@@ -35,7 +36,16 @@ export class ListingsCarouselSectionComponent {
   readonly showEyebrow = input<boolean>(false);
   readonly smallContent = input<boolean>(false);
   readonly isFeatured = input<boolean>(false);
+  readonly isHot = input<boolean>(false);
+  readonly browseQueryParams = input<Record<string, string | number | boolean | null> | undefined>(undefined);
   readonly scrollSnap = input<boolean>(true);
+
+  constructor() {
+    effect(() => {
+      this.items();
+      queueMicrotask(() => this.updateTrackMetrics());
+    });
+  }
 
   @Output() readonly cardClicked = new EventEmitter<string>();
   @Output() readonly favoriteToggled = new EventEmitter<string>();

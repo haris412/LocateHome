@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, computed, effect, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, of } from 'rxjs';
+import { Subject, forkJoin, of } from 'rxjs';
 import { catchError, debounceTime, switchMap } from 'rxjs/operators';
 
 import { FilterChipItem, FilterSelectConfig, FilterTabItem, SortOption } from '../../../../core/models/filter.models';
@@ -15,6 +15,7 @@ import {
 } from '../../../../shared/ui/property-filters/property-filters.component';
 import { ListingsQueryParams, ListingsService } from '../../services/listings.service';
 import { PaginationComponent } from '../../../../shared/ui/pagination/pagination.component';
+import { ListingsCarouselSectionComponent } from '../../../../shared/ui/listings-carousel-section/listings-carousel-section.component';
 
 const PAGE_SIZE = 20;
 
@@ -25,7 +26,8 @@ const PAGE_SIZE = 20;
     ListingsResultsHeaderComponent,
     ListingsGridComponent,
     PropertyFiltersComponent,
-    PaginationComponent
+    PaginationComponent,
+    ListingsCarouselSectionComponent
   ],
   templateUrl: './listings-page.component.html',
   styleUrl: './listings-page.component.scss',
@@ -69,6 +71,9 @@ export class ListingsPageComponent {
   ]);
 
   readonly listings = signal<ListingItem[]>([]);
+  readonly hotCarousel = signal<ListingItem[]>([]);
+  readonly isHotBrowse = signal(false);
+  readonly hotPlaceId = signal('');
   readonly totalResults = signal(0);
   readonly page = signal(1);
   readonly pageCount = signal(1);
@@ -84,6 +89,14 @@ export class ListingsPageComponent {
   readonly selectedSort = signal('newest');
   readonly selectedView = signal<'grid' | 'list'>('grid');
   readonly selectedMode = signal<'buy' | 'rent'>('buy');
+
+  readonly hotBrowseQuery = computed(() => ({
+    isHot: true,
+    placeId: this.hotPlaceId() || null,
+    purpose: this.selectedMode() === 'rent' ? 'For Rent' : 'For Sale',
+    locationName: this.selectedCityLabel() === 'All locations' ? null : this.selectedCityLabel(),
+    page: 1
+  }));
 
   readonly selectedSortLabel = computed(() => {
     return (
@@ -159,21 +172,36 @@ export class ListingsPageComponent {
           this.page.set(query.page ?? 1);
           this.selectedSort.set(this.fromSortParams(query.sortBy, query.sortOrder));
           this.selectedMode.set(query.purpose === 'For Rent' ? 'rent' : 'buy');
+          this.isHotBrowse.set(query.isHot === true);
+          this.hotPlaceId.set(query.placeId ?? '');
 
           const locationName = params.get('locationName');
           this.searchQuery.set(locationName ?? '');
           this.selectedCityLabel.set(locationName || 'All locations');
-          console.log('Query params changed:', query);
-          return this.listingsService.getListings(query).pipe(
+
+          if (query.placeId) {
+            this.listingsService.saveLastPlace(query.placeId, locationName ?? undefined);
+          }
+
+          const listings$ = this.listingsService.getListings(query).pipe(
             catchError((err) => {
               console.error('Failed to load listings', err);
               return of({ items: [] as ListingItem[], page: 1, totalPages: 0, total: 0 });
             })
           );
+          const carousel$ =
+            query.placeId && !query.isHot
+              ? this.listingsService.getHotCarousel({
+                  placeId: query.placeId,
+                  purpose: query.purpose
+                })
+              : of([] as ListingItem[]);
+
+          return forkJoin({ listings: listings$, carousel: carousel$ });
         })
       )
-      .subscribe((result) => {
-        debugger;
+      .subscribe(({ listings, carousel }) => {
+        const result = listings;
         const responseTotal = Number.isFinite(result.total)
           ? Math.max(0, Math.floor(result.total))
           : result.items.length;
@@ -185,6 +213,7 @@ export class ListingsPageComponent {
           : 1;
 
         this.listings.set(result.items);
+        this.hotCarousel.set(carousel);
         this.totalResults.set(responseTotal);
         this.pageCount.set(viablePageCount);
         this.page.set(Math.min(responsePage, viablePageCount));
@@ -238,7 +267,8 @@ export class ListingsPageComponent {
       minPrice: this.toNumber(params.get('minPrice')),
       maxPrice: this.toNumber(params.get('maxPrice')),
       sortBy: params.get('sortBy') ?? 'createdAt',
-      sortOrder: (params.get('sortOrder') as 'asc' | 'desc' | null) ?? 'desc'
+      sortOrder: (params.get('sortOrder') as 'asc' | 'desc' | null) ?? 'desc',
+      isHot: params.get('isHot') === 'true'
     };
   }
 
@@ -464,7 +494,9 @@ export class ListingsPageComponent {
       subtype: !subtype || subtype === 'any' ? null : subtype,
       category: null,
       minPrice: minPrice ?? null,
-      maxPrice: maxPrice ?? null
+      maxPrice: maxPrice ?? null,
+      placeId: this.route.snapshot.queryParamMap.get('placeId'),
+      isHot: this.route.snapshot.queryParamMap.get('isHot') === 'true' ? 'true' : null
     };
 
     this.router.navigate([], {

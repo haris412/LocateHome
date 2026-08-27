@@ -55,6 +55,7 @@ export interface PropertyDetailViewModel {
     images: string[];
     moreCount?: number;
     featuredTag?: string;
+    hotTag?: string;
     videoTag?: string;
     showPlay?: boolean;
   };

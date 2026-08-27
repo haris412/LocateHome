@@ -93,7 +93,8 @@ export function mapApiPropertyToDetailView(property: ListingsApiProperty): Prope
       primaryImage,
       images: imageUrls,
       moreCount: imageUrls.length > 1 ? Math.max(0, imageUrls.length - 5) : undefined,
-      featuredTag: property.purpose,
+      featuredTag: property.isFeatured ? 'Featured' : property.purpose,
+      hotTag: property.isHot ? 'Hot' : undefined,
       videoTag: videoTour ? 'Video tour' : undefined,
       showPlay: Boolean(videoTour)
     },
