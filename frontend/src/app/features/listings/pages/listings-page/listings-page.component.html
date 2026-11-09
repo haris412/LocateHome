@@ -19,6 +19,17 @@
                         (filtersChanged)="onFiltersChanged($event)"
                         (searchSubmitted)="onSearchSubmitted($event)" />
 
+  @if (!isHotBrowse() && hotCarousel().length) {
+    <app-listings-carousel-section
+      title="Hot in this area"
+      subtitle="Most viewed listings here — the lead card rotates so more homes get seen."
+      [items]="hotCarousel()"
+      [isHot]="true"
+      [browseQueryParams]="hotBrowseQuery()"
+      (cardClicked)="openListingDetail($event)"
+      (favoriteToggled)="onFavoriteToggled($event)" />
+  }
+
   <app-listings-results-header [resultsCount]="totalResults()"
                                [locationLabel]="selectedCityLabel()"
                                [selectedSort]="selectedSort()"

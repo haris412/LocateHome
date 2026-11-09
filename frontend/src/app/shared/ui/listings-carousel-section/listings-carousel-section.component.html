@@ -24,6 +24,13 @@
       Browse all featured
     </a>
     }
+    @if (isHot()) {
+    <a routerLink="/listings"
+       [queryParams]="browseQueryParams()"
+       class="listings-carousel-section__primary-btn">
+      Browse all hot
+    </a>
+    }
     @if (smallContent()) {
     <div class="listings-carousel-section__actions"
          [class.justify-content-end]="!showEyebrow()">

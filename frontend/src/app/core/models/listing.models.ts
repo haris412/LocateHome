@@ -51,6 +51,8 @@ export interface ListingsApiProperty {
   contactPhoneNumber: string;
   contactLocation?: string;
   isFeatured?: boolean;
+  /** True only when this listing is in the area's view-ranked hot pool. */
+  isHot?: boolean;
   /** Listing owner; string id or populated subdocument */
   userId?: string | ListingsApiPropertyOwnerRef;
   /** Optional stable CRM / frontend key */

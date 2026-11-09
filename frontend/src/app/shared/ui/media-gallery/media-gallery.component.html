@@ -7,11 +7,17 @@
       class="media-gallery__tile media-gallery__tile--primary"
       (click)="openOverlay(0)"
     >
-      @if (gallery().featuredTag || gallery().videoTag) {
+      @if (gallery().featuredTag || gallery().hotTag || gallery().videoTag) {
         <div class="media-gallery__badges">
           @if (gallery().featuredTag) {
             <span class="media-gallery__badge media-gallery__badge--featured">
               {{ gallery().featuredTag }}
+            </span>
+          }
+
+          @if (gallery().hotTag) {
+            <span class="media-gallery__badge media-gallery__badge--hot">
+              {{ gallery().hotTag }}
             </span>
           }
 

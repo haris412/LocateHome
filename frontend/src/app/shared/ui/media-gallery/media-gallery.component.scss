@@ -94,6 +94,11 @@
       color: var(--status-highlight-text);
     }
 
+    &--hot {
+      background: var(--primary);
+      color: var(--surface);
+    }
+
     &--dark {
       background: color-mix(in srgb, var(--surface-dark) 92%, transparent);
       color: var(--surface);

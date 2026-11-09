@@ -1,4 +1,5 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, PLATFORM_ID, inject } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -36,6 +37,8 @@ export interface ListingsQueryParams {
   sortOrder?: 'asc' | 'desc';
   /** Listing owner/agent id, used by agent profiles. */
   userId?: string;
+  /** When true, load the view-ranked hot pool instead of the organic list. */
+  isHot?: boolean;
 }
 
 export interface ListingsResult {
@@ -45,11 +48,14 @@ export interface ListingsResult {
   total: number;
 }
 
+const LAST_PLACE_STORAGE_KEY = 'locatehome.lastPlace';
+
 @Injectable({
   providedIn: 'root'
 })
 export class ListingsService {
   private readonly http = inject(HttpClient);
+  private readonly platformId = inject(PLATFORM_ID);
   private readonly baseUrl = `${environment.apiUrl}/api/properties`;
 
   /**
@@ -138,6 +144,10 @@ export class ListingsService {
   }
 
   getListings(params: ListingsQueryParams = {}): Observable<ListingsResult> {
+    if (params.isHot) {
+      return this.getHotListings(params);
+    }
+
     const httpParams = this.buildHttpParams(params);
 
     return this.http.get<ListingsApiResponse>(this.baseUrl, { params: httpParams }).pipe(
@@ -157,6 +167,68 @@ export class ListingsService {
         };
       })
     );
+  }
+
+  getHotCarousel(params: Pick<ListingsQueryParams, 'placeId' | 'purpose'>): Observable<ListingItem[]> {
+    if (!params.placeId) {
+      return of([]);
+    }
+
+    let httpParams = new HttpParams()
+      .set('placeId', params.placeId)
+      .set('limit', '6');
+    if (params.purpose) {
+      httpParams = httpParams.set('purpose', params.purpose);
+    }
+
+    return this.http.get<ListingsApiResponse>(`${this.baseUrl}/hot`, { params: httpParams }).pipe(
+      map((response) => (response.data?.properties ?? []).map((property) => this.mapToListingItem(property))),
+      catchError(() => of([]))
+    );
+  }
+
+  getHotListings(params: ListingsQueryParams = {}): Observable<ListingsResult> {
+    let httpParams = new HttpParams()
+      .set('page', String(params.page ?? 1))
+      .set('limit', String(params.limit ?? 20));
+
+    if (params.placeId) {
+      httpParams = httpParams.set('placeId', params.placeId);
+    }
+    if (params.purpose) {
+      httpParams = httpParams.set('purpose', params.purpose);
+    }
+
+    return this.http.get<ListingsApiResponse>(`${this.baseUrl}/hot`, { params: httpParams }).pipe(
+      map((response) => ({
+        items: (response.data?.properties ?? []).map((property) => this.mapToListingItem(property)),
+        page: response.data?.page ?? params.page ?? 1,
+        totalPages: response.data?.totalPages ?? 0,
+        total: response.data?.total ?? 0
+      })),
+      catchError(() => of({ items: [], page: 1, totalPages: 0, total: 0 }))
+    );
+  }
+
+  saveLastPlace(placeId: string, locationName?: string): void {
+    if (!isPlatformBrowser(this.platformId) || !placeId.trim()) return;
+    sessionStorage.setItem(
+      LAST_PLACE_STORAGE_KEY,
+      JSON.stringify({ placeId: placeId.trim(), locationName: locationName?.trim() ?? '' })
+    );
+  }
+
+  readLastPlace(): { placeId: string; locationName: string } | null {
+    if (!isPlatformBrowser(this.platformId)) return null;
+    try {
+      const raw = sessionStorage.getItem(LAST_PLACE_STORAGE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as { placeId?: string; locationName?: string };
+      if (!parsed?.placeId) return null;
+      return { placeId: parsed.placeId, locationName: parsed.locationName ?? '' };
+    } catch {
+      return null;
+    }
   }
 
   getSimilarListings(
@@ -210,9 +282,10 @@ export class ListingsService {
   }
 
   private mapToListingItem(property: ListingsApiProperty): ListingItem {
+    const images = property.images ?? [];
     const thumbnail =
-      property.images.find((img) => img.isThumbnail) ??
-      property.images.sort((a, b) => a.orderIndex - b.orderIndex)[0];
+      images.find((img) => img.isThumbnail) ??
+      [...images].sort((a, b) => a.orderIndex - b.orderIndex)[0];
 
     const badge = this.getPromotionalBadge(property);
 
@@ -238,9 +311,7 @@ export class ListingsService {
       return { label: 'Featured', variant: 'featured' };
     }
 
-    const publishedAt = Date.parse(property.createdAt);
-    const hotWindowMs = 14 * 24 * 60 * 60 * 1000;
-    if (Number.isFinite(publishedAt) && Date.now() - publishedAt <= hotWindowMs) {
+    if (property.isHot) {
       return { label: 'Hot', variant: 'hot' };
     }
 
