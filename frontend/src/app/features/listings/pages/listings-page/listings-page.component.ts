@@ -173,7 +173,6 @@ export class ListingsPageComponent {
         })
       )
       .subscribe((result) => {
-        debugger;
         const responseTotal = Number.isFinite(result.total)
           ? Math.max(0, Math.floor(result.total))
           : result.items.length;

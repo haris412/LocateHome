@@ -74,7 +74,7 @@ export class LocationSearchFieldComponent {
 
   // ── Outputs ──────────────────────────────────────────────────────────────────
 
-  readonly searchCommitted = output<string>();
+  readonly searchCommitted = output<any>();
   readonly voiceTriggered = output<void>();
 
   // ── View state ───────────────────────────────────────────────────────────────
@@ -134,6 +134,6 @@ export class LocationSearchFieldComponent {
     const prediction  = event.option.value as GooglePlacePrediction;
     const displayName = prediction.structuredFormat.mainText.text;
     this.draft.set(displayName);
-    this.searchCommitted.emit(displayName);
+    this.searchCommitted.emit(prediction);
   }
 }

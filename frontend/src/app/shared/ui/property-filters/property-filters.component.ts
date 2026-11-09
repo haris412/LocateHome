@@ -450,10 +450,11 @@ export class PropertyFiltersComponent {
     this.emitFiltersChanged();
   }
 
-  updateSearch(value: string): void {
-    this.searchQuery.set(value);
-    this.syncSearchFieldValue(value);
-    this.searchQueryChange.emit(value);
+  updateSearch(searchObj: any): void {
+    console.log('Updating search with:', searchObj);
+    this.searchQuery.set(searchObj.query);
+    this.syncSearchFieldValue(searchObj.query);
+    this.searchQueryChange.emit(searchObj.query);
   }
 
   runSearch(): void {

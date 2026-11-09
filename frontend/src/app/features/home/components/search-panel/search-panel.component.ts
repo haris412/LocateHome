@@ -32,6 +32,52 @@ import {
 } from './speech-recognition.types';
 import { SearchPayload, SearchMode } from '../../../../core/interfaces/search-payload.interface';
 
+type VoiceLang = 'en' | 'ur';
+
+interface LanguagePack {
+  bcp47: string;
+  rentWords: RegExp;
+  saleWords: RegExp;
+  fillerWords: RegExp;
+  /** Local-language word → canonical English word to match against catalog labels. */
+  propertyTypeSynonyms: Record<string, string>;
+  titleCaseLocation: boolean;
+}
+
+// Add a language by adding an entry here — detection below picks it up automatically.
+const LANGUAGE_PACKS: Record<VoiceLang, LanguagePack> = {
+  en: {
+    bcp47: 'en-US',
+    rentWords: /\b(for rent|to rent|rent|lease|renting)\b/,
+    saleWords: /\b(for sale|to buy|buy|sale|selling)\b/,
+    fillerWords: /\b(a|an|the|for|to|with|in|at|near|located)\b/g,
+    propertyTypeSynonyms: {},
+    titleCaseLocation: true
+  },
+  ur: {
+    bcp47: 'ur-PK',
+    rentWords: /(کرائے پر|کرایہ پر|کرایہ|کرائے)/,
+    saleWords: /(برائے فروخت|فروخت کے لیے|فروخت|بیچنا|بکاؤ)/,
+    fillerWords: /(میں|کے لیے|کے|کی|کا|برائے|نزدیک|قریب|والا|والی|چاہیے|درکار)/g,
+    propertyTypeSynonyms: {
+      'گھر': 'house',
+      'مکان': 'house',
+      'فلیٹ': 'flat',
+      'اپارٹمنٹ': 'apartment',
+      'پلاٹ': 'plot',
+      'زمین': 'land',
+      'دکان': 'shop',
+      'دفتر': 'office',
+      'ولا': 'villa',
+      'ویلا': 'villa',
+      'کمرہ': 'room',
+      'عمارت': 'building',
+      'گودام': 'warehouse'
+    },
+    titleCaseLocation: false
+  }
+};
+
 @Component({
   selector: 'app-search-panel',
   imports: [
@@ -99,6 +145,7 @@ export class SearchPanelComponent {
   readonly isListening  = signal(false);
   readonly micSupported = signal(false);
   readonly micError     = signal('');
+  readonly voiceLang    = signal<VoiceLang>(this.detectDefaultVoiceLang());
   readonly voiceHint    = computed(() =>
     this.isListening() ? 'Listening… speak now' : 'Tap to speak'
   );
@@ -247,6 +294,17 @@ export class SearchPanelComponent {
     this.showVoicePanel.set(false);
   }
 
+  private detectDefaultVoiceLang(): VoiceLang {
+    if (!isPlatformBrowser(this.platformId)) return 'en';
+
+    const locales = navigator.languages?.length ? navigator.languages : [navigator.language];
+    for (const locale of locales) {
+      const prefix = locale.toLowerCase().split('-')[0] as VoiceLang;
+      if (prefix in LANGUAGE_PACKS) return prefix;
+    }
+    return 'en';
+  }
+
   private detectUserCity(): void {
     if (!isPlatformBrowser(this.platformId)) return;
     if (!navigator.geolocation) return;
@@ -280,10 +338,13 @@ export class SearchPanelComponent {
     const recognition = new Ctor();
     recognition.continuous     = false;
     recognition.interimResults = true;
-    recognition.lang           = 'en-US';
+    recognition.lang           = LANGUAGE_PACKS[this.voiceLang()].bcp47;
 
     recognition.onstart = () => { this.isListening.set(true); this.micError.set(''); };
-    recognition.onend   = () => this.isListening.set(false);
+    recognition.onend   = () => {
+      this.isListening.set(false);
+      this.applyKeywordToFilters(this.keyword());
+    };
     recognition.onerror = (e: SpeechRecognitionErrorLike) => {
       this.isListening.set(false);
       this.micError.set(
@@ -307,5 +368,56 @@ export class SearchPanelComponent {
     };
 
     this.recognition = recognition;
+  }
+
+  // ── Keyword parsing ─────────────────────────────────────────────────────
+  // Splits a free-text query (typed or spoken) into the existing structured
+  // filters — purpose, property type/subtype, location — so runSearch()
+  // sends real filters instead of an opaque keyword string.
+
+  private applyKeywordToFilters(raw: string): void {
+    const pack = LANGUAGE_PACKS[this.voiceLang()];
+
+    let remaining = ` ${raw.replace(/^"|"$/g, '').trim().toLowerCase()} `;
+    if (!remaining.trim()) return;
+
+    if (pack.rentWords.test(remaining)) {
+      this.setActiveTab('rent');
+      remaining = remaining.replace(pack.rentWords, ' ');
+    } else if (pack.saleWords.test(remaining)) {
+      this.setActiveTab('buy');
+      remaining = remaining.replace(pack.saleWords, ' ');
+    }
+
+    // Translate local-language property-type words to their English catalog equivalent.
+    for (const [local, canonical] of Object.entries(pack.propertyTypeSynonyms)) {
+      if (remaining.includes(local)) {
+        remaining = remaining.split(local).join(` ${canonical} `);
+      }
+    }
+
+    const subtypeOptions = this.filtersCatalog
+      .getSubtypeOptions('any')
+      .filter(o => o.id !== 'any')
+      .sort((a, b) => b.label.length - a.label.length);
+
+    for (const option of subtypeOptions) {
+      const needle = option.label.toLowerCase();
+      if (remaining.includes(needle)) {
+        this.onSubtypeSelected(option.id);
+        remaining = remaining.split(needle).join(' ');
+        break;
+      }
+    }
+
+    const location = remaining.replace(pack.fillerWords, ' ').replace(/\s+/g, ' ').trim();
+
+    if (location) {
+      const formatted = pack.titleCaseLocation
+        ? location.replace(/\b\w/g, c => c.toUpperCase())
+        : location;
+      this.locationName.set(formatted);
+      this.locationControl.setValue(formatted, { emitEvent: false });
+    }
   }
 }
