@@ -8,16 +8,40 @@
   }
 
   .mat-mdc-chip-option {
-    --mdc-chip-elevated-container-color: var(--secondary);
-    --mdc-chip-label-text-color: var(--font-main);
-    --mdc-chip-with-icon-icon-color: var(--font-secondary);
+    --mat-chip-elevated-container-color: var(--secondary);
+    --mat-chip-label-text-color: var(--font-main);
+    --mat-chip-with-icon-icon-color: var(--font-secondary);
     --mat-chip-elevated-selected-container-color: var(--primary);
     border-radius: var(--radius-pill);
     font-weight: 600;
+    opacity: 1;
+
+    .mdc-evolution-chip {
+      &__text-label {
+        color: var(--font-main) !important;
+        opacity: 1;
+      }
+    }
+
+    .mat-icon {
+      color: var(--font-secondary) !important;
+      opacity: 1;
+    }
+  }
+
+  // These chips are interactive filters, so they should never use MDC's
+  // faded disabled treatment while rendered in the More Filters drawer.
+  .mat-mdc-chip-option.mdc-evolution-chip--disabled {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .mat-mdc-chip-option.mdc-evolution-chip--selected {
-    --mdc-chip-elevated-container-color: var(--primary-soft-hover);
-    --mdc-chip-label-text-color: var(--font-main);
+    --mat-chip-elevated-selected-container-color: var(--primary-soft-hover);
+    --mat-chip-selected-label-text-color: var(--font-main);
   }
+}
+
+.mat-mdc-standard-chip .mdc-evolution-chip__action--primary::before {
+  border: none;
 }

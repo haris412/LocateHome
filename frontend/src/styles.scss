@@ -30,8 +30,26 @@ html {
       on-tertiary-container: #0b294e,
       surface-container: #f4f6f9,
       on-surface: #374151,
+      error: #b82026,
+      on-error: #ffffff,
+      error-container: #f8d9d9,
+      on-error-container: #5f1114,
     )
   );
+
+  --mat-form-field-error-text-color: var(--error-strong);
+  --mat-form-field-outlined-error-focus-label-text-color: var(--error-strong);
+  --mat-form-field-outlined-error-label-text-color: var(--error-strong);
+  --mat-form-field-outlined-error-hover-label-text-color: var(--error-strong);
+  --mat-form-field-outlined-error-focus-outline-color: var(--error-strong);
+  --mat-form-field-outlined-error-hover-outline-color: var(--error-strong);
+  --mat-form-field-outlined-error-outline-color: var(--error-strong);
+  --mat-form-field-outlined-label-text-color: var(--font-main);
+  --mat-form-field-outlined-hover-label-text-color: var(--font-main);
+  --mat-form-field-outlined-focus-label-text-color: var(--primary);
+  --mat-form-field-filled-label-text-color: var(--font-main);
+  --mat-form-field-filled-hover-label-text-color: var(--font-main);
+  --mat-form-field-filled-focus-label-text-color: var(--primary);
 }
 
 :root {
@@ -359,6 +377,71 @@ textarea,
   display: flex !important;
   align-items: center;
   justify-content: center;
+}
+
+/* Keep Material controls on the LocateHome brand palette with readable
+   selected, hover, focus, and disabled states. */
+.mat-mdc-checkbox,
+mat-checkbox {
+  --mdc-checkbox-unselected-icon-color: var(--border-field-strong, var(--border-soft-strong));
+  --mdc-checkbox-unselected-hover-icon-color: var(--primary);
+  --mdc-checkbox-unselected-focus-icon-color: var(--primary);
+  --mdc-checkbox-unselected-pressed-icon-color: var(--primary);
+  --mdc-checkbox-selected-icon-color: var(--primary);
+  --mdc-checkbox-selected-hover-icon-color: var(--primary-hover);
+  --mdc-checkbox-selected-focus-icon-color: var(--primary-hover);
+  --mdc-checkbox-selected-pressed-icon-color: var(--primary-strong);
+  --mdc-checkbox-selected-checkmark-color: var(--surface);
+  --mdc-checkbox-disabled-selected-icon-color: var(--surface-disabled);
+  --mdc-checkbox-disabled-unselected-icon-color: var(--surface-disabled);
+}
+
+.mat-mdc-checkbox .mdc-checkbox__checkmark-path,
+mat-checkbox .mdc-checkbox__checkmark-path {
+  stroke: var(--surface) !important;
+}
+
+.mat-mdc-slide-toggle,
+mat-slide-toggle {
+  --mdc-switch-selected-track-color: var(--primary);
+  --mdc-switch-selected-hover-track-color: var(--primary-hover);
+  --mdc-switch-selected-focus-track-color: var(--primary-hover);
+  --mdc-switch-selected-pressed-track-color: var(--primary-strong);
+  --mdc-switch-selected-handle-color: var(--surface);
+  --mdc-switch-selected-hover-handle-color: var(--surface);
+  --mdc-switch-selected-focus-handle-color: var(--surface);
+  --mdc-switch-selected-pressed-handle-color: var(--surface);
+  --mdc-switch-unselected-track-color: var(--border-soft-strong);
+  --mdc-switch-unselected-hover-track-color: var(--border-field-hover);
+  --mdc-switch-unselected-focus-track-color: var(--border-field-hover);
+  --mdc-switch-unselected-pressed-track-color: var(--border-field-hover);
+  --mdc-switch-unselected-handle-color: var(--surface);
+  --mdc-switch-unselected-hover-handle-color: var(--surface);
+  --mdc-switch-unselected-focus-handle-color: var(--surface);
+  --mdc-switch-unselected-pressed-handle-color: var(--surface);
+}
+
+.mat-mdc-form-field-error,
+mat-error {
+  color: var(--error-strong) !important;
+}
+
+.mat-mdc-form-field .mdc-floating-label {
+  color: var(--font-main) !important;
+}
+
+.mat-mdc-form-field.mat-focused .mdc-floating-label {
+  color: var(--primary) !important;
+}
+
+.mat-mdc-form-field.mat-form-field-invalid .mdc-floating-label {
+  color: var(--error-strong) !important;
+}
+
+.mat-mdc-form-field.mat-form-field-invalid {
+  --mdc-outlined-text-field-error-outline-color: var(--error-strong);
+  --mdc-outlined-text-field-error-focus-outline-color: var(--error-strong);
+  --mdc-outlined-text-field-error-hover-outline-color: var(--error-strong);
 }
 
 ::-webkit-scrollbar-button,
