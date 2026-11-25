@@ -249,7 +249,8 @@ export class ListingsPageComponent {
         propertyTypeTop = this.filtersCatalog.categoryForSubtypeSlug(resolvedName) ?? undefined;
         subtypeValue    = resolvedName;
       } else {
-        subtypeValue = rawTop;
+        // Not a known subtype (or catalog not loaded yet) — keep it as propertyType.
+        propertyTypeTop = rawTop;
       }
     }
 
